@@ -1,0 +1,4 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+# Forcer LF sur les sourcemaps CSS
+*.css.map text eol=lf

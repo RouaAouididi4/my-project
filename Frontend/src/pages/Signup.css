@@ -1,0 +1,130 @@
+/* Signup.css */
+
+body {
+  background-color: #f7f8f5;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.signup-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin-top: 80px;/*distance*/
+}
+
+.signup-container {
+  background-color: #ffffff;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 1500px; /* Plus large */
+}
+
+.signup-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 30px;
+  color: #111;
+  text-align: left;
+}
+
+.signup-form .form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.form-control {
+  width: 100%;
+  padding: 14px 18px;
+  font-size: 1rem;
+  border-radius: 999px;
+  border: 1px solid #ddd;
+  background-color: #f8f9f7;
+  transition: border 0.3s ease;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #111;
+  background-color: #fff;
+}
+
+.signup-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 999px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  background-color: #d6a988; /* bony color */
+  border: none;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  transition: background-color 0.5s ease;
+}
+
+.signup-btn:hover {
+  background-color: #ae6a3c; /* darker on hover */
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+
+.google-btn,
+.phone-btn {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  border-radius: 999px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #333;
+  transition: background-color 0.3s ease;
+}
+
+.google-btn:hover,
+.phone-btn:hover {
+  background-color: #f1f1f1;
+}
+
+.google-icon {
+  font-size: 1.2rem;
+}
+
+
+
+.login-link {
+  font-size: 0.9rem;
+  text-align: center;
+  color: #333;
+}
+
+.login-link a {
+  color: #111;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+
+
+
+

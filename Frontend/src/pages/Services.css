@@ -1,0 +1,152 @@
+.services-wrapper {
+  padding: 0 20px;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin-top: clamp(40px, 8vw, 100px);
+}
+
+.services-title {
+  font-weight: bold;
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+
+.white-box {
+  background-color: white;
+  padding: 15px;
+  border-radius: 5px;
+  width: 95%;
+  max-width: 900px;
+  margin: 0 auto 20px auto;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  margin-top: 80px;
+}
+
+.services-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 30px;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-large {
+  width: 60%;
+  max-width: 600px;
+  height: auto;
+  object-fit: cover;
+}
+
+.image-side-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 35%;
+}
+
+.image-small {
+  width: 100%;
+  max-width: 250px;
+  height: auto;
+  object-fit: cover;
+}
+
+.side-caption {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.services-subtitle {
+  font-weight: bold;
+  font-size: 20px;
+  margin-top: 30px;
+}
+
+.intro-section {
+  padding: 30px;
+  font-family: Arial, sans-serif;
+}
+
+.intro-banner{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #e5d1b9;
+  padding: 20px;
+}
+
+.intro-text {
+  max-width: 60%;
+  font-size: 26px;
+  font-weight: bold;
+  color: #000;
+  text-align: left;
+}
+
+.intro-image {
+  width: 100%;
+  height: auto;
+  max-width: è00px; 
+  display: block;
+  margin: 0 auto;
+  border-radius: 10px;
+}
+
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  margin-top: 30px;
+}
+
+.service-box {
+  background-color: #f3e1cd;
+  padding: 15px;
+
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease;
+}
+.service-box:hover {
+  transform: translateY(-5px);
+}
+.service-box h4 {
+  background-color: #1c1c1c;
+  color: white;
+  padding: 5px 10px;
+  display: inline-block;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.service-box p {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #333;
+}
+
+@media (max-width: 768px) {
+  .services-images {
+    flex-direction: column;
+  }
+
+  .image-large,
+  .image-side-container {
+    width: 100%;
+  }
+}
+
+
+/*animation de img*/
+.zoom-hover {
+  transition: transform 0.4s ease;
+}
+
+.zoom-hover:hover {
+  transform: scale(0.7); /* Zoom 10% */
+}
+

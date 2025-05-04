@@ -1,0 +1,130 @@
+/* /src/components/PropertyDetails.css */
+
+.property-details-container {
+  display: flex;
+  gap: 40px;
+  padding: 40px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Left Column */
+.property-main {
+  flex: 2;
+}
+
+.price {
+  font-size: 24px;
+  color: #916D4D;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.address {
+  font-size: 16px;
+  color: #777;
+}
+
+.description {
+  margin: 20px 0;
+  line-height: 1.6;
+}
+
+.icons-row {
+  display: flex;
+  gap: 20px;
+  margin: 20px 0;
+  font-size: 18px;
+}
+
+.features-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.features-list li {
+  background: #f1f1f1;
+  padding: 6px 10px;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+/* Buttons */
+.action-buttons {
+  margin-top: 30px;
+  display: flex;
+  gap: 15px;
+}
+
+.btn-outline {
+  background: #A47C59;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.btn-dark {
+  background: black;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+/* Right Column (Agent Card) */
+.agent-card {
+  flex: 1;
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.agent-photo {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.agent-role {
+  font-style: italic;
+  margin-bottom: 10px;
+  color: #666;
+}
+
+/* Contact Form */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.contact-form input,
+.contact-form textarea {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.contact-form button {
+  background-color: #A47C59;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}

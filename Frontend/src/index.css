@@ -1,0 +1,75 @@
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+    background-color:#eaded2;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+.footer-container {
+  margin: 100; /* Remove top, bottom, left, right margins */
+  background-color: rgba(227, 215, 215, 0.497); /* Semi-transparent brown */
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: flex-start;
+  gap: 2rem;
+  width: 100%;
+  height: 100%;
+  border-color: rgb(43, 37, 37);
+border-radius: 10px;
+border: solid 1px;
+}
+
+.footer-container .footer-section {
+  color: black; /* Make all text black */
+}
+
+.footer-container .footer-section a {
+  color: black;
+  text-decoration: none;
+}
+
+.footer-container .footer-section a:hover {
+  text-decoration: underline;
+}
+
+.footer-container .logo,
+.footer-container h3,
+.footer-container p,
+.footer-container li {
+  color: black;
+}
+
+.footer-container .newsletter input,
+.footer-container .newsletter button {
+  margin-top: 0.5rem;
+}
+
+.footer-container .social-icons svg {
+  color: black;
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
+}
+.testimonials {
+background-color: #271f0262;}
+
+
+
+
+/**/
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}

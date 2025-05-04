@@ -18,7 +18,6 @@ import Upload from "./pages/upload";
 import Footer from "./components/Footer";
 import Profile from "./pages/Profile";
 import ForgotPassword from './ForgotPassword/ForgotPassword';
-import CheckEmail from './ForgotPassword/CheckEmail';
 import ResetPassword from './ForgotPassword/ResetPassword';
 
 
@@ -44,7 +43,6 @@ function App() {
           <Route path="/upload" element={<Upload />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/check-email" element={<CheckEmail />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         </Routes>
       </div>

@@ -82,6 +82,7 @@ const Login = () => {
       });
 
       const data = await res.json();
+      console.log("Response data:", data);
       if (res.ok) {
         login(
           {
@@ -96,9 +97,10 @@ const Login = () => {
       } else {
         setError(data.message || "Login failed");
       }
-      console.log("Login success:", response.data);
+      console.log("Login success:", data);
     } catch (err) {
       setError("An error occurred. Please try again.");
+      console.error("Error details:", err);
     }
   };
   return (

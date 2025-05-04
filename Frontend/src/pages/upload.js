@@ -18,10 +18,10 @@ const Upload = () => {
         data.append("photos", file);
       });
 
-      const response = await fetch("http://localhost:3001/upload", {
-        method: "POST",
-        body: data,
-      });
+      // const response = await fetch("http://localhost:3001/upload", {
+      //   method: "POST",
+      //   body: data,
+      // });
 
       if (!response.ok) {
         throw new Error("Erreur lors de l'envoi !");
@@ -102,7 +102,9 @@ const Upload = () => {
       </div>
 
       {successMessage && (
-        <div style={{ color: "green", marginTop: "15px" }}>{successMessage}</div>
+        <div style={{ color: "green", marginTop: "15px" }}>
+          {successMessage}
+        </div>
       )}
 
       <button

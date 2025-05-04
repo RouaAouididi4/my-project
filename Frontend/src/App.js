@@ -17,36 +17,44 @@ import Details from "./pages/Details";
 import Upload from "./pages/upload";
 import Footer from "./components/Footer";
 import Profile from "./pages/Profile";
-import ForgotPassword from './ForgotPassword/ForgotPassword';
-import ResetPassword from './ForgotPassword/ResetPassword';
-
+import ForgotPassword from "./ForgotPassword/ForgotPassword";
+import ResetPassword from "./ForgotPassword/ResetPassword";
+import { AuthProvider } from "./context/auth";
 
 function App() {
   return (
     <>
-      <Preloader />
-      <NavBar />
-      <div className="app-container p-4 bg-gray-100">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/About" element={<About />} />
-          <Route path="/Property-Listing" element={<PropertyListing />} />
-          <Route path="/Post" element={<Post />} />
-          <Route path="/House-For-Sale-Or-Rent" element={<HouseForSaleOrRent />} />
-          <Route path="/Property-By-Location" element={<PropertyByLocation />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/details/:id" element={<Details />} />
-          <Route path="/upload" element={<Upload />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        </Routes>
-      </div>
-     <Footer/>
+      <AuthProvider>
+        <Preloader />
+        <NavBar />
+        <div className="app-container p-4 bg-gray-100">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/About" element={<About />} />
+            <Route path="/Property-Listing" element={<PropertyListing />} />
+            <Route path="/Post" element={<Post />} />
+            <Route
+              path="/House-For-Sale-Or-Rent"
+              element={<HouseForSaleOrRent />}
+            />
+            <Route
+              path="/Property-By-Location"
+              element={<PropertyByLocation />}
+            />
+            <Route path="/services" element={<Services />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/details/:id" element={<Details />} />
+            <Route path="/upload" element={<Upload />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+          </Routes>
+        </div>
+        <Footer />
+      </AuthProvider>
     </>
   );
 }

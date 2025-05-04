@@ -1,4 +1,4 @@
-const User = require("../Models/UserModel");
+const User = require("../Models/User");
 const catchAsync = require("../Utils/CatchAsync");
 
 // Get all users

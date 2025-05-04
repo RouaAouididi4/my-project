@@ -153,7 +153,7 @@ function Signup() {
                       animation: "fadeIn 1.5s ease-out both",
                     }}
                   >
-                    Log in to Discover Your Dream Home
+                    Signup
                   </h2>
                 </div>
 

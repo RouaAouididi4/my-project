@@ -6,22 +6,42 @@ const PropertiesRoutes = require("./src/Routes/PropertiesRoutes");
 const MeetingRoutes = require("./src/Routes/MeetingRoutes.js");
 const UserRoutes = require("./src/Routes/UserRoutes.js");
 const AuthRoutes = require("./src/Routes/AuthRoutes");
-const path = require("path"); // N'oublie pas d'ajouter ce module
+const path = require("path");
+const session = require("express-session");
 
+// Load environment variables
 dotenv.config();
 
-// Initialize the Express application
+// Initialize Express app
 const app = express();
-app.use(express.json());
 
-app.use(cors());
+// Middleware
+app.use(express.json()); // For parsing application/json
+app.use(cors()); // Enable CORS
 
-// Middleware pour servir des fichiers statiques depuis le dossier 'uploads'
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Session configuration (MUST come after app initialization)
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "YourFallbackSecretKey", // Always use environment variables for secrets
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production", // Enable secure cookies in production
+      httpOnly: true, // Helps prevent XSS attacks
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    },
+  })
+);
 
-// Connect to MongoDB
+// Serve static files from 'uploads' directory
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// Database connection
 mongoose
-  .connect(process.env.MONGO_URI, {})
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => console.log("✅ MongoDB Connected Successfully"))
   .catch((err) => {
     console.error("❌ MongoDB Connection Error:", err);
@@ -34,6 +54,12 @@ app.use("/api/properties", PropertiesRoutes);
 app.use("/api/meetings", MeetingRoutes);
 app.use("/api/users", UserRoutes);
 
-// Start the server
+// Error handling middleware (should be after all routes)
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: "Internal Server Error" });
+});
+
+// Start server
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

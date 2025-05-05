@@ -1,12 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./Post.css";
 import "leaflet/dist/leaflet.css"; // Importation du style Leaflet
+import { useNavigate } from "react-router-dom";
 
 function PostForSaleByOwnerListing() {
   const [photos, setPhotos] = useState([]);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+  const navigate = useNavigate();
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+
   const [streetAddress, setStreetAddress] = useState("");
   const [city, setCity] = useState("");
   const [location, setLocation] = useState({ lat: 0, lng: 0 });
@@ -26,6 +29,26 @@ function PostForSaleByOwnerListing() {
     "img/bg-img/hero2.jpg",
     "img/bg-img/hero3.jpg",
   ];
+
+  // Check if the user is logged in when the component loads
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      try {
+        const response = await fetch("http://localhost:3001/api/auth/check", {
+          credentials: "include",
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setIsUserLoggedIn(data.isAuthenticated);
+        }
+      } catch (error) {
+        console.error("Error checking auth status:", error);
+      }
+    };
+
+    checkAuthStatus();
+  }, []);
 
   const goToPrevSlide = () => {
     setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
@@ -99,49 +122,56 @@ function PostForSaleByOwnerListing() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
+    // Check if the user is logged in
+    if (!isUserLoggedIn) {
+      alert("You must be logged in to post an ad");
+      navigate("/signup");
+      return;
+    }
+
     // Vérification si l'utilisateur a accepté les termes et conditions
     if (!formData.agreement) {
       alert("Please agree to the terms and conditions");
       return;
     }
-  
+
     // Indiquer que la soumission est en cours
     setIsSubmitting(true);
-    
+
     // Créer un objet FormData pour envoyer des fichiers et des données sous forme de formulaire
     const formDataToSend = new FormData();
-    
+
     // Ajouter les fichiers à l'objet FormData
-    uploadedFiles.forEach(file => {
+    uploadedFiles.forEach((file) => {
       console.log("Appending file:", file);
-      formDataToSend.append('photos', file);
+      formDataToSend.append("photos", file);
     });
-    
+
     // Ajouter les autres données du formulaire (à l'exception des photos)
-    Object.keys(formData).forEach(key => {
-      if (key !== 'photos' && key !== 'photo') {
+    Object.keys(formData).forEach((key) => {
+      if (key !== "photos" && key !== "photo") {
         console.log(`Appending data: ${key} = ${formData[key]}`);
         formDataToSend.append(key, formData[key]);
       }
     });
-  
+
     try {
       // Envoyer la requête POST avec FormData
-      const response = await fetch("http://localhost:5000/api/properties/add", {
+      const response = await fetch("http://localhost:3001/api/properties/add", {
         method: "POST",
         body: formDataToSend,
       });
-  
+
       // Vérification si la réponse est OK (status HTTP 2xx)
       if (!response.ok) {
         throw new Error(`HTTP Error: ${response.status}`);
       }
-  
+
       // Récupérer la réponse du serveur et afficher le message
       const data = await response.json();
       alert("Property added successfully!");
-  
+
       // Réinitialiser le formulaire après soumission
       setPhotos([]);
       setUploadedFiles([]);
@@ -166,7 +196,6 @@ function PostForSaleByOwnerListing() {
         management: "",
         agreement: false,
       });
-  
     } catch (error) {
       // En cas d'erreur lors de la soumission
       console.error("Error:", error);
@@ -181,7 +210,7 @@ function PostForSaleByOwnerListing() {
     const { streetAddress, city } = formData;
 
     if (!streetAddress || !city) {
-      alert("Please fill in all required fields: street address, city.");
+      alert("Street Address and City are required!");
       return;
     }
 
@@ -205,9 +234,9 @@ function PostForSaleByOwnerListing() {
 
   const handlePhotoUpload = (event) => {
     const files = Array.from(event.target.files);
-    const fileUrls = files.map(file => URL.createObjectURL(file));
-    setPhotos(prev => [...prev, ...fileUrls]);
-    setUploadedFiles(prev => [...prev, ...files]);
+    const fileUrls = files.map((file) => URL.createObjectURL(file));
+    setPhotos((prev) => [...prev, ...fileUrls]);
+    setUploadedFiles((prev) => [...prev, ...files]);
     console.log("Photos sélectionnées :", files);
   };
 
@@ -509,9 +538,9 @@ function PostForSaleByOwnerListing() {
             <div className="form-row">
               <div className="form-section" style={{ width: "70%" }}>
                 <label>Title</label>
-                <input 
-                  type="text" 
-                  placeholder="Enter A Title" 
+                <input
+                  type="text"
+                  placeholder="Enter A Title"
                   name="title"
                   value={formData.title}
                   onChange={handleInputChange}
@@ -519,8 +548,8 @@ function PostForSaleByOwnerListing() {
               </div>
               <div className="form-section" style={{ width: "30%" }}>
                 <label htmlFor="type">Type :</label>
-                <select 
-                  id="type" 
+                <select
+                  id="type"
                   name="hometype"
                   value={formData.hometype}
                   onChange={handleInputChange}
@@ -535,9 +564,9 @@ function PostForSaleByOwnerListing() {
             <div className="form-row">
               <div className="form-section">
                 <label>Beds</label>
-                <input 
-                  type="number" 
-                  placeholder="0" 
+                <input
+                  type="number"
+                  placeholder="0"
                   name="beds"
                   value={formData.beds}
                   onChange={handleInputChange}
@@ -545,18 +574,18 @@ function PostForSaleByOwnerListing() {
               </div>
               <div className="form-section">
                 <label>Baths</label>
-                <input 
-                  type="number" 
-                  placeholder="0" 
+                <input
+                  type="number"
+                  placeholder="0"
                   name="baths"
                   value={formData.baths.fullBaths}
                   onChange={(e) => {
-                    setFormData(prev => ({
+                    setFormData((prev) => ({
                       ...prev,
                       baths: {
                         ...prev.baths,
-                        fullBaths: e.target.value
-                      }
+                        fullBaths: e.target.value,
+                      },
                     }));
                   }}
                 />
@@ -590,7 +619,7 @@ function PostForSaleByOwnerListing() {
 
             <div className="form-section">
               <label>Describe your home</label>
-              <textarea 
+              <textarea
                 placeholder="Tell us about your home"
                 name="description"
                 value={formData.description}
@@ -614,9 +643,9 @@ function PostForSaleByOwnerListing() {
                     Unmanaged
                   </label>
                   <label className="checkbox-option">
-                    <input 
-                      type="checkbox" 
-                      name="management" 
+                    <input
+                      type="checkbox"
+                      name="management"
                       value="managed"
                       checked={formData.management === "managed"}
                       onChange={handleInputChange}
@@ -629,8 +658,8 @@ function PostForSaleByOwnerListing() {
 
               <div className="form-section">
                 <h3>Contact information</h3>
-                <input 
-                  type="tel" 
+                <input
+                  type="tel"
                   placeholder="(216) 00 000 000"
                   name="phone"
                   value={formData.phone}
@@ -650,10 +679,12 @@ function PostForSaleByOwnerListing() {
                     type="checkbox"
                     id="agreement-checkbox"
                     checked={formData.agreement}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      agreement: e.target.checked
-                    }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        agreement: e.target.checked,
+                      }))
+                    }
                   />
                   <label htmlFor="agreement-checkbox">
                     I agree to acknowledge and understand the following:

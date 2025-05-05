@@ -17,7 +17,12 @@ const app = express();
 
 // Middleware
 app.use(express.json()); // For parsing application/json
-app.use(cors()); // Enable CORS
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+); // Enable CORS
 
 // Session configuration (MUST come after app initialization)
 app.use(
@@ -26,7 +31,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: process.env.NODE_ENV === "production", // Enable secure cookies in production
+      secure: false,
       httpOnly: true, // Helps prevent XSS attacks
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
     },

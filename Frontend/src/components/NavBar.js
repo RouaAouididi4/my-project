@@ -44,12 +44,24 @@ const Navbar = () => {
           </Link>
 
           <div className={`menu ${mobileMenuOpen ? "mobile-open" : ""}`}>
-            <a href="/" className="menu-item">HOME</a>
-            <a href="/Services" className="menu-item">Services</a>
-            <a href="/upload" className="menu-item">Upload</a>
-            <a href="/about" className="menu-item">About Us</a>
-            <a href="/Post" className="menu-item">Post</a>
-            <a href="/blog" className="menu-item">Blog</a>
+            <a href="/" className="menu-item">
+              HOME
+            </a>
+            <a href="/Services" className="menu-item">
+              Services
+            </a>
+            <a href="/upload" className="menu-item">
+              Upload
+            </a>
+            <a href="/about" className="menu-item">
+              About Us
+            </a>
+            <a href="/Post" className="menu-item">
+              Post
+            </a>
+            <a href="/blog" className="menu-item">
+              Blog
+            </a>
 
             <div className="dropdown">
               <button className="menu-item">
@@ -62,20 +74,30 @@ const Navbar = () => {
               </div>
             </div>
 
-            <a href="/contact" className="menu-item">Contact</a>
+            <a href="/contact" className="menu-item">
+              Contact
+            </a>
           </div>
 
           <div className="auth-links">
-            <Link to="/profile" className="menu-item">PROFILE</Link>
-            <a href="/login" className="menu-item">LOGIN</a>
-            <a href="/signup" className="menu-item signup">SIGNUP</a>
+            <Link to="/profile" className="menu-item">
+              PROFILE
+            </Link>
+            <a href="/login" className="menu-item">
+              LOGIN
+            </a>
+            <a href="/signup" className="menu-item signup">
+              SIGNUP
+            </a>
           </div>
 
-          <button className="mobile-menu-btn" onClick={toggleMobileMenu}>☰</button>
+          <button className="mobile-menu-btn" onClick={toggleMobileMenu}>
+            ☰
+          </button>
         </div>
       </nav>
 
-      <style jsx>{`
+      <style data-jsx>{`
         .header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; }
         .top-bar {
           background-color: #000;

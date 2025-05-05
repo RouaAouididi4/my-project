@@ -1,11 +1,17 @@
 .profile-wrapper {
   display: flex;
   height: 100vh;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: "Segoe UI", sans-serif;
   flex-direction: row;
-  
 }
-
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 1.5rem;
+  color: #333;
+}
 .sidebar {
   width: 240px;
   background: #dfd0ba;
@@ -165,7 +171,6 @@
   margin: 0 auto;
 }
 
-
 .password-section-title {
   font-size: 18px;
   margin: 30px 0 15px;
@@ -181,4 +186,3 @@
     flex-direction: column;
   }
 }
-

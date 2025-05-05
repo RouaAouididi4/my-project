@@ -1,15 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import {
-  FaFacebookF,
-  FaInstagram,
-  FaLinkedinIn,
-  FaYoutube,
-  FaMapMarkerAlt,
-  FaPhone,
-  FaGoogle,
-  FaEnvelope,
-} from "react-icons/fa";
+import { FaPhone, FaGoogle } from "react-icons/fa";
 import "./Signup.css";
 
 function Signup() {
@@ -61,7 +52,7 @@ function Signup() {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
     }, 4000);
 
-    return () => clearInterval(interval); // Clean up the interval on component unmount
+    return () => clearInterval(interval);
   }, []);
 
   const handleChange = (e) => {

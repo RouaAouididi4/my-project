@@ -44,6 +44,7 @@ function PostForSaleByOwnerListing() {
         }
       } catch (error) {
         console.error("Error checking auth status:", error);
+        setIsUserLoggedIn(false);
       }
     };
 
@@ -441,7 +442,7 @@ function PostForSaleByOwnerListing() {
               </div>
             </div>
 
-            <style jsx global>{`
+            <style data-jsx data-global>{`
               @keyframes fadeIn {
                 from {
                   opacity: 0;

@@ -2,81 +2,89 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-// CréatioFullName du contexte
 const AuthContext = createContext();
 
-// Provider d'authentification
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Initialisation avec ce qu’il y a dans localStorage
-  const [token, setToken] = useState(localStorage.getItem("token"));
-  const [user, setUser] = useState(() => {
-    const storedUser = localStorage.getItem("user");
-    return storedUser ? JSON.parse(storedUser) : null;
-  });
-
-  // Vérification du token auprès du backend
+  // Vérification de l'authentification au chargement
   useEffect(() => {
-    const verifyAuth = async () => {
-      if (token) {
-        try {
-          const response = await fetch("/api/auth/me", {
-            method: "GET",
-            headers: { Authorization: `Bearer ${token}` },
-          });
+    const checkAuth = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch("http://localhost:3001/api/auth/check", {
+          credentials: "include",
+        });
 
-          if (!response.ok) throw new Error("Invalid token");
+        if (!response.ok) throw new Error("Not authenticated");
 
-          const data = await response.json();
-          setUser(data);
-          localStorage.setItem("user", JSON.stringify(data)); // mettre à jour l'utilisateur stocké
-        } catch (err) {
-          logout();
+        const data = await response.json();
+        if (data.isAuthenticated) {
+          setUser(data.user);
+        } else {
+          setUser(null);
         }
+      } catch (error) {
+        setUser(null);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    verifyAuth();
-  }, [token]);
+    checkAuth();
+  }, []);
 
   // Connexion
   const login = async (credentials) => {
     try {
-      const response = await fetch("/api/auth/login", {
+      const response = await fetch("http://localhost:3001/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(credentials),
+        credentials: "include",
       });
 
       if (!response.ok) throw new Error("Login failed");
 
       const data = await response.json();
-      setToken(data.token);
       setUser(data.user);
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-      navigate("/"); // Redirection après connexion réussie
-    } catch (err) {
-      console.error("Erreur de connexion :", err);
+      navigate("/profile"); // Redirection après connexion
+      return { success: true };
+    } catch (error) {
+      console.error("Login error:", error);
+      return { success: false, error: error.message };
     }
   };
 
   // Déconnexion
-  const logout = () => {
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/login");
+  const logout = async () => {
+    try {
+      await fetch("http://localhost:3001/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+      setUser(null);
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isLoading,
+        isAuthenticated: !!user,
+        login,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 };
 
-// Hook personnalisé pour utiliser le contexte
 export const useAuth = () => useContext(AuthContext);

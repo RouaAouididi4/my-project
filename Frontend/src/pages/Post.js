@@ -127,7 +127,7 @@ function PostForSaleByOwnerListing() {
     // Check if the user is logged in
     if (!isUserLoggedIn) {
       alert("You must be logged in to post an ad");
-      navigate("/signup");
+      navigate("/login");
       return;
     }
 

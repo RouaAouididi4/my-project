@@ -1,6 +1,6 @@
 const User = require("../Models/User");
-const catchAsync = require("../Utils/CatchAsync");
 
+const catchAsync = require("../Utils/catchAsync");
 // Get all users
 exports.getAllUsers = catchAsync(async (req, res, next) => {
   const users = await User.find();
@@ -27,3 +27,8 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
   await User.findByIdAndDelete(req.params.id);
   res.status(204).json({ status: "success", data: null });
 });
+// favory.js
+exports.getUserFavorites = async (req, res) => {
+  const user = await User.findById(req.user.id).populate("favorites");
+  res.json(user.favorites);
+};

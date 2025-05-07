@@ -1,90 +1,43 @@
-// context/auth.js
-import { createContext, useContext, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { createContext, useState, useContext, useEffect } from "react";
 
 const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
-  const navigate = useNavigate();
+export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
 
-  // Vérification de l'authentification au chargement
+  // Charge l'utilisateur au démarrage
   useEffect(() => {
-    const checkAuth = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch("http://localhost:3001/api/auth/check", {
-          credentials: "include",
-        });
-
-        if (!response.ok) throw new Error("Not authenticated");
-
-        const data = await response.json();
-        if (data.isAuthenticated) {
-          setUser(data.user);
-        } else {
-          setUser(null);
-        }
-      } catch (error) {
-        setUser(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkAuth();
+    const storedUser = localStorage.getItem("user");
+    const token = localStorage.getItem("token");
+    if (storedUser && token) {
+      setUser(JSON.parse(storedUser));
+    }
   }, []);
 
-  // Connexion
-  const login = async (credentials) => {
-    try {
-      const response = await fetch("http://localhost:3001/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(credentials),
-        credentials: "include",
-      });
-
-      if (!response.ok) throw new Error("Login failed");
-
-      const data = await response.json();
-      setUser(data.user);
-      navigate("/profile"); // Redirection après connexion
-      return { success: true };
-    } catch (error) {
-      console.error("Login error:", error);
-      return { success: false, error: error.message };
+  const login = (userData, token) => {
+    if (!token || !userData?._id) {
+      // Changé de id à _id
+      console.error("Invalid login data");
+      return;
     }
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(userData));
+    setUser(userData);
   };
 
-  // Déconnexion
-  const logout = async () => {
-    try {
-      await fetch("http://localhost:3001/api/auth/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-      setUser(null);
-      navigate("/login");
-    } catch (error) {
-      console.error("Logout error:", error);
-    }
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isLoading,
-        isAuthenticated: !!user,
-        login,
-        logout,
-      }}
-    >
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
-};
+}
 
-export const useAuth = () => useContext(AuthContext);
+export function useAuth() {
+  return useContext(AuthContext);
+}

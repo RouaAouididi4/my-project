@@ -45,19 +45,4 @@ const checkAuth = (req, res, next) => {
   }
 };
 
-// Route to check authentication status
-router.get("/check", (req, res) => {
-  if (req.session.userId) {
-    res.json({
-      isAuthenticated: true,
-      user: {
-        id: req.session.userId,
-        email: req.session.userEmail,
-        // Add other user info if needed
-      },
-    });
-  } else {
-    res.json({ isAuthenticated: false });
-  }
-});
 module.exports = router;

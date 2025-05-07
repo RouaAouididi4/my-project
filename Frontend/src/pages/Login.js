@@ -3,7 +3,6 @@ import "./Login.css";
 import { useAuth } from "../context/auth";
 import { useNavigate } from "react-router-dom";
 import { FaGoogle, FaPhone } from "react-icons/fa";
-
 import log from "./images/log.png";
 
 const Login = () => {
@@ -12,6 +11,8 @@ const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [touched, setTouched] = useState({});
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const togglePassword = () => setShowPassword(!showPassword);
@@ -36,6 +37,7 @@ const Login = () => {
         : prev + testimonialsPerPage
     );
   };
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const goToPrevSlide = () => {
     setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
@@ -56,6 +58,7 @@ const Login = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    if (error) setError("");
   };
   const handleBlur = (e) => {
     setTouched((prev) => ({ ...prev, [e.target.name]: true }));
@@ -65,42 +68,59 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     setError("");
 
     if (!formData.email || !formData.password) {
       setError("All fields are required");
+      setIsLoading(false);
       return;
     }
+
     try {
       const res = await fetch("http://localhost:3001/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
+          email: formData.email.trim(),
+          password: formData.password.trim(), // Sending plain password
         }),
       });
 
       const data = await res.json();
-      console.log("Response data:", data);
-      if (res.ok) {
-        login(
-          {
-            id: data._id,
-            FullName: data.FullName,
-            email: data.email,
-            phone: data.phone,
-          },
-          data.token
-        );
-        navigate("/profile");
-      } else {
-        setError(data.message || "Login failed");
+
+      if (!res.ok) {
+        throw new Error(data.message || "Login failed");
       }
-      console.log("Login success:", data);
+
+      if (!data.token) {
+        throw new Error("No authentication token received");
+      }
+
+      // Verify user data structure
+      if (!data.user || !data.user._id || !data.user.email) {
+        throw new Error("Incomplete user data received");
+      }
+
+      login(
+        {
+          id: data.user._id,
+          FullName: data.user.FullName || "",
+          email: data.user.email,
+          phone: data.user.phone || "",
+        },
+        data.token
+      );
+
+      setIsSuccess(true);
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
     } catch (err) {
-      setError("An error occurred. Please try again.");
-      console.error("Error details:", err);
+      setError(err.message || "Login failed. Please try again.");
+      console.error("Login error:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
   return (
@@ -210,7 +230,12 @@ const Login = () => {
           {/* Left: Form */}
           <div className="login-form">
             <h2>Welcome Back!!</h2>
-
+            {error && <div className="alert alert-danger">{error}</div>}
+            {isSuccess && (
+              <div className="alert alert-success">
+                Login successful! Redirecting...
+              </div>
+            )}
             <form onSubmit={handleSubmit}>
               <label>Email</label>
               <input
@@ -222,7 +247,6 @@ const Login = () => {
                 onBlur={handleBlur}
                 style={{ borderColor: isEmpty("email") ? "red" : "" }}
               />
-
               <label>Password</label>
               <div className="password-input">
                 <input
@@ -239,12 +263,12 @@ const Login = () => {
                   {showPassword ? "🙈" : "👁️"}
                 </span>
               </div>
-
               <div className="forgot-password">
                 <a href="#">Forgot Password?</a>
               </div>
-
-              <button type="submit">Login</button>
+              <button type="submit" disabled={isLoading}>
+                {isLoading ? "Logging in..." : "Login"}
+              </button>{" "}
             </form>
 
             <div className="separator">or</div>

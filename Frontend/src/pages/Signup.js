@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FaPhone, FaGoogle } from "react-icons/fa";
+import { FaPhone, FaGoogle, FaEye, FaEyeSlash } from "react-icons/fa";
 import "./Signup.css";
 
 function Signup() {
   const [showPassword, setShowPassword] = useState(false);
-  const [touched, setTouched] = useState({});
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const [touched, setTouched] = useState({
+    FullName: false,
+    email: false,
+    password: false,
+    confirmPassword: false,
+  });
   const [errors, setErrors] = useState({});
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
@@ -23,6 +31,13 @@ function Signup() {
     "img/bg-img/hero2.jpg",
     "img/bg-img/hero3.jpg",
   ];
+  // Image carousel effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [images.length]);
 
   const goToPrevSlide = () => {
     setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
@@ -32,70 +47,84 @@ function Signup() {
     setCurrentIndex((prev) => (prev + 1) % images.length);
   };
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const handleNext = () => {
-    setStartIndex((prev) =>
-      prev + testimonialsPerPage >= testimonial.length
-        ? 0
-        : prev + testimonialsPerPage
-    );
-  };
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 4000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
   };
 
   const handleBlur = (e) => {
-    setTouched((prev) => ({ ...prev, [e.target.name]: true }));
+    const { name } = e.target;
+    setTouched((prev) => ({ ...prev, [name]: true }));
+
+    // Validate on blur
+    validateField(name, formData[name]);
   };
 
-  const isEmpty = (field) => !formData[field] && touched[field];
+  const validateField = (name, value) => {
+    let error = "";
+    if (!touched[name]) return true;
+
+    switch (name) {
+      case "FullName":
+        if (!value.trim()) error = "Full Name is required";
+        else if (value.length < 3) error = "Name too short";
+        break;
+      case "email":
+        if (!value) error = "Email is required";
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
+          error = "Invalid email format";
+        break;
+      case "password":
+        if (!value) error = "Password is required";
+        else if (value.length < 6)
+          error = "Password must be at least 6 characters";
+        break;
+      case "confirmPassword":
+        if (!value) error = "Please confirm your password";
+        else if (value !== formData.password) error = "Passwords don't match";
+        break;
+      default:
+        break;
+    }
+
+    setErrors((prev) => ({ ...prev, [name]: error }));
+    return !error;
+  };
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors = {};
+
+    Object.keys(formData).forEach((field) => {
+      if (!touched[field] && !formData[field]) {
+        return;
+      }
+      const fieldValid = validateField(field, formData[field]);
+      if (!fieldValid) {
+        newErrors[field] = errors[field];
+        isValid = false;
+      }
+    });
+
+    setErrors(newErrors);
+    return isValid;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrors({});
-    const newTouched = {
-      FullName: true,
-      email: true,
-      password: true,
-      confirmPassword: true,
-    };
-    setTouched(newTouched);
 
-    const formErrors = {};
-    if (!formData.FullName) formErrors.FullName = "Full Name is required.";
-    if (!formData.email) formErrors.email = "Email is required.";
-    if (!formData.password) formErrors.password = "Password is required.";
-    if (!formData.confirmPassword)
-      formErrors.confirmPassword = "Confirm Password is required.";
-    if (
-      formData.password &&
-      formData.confirmPassword &&
-      formData.password !== formData.confirmPassword
-    ) {
-      formErrors.confirmPassword = "Passwords must match.";
+    // Validate form
+    if (!validateForm()) {
+      console.log("Validation failed", errors);
+      return;
     }
-
-    setErrors(formErrors);
-    if (Object.keys(formErrors).length > 0) return;
 
     try {
       const response = await fetch("http://localhost:3001/api/auth/signup", {
@@ -106,7 +135,7 @@ function Signup() {
         body: JSON.stringify({
           FullName: formData.FullName,
           email: formData.email,
-          password: formData.password,
+          password: formData.password, // Sending plain password
           confirmPassword: formData.confirmPassword,
         }),
       });
@@ -114,18 +143,18 @@ function Signup() {
       const data = await response.json();
 
       if (response.ok) {
-        setError(data.message || "Account created successfully!");
         localStorage.setItem("token", data.token);
-        window.location.href = "/";
+        setIsSuccess(true);
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 3000);
       } else {
-        alert(data.message || "Something went wrong.");
+        setErrors({ server: data.message || "Registration failed" });
       }
     } catch (err) {
-      console.error("Error:", err);
-      setError("Signup failed. Please try again later.");
+      setErrors({ server: "Network error. Please try again." });
     }
   };
-
   return (
     <div>
       <section className="hero">
@@ -233,6 +262,10 @@ function Signup() {
           <div className="signup-container">
             <h1 className="signup-title">Create an account</h1>
 
+            {errors.server && (
+              <div className="alert alert-danger">{errors.server}</div>
+            )}
+
             <form className="signup-form" onSubmit={handleSubmit}>
               <div className="form-group">
                 <label htmlFor="FullName" className="form-label">
@@ -240,14 +273,17 @@ function Signup() {
                 </label>
                 <input
                   type="text"
-                  className="form-control"
+                  className={`form-control ${errors.FullName ? "is-invalid" : ""}`}
                   id="FullName"
                   name="FullName"
                   placeholder="Your name"
                   value={formData.FullName}
                   onChange={handleChange}
-                  required
+                  onBlur={handleBlur}
                 />
+                {errors.FullName && (
+                  <div className="invalid-feedback">{errors.FullName}</div>
+                )}
               </div>
 
               <div className="form-group">
@@ -256,46 +292,81 @@ function Signup() {
                 </label>
                 <input
                   type="email"
-                  className="form-control"
+                  className={`form-control ${errors.email ? "is-invalid" : ""}`}
                   id="email"
                   name="email"
                   placeholder="Your email address"
-                  value={formData.email || ""}
+                  value={formData.email}
                   onChange={handleChange}
-                  required
+                  onBlur={handleBlur}
                 />
+                {errors.email && (
+                  <div className="invalid-feedback">{errors.email}</div>
+                )}
               </div>
 
               <div className="form-group">
                 <label htmlFor="password" className="form-label">
                   Password*
                 </label>
-                <input
-                  type="password"
-                  className="form-control"
-                  id="password"
-                  name="password"
-                  placeholder="Your password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                />
+                <div className="input-group">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    className={`form-control ${errors.password ? "is-invalid" : ""}`}
+                    id="password"
+                    name="password"
+                    placeholder="Your password (min 6 characters)"
+                    value={formData.password}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  <div className="input-group-append">
+                    <span
+                      className="input-group-text"
+                      onClick={() => setShowPassword(!showPassword)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      {showPassword ? <FaEyeSlash /> : <FaEye />}
+                    </span>
+                  </div>
+                  {errors.password && (
+                    <div className="invalid-feedback">{errors.password}</div>
+                  )}
+                </div>
               </div>
 
               <div className="form-group">
                 <label htmlFor="confirmPassword" className="form-label">
                   Confirm password*
                 </label>
-                <input
-                  type="password"
-                  className="form-control"
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  placeholder="Your password"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  required
-                />
+                <div className="input-group">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    className={`form-control ${errors.confirmPassword ? "is-invalid" : ""}`}
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    placeholder="Confirm your password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  <div className="input-group-append">
+                    <span
+                      className="input-group-text"
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
+                      style={{ cursor: "pointer" }}
+                    >
+                      {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                    </span>
+                  </div>
+                  {errors.confirmPassword && (
+                    <div className="invalid-feedback">
+                      {errors.confirmPassword}
+                    </div>
+                  )}
+                </div>
               </div>
 
               <button type="submit" className="signup-btn">
@@ -312,9 +383,13 @@ function Signup() {
                   Sign in with Phone
                 </button>
               </div>
-
+              {isSuccess && (
+                <div className="alert alert-success mt-3">
+                  Inscription réussie ! Redirection en cours...
+                </div>
+              )}
               <div className="login-link">
-                Already have an account? <a href="#login">login</a>
+                Already have an account? <a href="/login">Login</a>
               </div>
             </form>
           </div>

@@ -1,36 +1,30 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
+// const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema({
   FullName: {
     type: String,
+    required: [true, "Full name is required"],
     trim: true,
   },
   email: {
     type: String,
     unique: true,
+    required: [true, "Email is required"],
     lowercase: true,
   },
   password: {
     type: String,
-    minlength: 8,
+    required: [true, "Password is required"],
+    minlength: 6,
     select: false,
-  },
-  confirmPassword: {
-    type: String,
-    validate: {
-      validator: function (el) {
-        return el === this.password;
-      },
-      message: "Passwords don't match",
-    },
   },
   phone: {
     type: String,
     trim: true,
     validate: {
       validator: function (v) {
-        return /^\d{10}$/.test(v);
+        return !v || /^\d{10}$/.test(v); // Permet null/undefined ou valide le format
       },
       message: (props) => `${props.value} is not a valid phone number!`,
     },
@@ -54,33 +48,39 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
 });
 
-// Middleware de hachage du mot de passe
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+// Middleware pour hasher le mot de passe avant de sauvegarder
+// userSchema.pre("save", async function (next) {
+//   // Seulement hasher le mot de passe s'il a été modifié
+//   if (!this.isModified("password")) return next();
 
-  this.password = await bcrypt.hash(this.password, 12);
-  this.confirmPassword = undefined; // Ne pas stocker dans la DB
-  next();
-});
+//   try {
+//     // Hash le mot de passe avec un coût de 12
+//     this.password = await bcrypt.hash(this.password, 12);
+//     next();
+//   } catch (error) {
+//     next(error);
+//   }
+// });
 
-// Méthode pour comparer les mots de passe
-userSchema.methods.correctPassword = async function (
-  candidatePassword,
-  userPassword
-) {
-  return await bcrypt.compare(candidatePassword, userPassword);
-};
+// // Méthode pour comparer les mots de passe
+// userSchema.methods.correctPassword = async function (
+//   candidatePassword,
+//   userPassword
+// ) {
+//   return await bcrypt.compare(candidatePassword, userPassword);
+// };
 
-// Gestion des doublons d'email
+// Gestion des doublons d'email - correction pour les nouvelles versions de MongoDB
 userSchema.post("save", function (error, doc, next) {
-  if (error.name === "MongoError" && error.code === 11000) {
+  if (error.name === "MongoServerError" && error.code === 11000) {
     next(new Error("Email already exists"));
   } else {
     next(error);
   }
 });
 
-const User = mongoose.models.User || mongoose.model("User", userSchema);
+const User = mongoose.model("User", userSchema);
 module.exports = User;

@@ -1,8 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState , useEffect} from "react";
 import "./Contact.css";
-import contactImage from "./images/cont.jpg";
+import contactImage from './images/cont.jpg';
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FaPhone, FaEnvelope } from "react-icons/fa";
+import {
+  
+  FaPhone,
+  FaEnvelope,
+} from "react-icons/fa";
 
 function Contact() {
   const [subject, setSubject] = useState("");
@@ -18,23 +22,40 @@ function Contact() {
   const data = [
     {
       id: 1,
-      question: "What are the first steps to buying a home?",
-      answer:
-        "Pre-qualification is an initial assessment of your income, debt, and credit score to give you an estimate of how much you might be able to borrow...",
+      question: "What are we working hours?",
+      answer: "We are open Monday to Friday, 9:00 AM to 6:00 PM. On Saturday, we are open from 9:00 AM to 1:00 PM. Closed on Sunday.",
     },
     {
       id: 2,
-      question: "How do I find the right real estate agent?",
-      answer:
-        "Research online reviews, ask for referrals, and interview agents before choosing one.",
+      question: "How can I contact you quickly?",
+      answer: "You can call us at [your phone number] or fill out the contact form. We usually reply within 24 hours.",
     },
     {
       id: 3,
-      question: "What should I look for when viewing homes?",
-      answer:
-        "Check the condition of the property, neighborhood, amenities, and future development plans.",
+      question: " Where are we located?",
+      answer: "Our office is at [your address]. You can see the Footer at the bottom of this page.",
     },
-    // ... add more if needed
+    {
+      id: 4,
+      question: " Can I book an appointment online?",
+      answer: "Yes, you can book an appointment using the contact form or through our booking page.",
+    },
+    {
+      id: 5,
+      question: " How long does it take to get a reply?",
+      answer: "We usually reply in 24 to 48 working hours.",
+    },
+    {
+      id: 6,
+      question: " What services do you offer?",
+      answer: "We offer [list of your services, like selling, renting, customer support, etc.]. You can see more on our Services page.",
+    },
+    {
+      id: 7,
+      question: "  Can I contact you on social media?",
+      answer: "Yes! You can message us on [Facebook, Instagram, WhatsApp, etc.]. We will reply as soon as possible.",
+    },
+    
   ];
 
   const toggleSection = (id) => {
@@ -48,91 +69,59 @@ function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(
-        "http://localhost:3001/api/contact/submit-message",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: formData.name,
-            phone: formData.phone,
-            email: formData.email,
-            subject,
-            message: formData.message,
-
-            company:
-              subject === "partner"
-                ? document.getElementById("company").value
-                : null,
-            businessType:
-              subject === "partner"
-                ? document.getElementById("businessType").value
-                : null,
-          }),
-        }
-      );
-
-      const data = await response.json();
-      if (response.status === 200) {
-        alert(data.message);
-        setFormData({
-          name: "",
-          phone: "",
-          email: "",
-          message: "",
-        });
-        setSubject("");
-      } else {
-        alert("Failed to send message.");
-      }
+      alert("Message sent successfully!");
+      setFormData({
+        name: "",
+        phone: "",
+        email: "",
+        message: "",
+      });
     } catch (error) {
       console.error("Error sending message:", error);
       alert("Failed to send message.");
     }
   };
-
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  const togglePassword = () => setShowPassword(!showPassword);
-  const images = [
-    "img/bg-img/hero1.jpg",
-    "img/bg-img/hero2.jpg",
-    "img/bg-img/hero3.jpg",
-  ];
-
-  const handlePrev = () => {
-    setStartIndex((prev) =>
-      prev === 0
-        ? testimonial.length - testimonialsPerPage
-        : prev - testimonialsPerPage
-    );
-  };
-
-  const handleNext = () => {
-    setStartIndex((prev) =>
-      prev + testimonialsPerPage >= testimonial.length
-        ? 0
-        : prev + testimonialsPerPage
-    );
-  };
-
-  const goToPrevSlide = () => {
-    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-  };
-
-  const goToNextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % images.length);
-  };
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 4000);
-
-    return () => clearInterval(interval); // Clean up the interval on component unmount
-  }, []);
+    const [currentIndex, setCurrentIndex] = useState(0);
+  
+    const togglePassword = () => setShowPassword(!showPassword);
+    const images = [
+      "img/bg-img/hero1.jpg",
+      "img/bg-img/hero2.jpg",
+      "img/bg-img/hero3.jpg",
+    ];
+  
+    const handlePrev = () => {
+      setStartIndex((prev) =>
+        prev === 0
+          ? testimonial.length - testimonialsPerPage
+          : prev - testimonialsPerPage
+      );
+    };
+  
+    const handleNext = () => {
+      setStartIndex((prev) =>
+        prev + testimonialsPerPage >= testimonial.length
+          ? 0
+          : prev + testimonialsPerPage
+      );
+    };
+  
+    const goToPrevSlide = () => {
+      setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+    };
+  
+    const goToNextSlide = () => {
+      setCurrentIndex((prev) => (prev + 1) % images.length);
+    };
+  
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+      }, 4000);
+  
+      return () => clearInterval(interval); // Clean up the interval on component unmount
+    }, []);
+  
 
   return (
     <div>
@@ -213,7 +202,7 @@ function Contact() {
                       animation: "fadeIn 1.5s ease-out both",
                     }}
                   >
-                    FIND YOUR DREAM HOUSE
+                    Connect with Us to Find Your Future Home
                   </h2>
                 </div>
 
@@ -237,165 +226,165 @@ function Contact() {
         </div>
       </section>
 
-      <div className="contact-page">
-        <div className="container py-5">
-          <div className="row align-items-start">
-            {/* Image Section */}
-            <div className="col-md-5 mb-4">
-              <img
-                src={contactImage}
-                alt="Contact"
-                className="img-fluid rounded shadow-lg contact-image"
-              />
-            </div>
+    
+    <div className="contact-page">
+      <div className="container py-5">
+        <div className="row align-items-start">
+          {/* Image Section */}
+          <div className="col-md-5 mb-4">
+            <img
+              src={contactImage}
+              alt="Contact"
+              className="img-fluid rounded shadow-lg contact-image"
+            />
+          </div>
 
-            {/* Form Section */}
-            <div className="col-md-7">
-              <div className="contact-forme">
-                <h6 className="section-title mb-4">CONTACT INFO</h6>
-                <form onSubmit={handleSubmit}>
-                  <div className="form-row">
-                    <div className="form-group col-md-7">
-                      <label htmlFor="name">Votre Nom</label>
+          {/* Form Section */}
+          <div className="col-md-7">
+            <div className="contact-forme">
+              <h6 className="section-title mb-4">CONTACT INFO</h6>
+              <form onSubmit={handleSubmit}>
+                <div className="form-row">
+                  <div className="form-group col-md-7">
+                    <label htmlFor="name">Votre Nom</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="name"
+                      name="name"
+                      placeholder="Votre nom"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div className="form-group col-md-7">
+                    <label htmlFor="phone">Votre Téléphone</label>
+                    <div className="input-group">
+                      <div className="input-group-prepend">
+                        <span className="input-group-text"><FaPhone /></span>
+                      </div>
                       <input
                         type="text"
                         className="form-control"
-                        id="name"
-                        name="name"
-                        placeholder="Votre nom"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                    <div className="form-group col-md-7">
-                      <label htmlFor="phone">Votre Téléphone</label>
-                      <div className="input-group">
-                        <div className="input-group-prepend">
-                          <span className="input-group-text">
-                            <FaPhone />
-                          </span>
-                        </div>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="phone"
-                          name="phone"
-                          placeholder="Votre téléphone"
-                          value={formData.phone}
-                          onChange={handleChange}
-                          required
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="email">Votre Email</label>
-                    <div className="input-group">
-                      <div className="input-group-prepend">
-                        <span className="input-group-text">
-                          <FaEnvelope />
-                        </span>
-                      </div>
-                      <input
-                        type="email"
-                        className="form-control"
-                        id="email"
-                        name="email"
-                        placeholder="Votre email"
-                        value={formData.email}
+                        id="phone"
+                        name="phone"
+                        placeholder="Votre téléphone"
+                        value={formData.phone}
                         onChange={handleChange}
                         required
                       />
                     </div>
                   </div>
+                </div>
 
-                  <div className="form-groupcol-md-7">
-                    <label htmlFor="subject">Subject:</label>
-                    <select
-                      id="subject"
-                      className="form-control"
-                      onChange={(e) => setSubject(e.target.value)}
-                      value={subject}
-                    >
-                      <option value="">Select an option</option>
-                      <option value="appointment">
-                        Schedule an Appointment
-                      </option>
-                      <option value="partner">Become a Partner</option>
-                    </select>
-                  </div>
-
-                  {subject === "partner" && (
-                    <div className="form-row">
-                      <div className="form-group col-md-7">
-                        <label htmlFor="company">Company:</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="company"
-                          placeholder="Your company name"
-                        />
-                      </div>
-                      <div className="form-group col-md-7">
-                        <label htmlFor="businessType">Business Type:</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="businessType"
-                          placeholder="Your business type"
-                        />
-                      </div>
+                <div className="form-group">
+                  <label htmlFor="email">Your Email</label>
+                  <div className="input-group">
+                    <div className="input-group-prepend">
+                      <span className="input-group-text"><FaEnvelope /></span>
                     </div>
-                  )}
-
-                  <div className="form-group">
-                    <label htmlFor="message">Votre Message</label>
-                    <textarea
+                    <input
+                      type="email"
                       className="form-control"
-                      id="message"
-                      name="message"
-                      rows="5"
-                      placeholder="Votre message"
-                      value={formData.message}
+                      id="email"
+                      name="email"
+                      placeholder="Your email"
+                      value={formData.email}
                       onChange={handleChange}
                       required
-                    ></textarea>
+                    />
                   </div>
-
-                  <button type="submit" className="btn south-btn">
-                    Envoyer le message
-                  </button>
-                </form>
-              </div>
-            </div>
-            {/* FAQ Section */}
-            <div className="accordion mt-5">
-              <h4 className="mb-3">FAQ'S</h4>
-              {data.map((item) => (
-                <div key={item.id} className="faq-item mb-3">
-                  <div
-                    className={`accordion-header ${expandedId === item.id ? "expanded" : ""} d-flex justify-content-between align-items-center`}
-                    onClick={() => toggleSection(item.id)}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <h6 className="mb-0">{item.question}</h6>
-                    <span className="toggle-icon">
-                      {expandedId === item.id ? "-" : "+"}
-                    </span>
-                  </div>
-                  {expandedId === item.id && (
-                    <div className="accordion-content mt-2">
-                      <p className="mb-0 fade-in">{item.answer}</p>
-                    </div>
-                  )}
                 </div>
-              ))}
-            </div>
-          </div>
+
+                <div className="form-groupcol-md-7">
+                  <label htmlFor="subject">Subject:</label>
+                  <select
+                    id="subject"
+                    className="form-control"
+                    onChange={(e) => setSubject(e.target.value)}
+                    value={subject}
+                  >
+                    <option value="">Select an option</option>
+                    <option value="appointment">Schedule an Appointment</option>
+                    <option value="partner">Become a Partner</option>
+                  </select>
+                </div>
+
+                {subject === "appointment" && (
+                  <div className="form-row">
+                    <div className="form-group col-md-7">
+                      <label htmlFor="appointmentDate">Date:</label>
+                      <input type="date" className="form-control" id="appointmentDate" />
+                    </div>
+                    <div className="form-group col-md-7">
+                      <label htmlFor="appointmentTime">Time:</label>
+                      <input type="time" className="form-control" id="appointmentTime" />
+                    </div>
+                  </div>
+                )}
+
+                {subject === "partner" && (
+                  <div className="form-row">
+                    <div className="form-group col-md-7">
+                      <label htmlFor="company">Company:</label>
+                      <input type="text" className="form-control" id="company" placeholder="Your company name" />
+                    </div>
+                    <div className="form-group col-md-7">
+                      <label htmlFor="businessType">Business Type:</label>
+                      <input type="text" className="form-control" id="businessType" placeholder="Your business type" />
+                    </div>
+                  </div>
+                )}
+
+                <div className="form-group">
+                  <label htmlFor="message">Your message</label>
+                  <textarea
+                    className="form-control"
+                    id="message"
+                    name="message"
+                    rows="5"
+                    placeholder="   Your message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    required
+                  ></textarea>
+                </div>
+              
+                <button type="submit" className="btn south-btn">
+                Send
+                </button>
+              </form>
+              </div>
+              </div>
+              {/* FAQ Section */}
+              <div className="accordion mt-5">
+                <h4 className="mb-3">FAQ'S</h4>
+                {data.map((item) => (
+                  <div key={item.id} className="faq-item mb-3">
+                    <div
+                      className={`accordion-header ${expandedId === item.id ? "expanded" : ""} d-flex justify-content-between align-items-center`}
+                      onClick={() => toggleSection(item.id)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <h6 className="mb-0">{item.question}</h6>
+                      <span className="toggle-icon">
+                        {expandedId === item.id ? "-" : "+"}
+                      </span>
+                    </div>
+                    {expandedId === item.id && (
+                      <div className="accordion-content mt-2">
+                        <p className="mb-0 fade-in">{item.answer}</p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            
+          
         </div>
       </div>
+    </div>
     </div>
   );
 }

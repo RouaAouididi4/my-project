@@ -1,12 +1,8 @@
-import React, { useState , useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import "./Contact.css";
-import contactImage from './images/cont.jpg';
+import contactImage from "./images/cont.jpg";
 import "bootstrap/dist/css/bootstrap.min.css";
-import {
-  
-  FaPhone,
-  FaEnvelope,
-} from "react-icons/fa";
+import { FaPhone, FaEnvelope } from "react-icons/fa";
 
 function Contact() {
   const [subject, setSubject] = useState("");
@@ -23,17 +19,20 @@ function Contact() {
     {
       id: 1,
       question: "What are the first steps to buying a home?",
-      answer: "Pre-qualification is an initial assessment of your income, debt, and credit score to give you an estimate of how much you might be able to borrow...",
+      answer:
+        "Pre-qualification is an initial assessment of your income, debt, and credit score to give you an estimate of how much you might be able to borrow...",
     },
     {
       id: 2,
       question: "How do I find the right real estate agent?",
-      answer: "Research online reviews, ask for referrals, and interview agents before choosing one.",
+      answer:
+        "Research online reviews, ask for referrals, and interview agents before choosing one.",
     },
     {
       id: 3,
       question: "What should I look for when viewing homes?",
-      answer: "Check the condition of the property, neighborhood, amenities, and future development plans.",
+      answer:
+        "Check the condition of the property, neighborhood, amenities, and future development plans.",
     },
     // ... add more if needed
   ];
@@ -49,59 +48,91 @@ function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      alert("Message sent successfully!");
-      setFormData({
-        name: "",
-        phone: "",
-        email: "",
-        message: "",
-      });
+      const response = await fetch(
+        "http://localhost:3001/api/contact/submit-message",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            phone: formData.phone,
+            email: formData.email,
+            subject,
+            message: formData.message,
+
+            company:
+              subject === "partner"
+                ? document.getElementById("company").value
+                : null,
+            businessType:
+              subject === "partner"
+                ? document.getElementById("businessType").value
+                : null,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (response.status === 200) {
+        alert(data.message);
+        setFormData({
+          name: "",
+          phone: "",
+          email: "",
+          message: "",
+        });
+        setSubject("");
+      } else {
+        alert("Failed to send message.");
+      }
     } catch (error) {
       console.error("Error sending message:", error);
       alert("Failed to send message.");
     }
   };
-    const [currentIndex, setCurrentIndex] = useState(0);
-  
-    const togglePassword = () => setShowPassword(!showPassword);
-    const images = [
-      "img/bg-img/hero1.jpg",
-      "img/bg-img/hero2.jpg",
-      "img/bg-img/hero3.jpg",
-    ];
-  
-    const handlePrev = () => {
-      setStartIndex((prev) =>
-        prev === 0
-          ? testimonial.length - testimonialsPerPage
-          : prev - testimonialsPerPage
-      );
-    };
-  
-    const handleNext = () => {
-      setStartIndex((prev) =>
-        prev + testimonialsPerPage >= testimonial.length
-          ? 0
-          : prev + testimonialsPerPage
-      );
-    };
-  
-    const goToPrevSlide = () => {
-      setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-    };
-  
-    const goToNextSlide = () => {
-      setCurrentIndex((prev) => (prev + 1) % images.length);
-    };
-  
-    useEffect(() => {
-      const interval = setInterval(() => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-      }, 4000);
-  
-      return () => clearInterval(interval); // Clean up the interval on component unmount
-    }, []);
-  
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const togglePassword = () => setShowPassword(!showPassword);
+  const images = [
+    "img/bg-img/hero1.jpg",
+    "img/bg-img/hero2.jpg",
+    "img/bg-img/hero3.jpg",
+  ];
+
+  const handlePrev = () => {
+    setStartIndex((prev) =>
+      prev === 0
+        ? testimonial.length - testimonialsPerPage
+        : prev - testimonialsPerPage
+    );
+  };
+
+  const handleNext = () => {
+    setStartIndex((prev) =>
+      prev + testimonialsPerPage >= testimonial.length
+        ? 0
+        : prev + testimonialsPerPage
+    );
+  };
+
+  const goToPrevSlide = () => {
+    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+  };
+
+  const goToNextSlide = () => {
+    setCurrentIndex((prev) => (prev + 1) % images.length);
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+    }, 4000);
+
+    return () => clearInterval(interval); // Clean up the interval on component unmount
+  }, []);
 
   return (
     <div>
@@ -206,165 +237,165 @@ function Contact() {
         </div>
       </section>
 
-    
-    <div className="contact-page">
-      <div className="container py-5">
-        <div className="row align-items-start">
-          {/* Image Section */}
-          <div className="col-md-5 mb-4">
-            <img
-              src={contactImage}
-              alt="Contact"
-              className="img-fluid rounded shadow-lg contact-image"
-            />
-          </div>
+      <div className="contact-page">
+        <div className="container py-5">
+          <div className="row align-items-start">
+            {/* Image Section */}
+            <div className="col-md-5 mb-4">
+              <img
+                src={contactImage}
+                alt="Contact"
+                className="img-fluid rounded shadow-lg contact-image"
+              />
+            </div>
 
-          {/* Form Section */}
-          <div className="col-md-7">
-            <div className="contact-forme">
-              <h6 className="section-title mb-4">CONTACT INFO</h6>
-              <form onSubmit={handleSubmit}>
-                <div className="form-row">
-                  <div className="form-group col-md-7">
-                    <label htmlFor="name">Votre Nom</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="name"
-                      name="name"
-                      placeholder="Votre nom"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div className="form-group col-md-7">
-                    <label htmlFor="phone">Votre Téléphone</label>
-                    <div className="input-group">
-                      <div className="input-group-prepend">
-                        <span className="input-group-text"><FaPhone /></span>
-                      </div>
+            {/* Form Section */}
+            <div className="col-md-7">
+              <div className="contact-forme">
+                <h6 className="section-title mb-4">CONTACT INFO</h6>
+                <form onSubmit={handleSubmit}>
+                  <div className="form-row">
+                    <div className="form-group col-md-7">
+                      <label htmlFor="name">Votre Nom</label>
                       <input
                         type="text"
                         className="form-control"
-                        id="phone"
-                        name="phone"
-                        placeholder="Votre téléphone"
-                        value={formData.phone}
+                        id="name"
+                        name="name"
+                        placeholder="Votre nom"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                    <div className="form-group col-md-7">
+                      <label htmlFor="phone">Votre Téléphone</label>
+                      <div className="input-group">
+                        <div className="input-group-prepend">
+                          <span className="input-group-text">
+                            <FaPhone />
+                          </span>
+                        </div>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="phone"
+                          name="phone"
+                          placeholder="Votre téléphone"
+                          value={formData.phone}
+                          onChange={handleChange}
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="email">Votre Email</label>
+                    <div className="input-group">
+                      <div className="input-group-prepend">
+                        <span className="input-group-text">
+                          <FaEnvelope />
+                        </span>
+                      </div>
+                      <input
+                        type="email"
+                        className="form-control"
+                        id="email"
+                        name="email"
+                        placeholder="Votre email"
+                        value={formData.email}
                         onChange={handleChange}
                         required
                       />
                     </div>
                   </div>
-                </div>
 
-                <div className="form-group">
-                  <label htmlFor="email">Votre Email</label>
-                  <div className="input-group">
-                    <div className="input-group-prepend">
-                      <span className="input-group-text"><FaEnvelope /></span>
-                    </div>
-                    <input
-                      type="email"
+                  <div className="form-groupcol-md-7">
+                    <label htmlFor="subject">Subject:</label>
+                    <select
+                      id="subject"
                       className="form-control"
-                      id="email"
-                      name="email"
-                      placeholder="Votre email"
-                      value={formData.email}
+                      onChange={(e) => setSubject(e.target.value)}
+                      value={subject}
+                    >
+                      <option value="">Select an option</option>
+                      <option value="appointment">
+                        Schedule an Appointment
+                      </option>
+                      <option value="partner">Become a Partner</option>
+                    </select>
+                  </div>
+
+                  {subject === "partner" && (
+                    <div className="form-row">
+                      <div className="form-group col-md-7">
+                        <label htmlFor="company">Company:</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="company"
+                          placeholder="Your company name"
+                        />
+                      </div>
+                      <div className="form-group col-md-7">
+                        <label htmlFor="businessType">Business Type:</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="businessType"
+                          placeholder="Your business type"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="form-group">
+                    <label htmlFor="message">Votre Message</label>
+                    <textarea
+                      className="form-control"
+                      id="message"
+                      name="message"
+                      rows="5"
+                      placeholder="Votre message"
+                      value={formData.message}
                       onChange={handleChange}
                       required
-                    />
+                    ></textarea>
                   </div>
-                </div>
 
-                <div className="form-groupcol-md-7">
-                  <label htmlFor="subject">Subject:</label>
-                  <select
-                    id="subject"
-                    className="form-control"
-                    onChange={(e) => setSubject(e.target.value)}
-                    value={subject}
+                  <button type="submit" className="btn south-btn">
+                    Envoyer le message
+                  </button>
+                </form>
+              </div>
+            </div>
+            {/* FAQ Section */}
+            <div className="accordion mt-5">
+              <h4 className="mb-3">FAQ'S</h4>
+              {data.map((item) => (
+                <div key={item.id} className="faq-item mb-3">
+                  <div
+                    className={`accordion-header ${expandedId === item.id ? "expanded" : ""} d-flex justify-content-between align-items-center`}
+                    onClick={() => toggleSection(item.id)}
+                    style={{ cursor: "pointer" }}
                   >
-                    <option value="">Select an option</option>
-                    <option value="appointment">Schedule an Appointment</option>
-                    <option value="partner">Become a Partner</option>
-                  </select>
+                    <h6 className="mb-0">{item.question}</h6>
+                    <span className="toggle-icon">
+                      {expandedId === item.id ? "-" : "+"}
+                    </span>
+                  </div>
+                  {expandedId === item.id && (
+                    <div className="accordion-content mt-2">
+                      <p className="mb-0 fade-in">{item.answer}</p>
+                    </div>
+                  )}
                 </div>
-
-                {subject === "appointment" && (
-                  <div className="form-row">
-                    <div className="form-group col-md-7">
-                      <label htmlFor="appointmentDate">Date:</label>
-                      <input type="date" className="form-control" id="appointmentDate" />
-                    </div>
-                    <div className="form-group col-md-7">
-                      <label htmlFor="appointmentTime">Time:</label>
-                      <input type="time" className="form-control" id="appointmentTime" />
-                    </div>
-                  </div>
-                )}
-
-                {subject === "partner" && (
-                  <div className="form-row">
-                    <div className="form-group col-md-7">
-                      <label htmlFor="company">Company:</label>
-                      <input type="text" className="form-control" id="company" placeholder="Your company name" />
-                    </div>
-                    <div className="form-group col-md-7">
-                      <label htmlFor="businessType">Business Type:</label>
-                      <input type="text" className="form-control" id="businessType" placeholder="Your business type" />
-                    </div>
-                  </div>
-                )}
-
-                <div className="form-group">
-                  <label htmlFor="message">Votre Message</label>
-                  <textarea
-                    className="form-control"
-                    id="message"
-                    name="message"
-                    rows="5"
-                    placeholder="Votre message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                  ></textarea>
-                </div>
-              
-                <button type="submit" className="btn south-btn">
-                  Envoyer le message
-                </button>
-              </form>
-              </div>
-              </div>
-              {/* FAQ Section */}
-              <div className="accordion mt-5">
-                <h4 className="mb-3">FAQ'S</h4>
-                {data.map((item) => (
-                  <div key={item.id} className="faq-item mb-3">
-                    <div
-                      className={`accordion-header ${expandedId === item.id ? "expanded" : ""} d-flex justify-content-between align-items-center`}
-                      onClick={() => toggleSection(item.id)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <h6 className="mb-0">{item.question}</h6>
-                      <span className="toggle-icon">
-                        {expandedId === item.id ? "-" : "+"}
-                      </span>
-                    </div>
-                    {expandedId === item.id && (
-                      <div className="accordion-content mt-2">
-                        <p className="mb-0 fade-in">{item.answer}</p>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            
-          
+              ))}
+            </div>
+          </div>
         </div>
       </div>
-    </div>
     </div>
   );
 }

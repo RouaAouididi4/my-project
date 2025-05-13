@@ -80,9 +80,6 @@ const Navbar = () => {
           </div>
 
           <div className="auth-links">
-            <Link to="/profile" className="menu-item">
-              PROFILE
-            </Link>
             <a href="/login" className="menu-item">
               LOGIN
             </a>

@@ -3,46 +3,41 @@ const router = express.Router();
 const AuthController = require("./../Controllers/AuthController");
 const AuthMiddleware = require("../middleware/AuthMiddleware");
 const userController = require("../Controllers/UserController");
-
+const { verifyAccount } = require("../Controllers/VerifAccount.js");
+const { sendCode } = require("../Controllers/AuthController.js");
+import { CodeVerif } from "./../Controllers/AuthController";
+// Signup
 router.post("/signup", AuthController.signup);
+
+// Vérification du compte
+router.get("/verify/:token", verifyAccount);
+router.post("/send-code", sendCode);
+router.post("/CodeVerif", CodeVerif);
+// Login
 router.post("/login", AuthController.login);
+
+// Récupération des infos de l'utilisateur
 router.get("/me", AuthMiddleware, AuthController.getMe);
-router.patch("/me", AuthMiddleware, userController.updateUser); // Assurez-vous que cette ligne est correcte
-// router.patch("/change-password", AuthMiddleware, userController.changePassword);
-// router.delete("/delete-account", AuthMiddleware, userController.deleteAccount);
-// Logout route
+router.patch("/me", AuthMiddleware, userController.updateUser);
+
+// Mot de passe oublié
+router.post("/forget-password", AuthController.forgotPassword);
+
+// Vérification du code de vérification (après l'email)
+router.post("/verify-code", AuthController.CodeVerif); // ✅ Ajoutée
+
+// Réinitialisation du mot de passe
+router.post("/reset-password", AuthController.resetPassword); // ✅ Ajoutée
+
+// Logout
 router.post("/logout", (req, res) => {
   req.session.destroy((err) => {
     if (err) {
       return res.status(500).json({ success: false, message: "Logout failed" });
     }
-    res.clearCookie("connect.sid"); // The name may vary depending on your configuration
+    res.clearCookie("connect.sid");
     res.json({ success: true, message: "Logout successful" });
   });
 });
-
-// Route to check login status
-router.get("/check", (req, res) => {
-  if (req.session.userId) {
-    res.json({
-      isAuthenticated: true,
-      user: {
-        id: req.session.userId,
-        email: req.session.userEmail,
-      },
-    });
-  } else {
-    res.json({ isAuthenticated: false });
-  }
-});
-
-// Middleware to check authentication
-const checkAuth = (req, res, next) => {
-  if (req.session.userId) {
-    next();
-  } else {
-    res.status(401).json({ isAuthenticated: false });
-  }
-};
 
 module.exports = router;

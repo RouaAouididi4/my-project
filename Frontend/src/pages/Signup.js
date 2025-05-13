@@ -2,11 +2,17 @@ import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaPhone, FaGoogle, FaEye, FaEyeSlash } from "react-icons/fa";
 import "./Signup.css";
+import { useNavigate } from "react-router-dom";
 
 function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showEmailCheckMessage, setShowEmailCheckMessage] = useState(false);
+
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
 
   const [touched, setTouched] = useState({
     FullName: false,
@@ -120,41 +126,63 @@ function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate form
+    console.log("🔄 Form submission started");
+
+    setIsSubmitting(true);
+    setIsSuccess(false);
+
+    // Vérification des champs du formulaire
     if (!validateForm()) {
-      console.log("Validation failed", errors);
+      console.log("❌ Form validation failed", formData);
+      setIsSubmitting(false);
       return;
     }
+
+    console.log("✅ Form is valid. Sending data:", {
+      FullName: formData.FullName,
+      email: formData.email,
+      password: formData.password,
+      confirmPassword: formData.confirmPassword,
+      role: formData.role,
+    });
 
     try {
       const response = await fetch("http://localhost:3001/api/auth/signup", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           FullName: formData.FullName,
           email: formData.email,
-          password: formData.password, // Sending plain password
+          password: formData.password,
           confirmPassword: formData.confirmPassword,
+          role: formData.role,
         }),
       });
 
       const data = await response.json();
 
+      console.log("📬 Server response:", data);
+
       if (response.ok) {
-        localStorage.setItem("token", data.token);
         setIsSuccess(true);
-        setTimeout(() => {
-          window.location.href = "/";
-        }, 3000);
+        alert("✅ Compte créé. Veuillez vérifier votre email.");
+        console.log("🎉 Account creation successful");
+        setShowEmailCheckMessage(true);
       } else {
-        setErrors({ server: data.message || "Registration failed" });
+        console.log("❌ Server error:", data);
+        setErrors({ server: data.message || "Une erreur est survenue." });
+        setIsSuccess(false);
       }
     } catch (err) {
+      console.log("❌ Network error:", err);
       setErrors({ server: "Network error. Please try again." });
+      setIsSuccess(false);
+    } finally {
+      setIsSubmitting(false);
+      console.log("🛑 Form submission ended");
     }
   };
+
   return (
     <div>
       <section className="hero">

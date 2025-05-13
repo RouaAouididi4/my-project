@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./Login.css";
 import { useAuth } from "../context/auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { FaGoogle, FaPhone } from "react-icons/fa";
 import log from "./images/log.png";
 
@@ -83,7 +83,7 @@ const Login = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: formData.email.trim(),
-          password: formData.password.trim(), // Sending plain password
+          password: formData.password.trim(),
         }),
       });
 
@@ -97,10 +97,16 @@ const Login = () => {
         throw new Error("No authentication token received");
       }
 
-      // Verify user data structure
-      if (!data.user || !data.user._id || !data.user.email) {
-        throw new Error("Incomplete user data received");
-      }
+      localStorage.setItem("token", data.token);
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          id: data.user._id,
+          FullName: data.user.FullName,
+          email: data.user.email,
+          role: data.user.role,
+        })
+      );
 
       login(
         {
@@ -251,11 +257,12 @@ const Login = () => {
               <div className="password-input">
                 <input
                   name="password"
-                  type="password"
+                  id="password"
+                  type={showPassword ? "text" : "password"}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   style={{ borderColor: isEmpty("password") ? "red" : "" }}
-                  placeholder="Enter your password"
+                  placeholder="Enter  password"
                   required
                 />{" "}
                 {error && <p style={{ color: "red" }}>{error}</p>}
@@ -264,11 +271,11 @@ const Login = () => {
                 </span>
               </div>
               <div className="forgot-password">
-                <a href="#">Forgot Password?</a>
+                <Link to="/forgot-password">Forgot Password?</Link>
               </div>
               <button type="submit" disabled={isLoading}>
-                {isLoading ? "Logging in..." : "Login"}
-              </button>{" "}
+                {isLoading ? <span className="spinner" /> : "Login"}
+              </button>
             </form>
 
             <div className="separator">or</div>
@@ -285,7 +292,7 @@ const Login = () => {
             </div>
 
             <p>
-              Don’t have an account? <a href="#">Sign up</a>
+              Don’t have an account? <Link to="/signup">Sign up</Link>
             </p>
           </div>
 

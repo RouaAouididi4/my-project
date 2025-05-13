@@ -8,7 +8,7 @@ const UserRoutes = require("./src/Routes/UserRoutes.js");
 const AuthRoutes = require("./src/Routes/AuthRoutes");
 const path = require("path");
 const session = require("express-session");
-
+const MessageRoutes = require("./src/Routes/MessageRoutes.js");
 // Load environment variables
 dotenv.config();
 
@@ -58,6 +58,7 @@ app.use("/api/auth", AuthRoutes);
 app.use("/api/properties", PropertiesRoutes);
 app.use("/api/meetings", MeetingRoutes);
 app.use("/api/users", UserRoutes);
+app.use("/api/contact", MessageRoutes);
 
 // Error handling middleware (should be after all routes)
 app.use((err, req, res, next) => {

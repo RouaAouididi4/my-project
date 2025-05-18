@@ -713,32 +713,35 @@ function PostForSaleByOwnerListing() {
                 </div>
                 <ol className="agreement-list">
                   <li>
-                    I am (or I have authority to act on behalf of) the owner of
-                    this home;
+                    Property Information All property details must be true and
+                    accurate. Do not post fake or misleading information.
+                    Listings with wrong or suspicious info will be removed.
                   </li>
                   <li>
-                    I will not provide incorrect information or state a
-                    discriminatory preference;
+                    Ownership and Authorization You confirm that you are the
+                    owner of the property or have legal authorization to post
+                    this property for sale or rent.
                   </li>
                   <li>
-                    I will be posting my property 'for sale by owner' on
-                    homz.com and other affiliated websites and that I will
-                    solely be responsible for maintaining and updating the
-                    posting and responding to and negotiating potential offers
-                    to purchase the property;
+                    Monthly Subscription Required To post a property, you must
+                    subscribe to a monthly plan. The subscription costs 10 TND
+                    per month. Payment is made online by credit or debit card.
+                    The subscription is valid until: The property is sold, Or
+                    you remove the listing yourself. You must pay again if you
+                    want to post a new property after that.
                   </li>
                   <li>
-                    Homz, Inc. ("Homz") is a licensed real estate brokerage,
-                    that I am not entering into any agency or brokerage
-                    relationship with Homz as part of this posting and that Homz
-                    is not providing me with any real estate brokerage services
-                    as part of this posting;
+                    You Must Be the Owner or Authorized You can only post a
+                    property if: You own it, Or you have permission from the
+                    owner to post it.
                   </li>
                   <li>
-                    I will comply with the Homz Terms of Use and Listing Quality
-                    Policy.
+                    Contact If you have any questions, contact us: 📧
+                    contact@agenceimmobilier.com
                   </li>
+                             
                 </ol>
+
                 <p className="marketing-consent">
                   I also agree that by clicking below, Homz Group and its
                   affiliates, and real estate professionals may call or text me

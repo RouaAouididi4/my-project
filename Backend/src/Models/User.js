@@ -57,11 +57,15 @@ const userSchema = new mongoose.Schema(
     },
 
     favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
-    isVerified: { type: Boolean, default: false },
-    verificationToken: { type: String },
+    verificationToken: { type: String, index: true, sparse: true },
     verificationTokenExpires: Date,
-
+    activationToken: {
+      type: String,
+      index: true,
+      sparse: true,
+    },
     verificationCode: String,
+    isVerified: { type: Boolean, default: false },
     verificationCodeExpires: Date,
   },
   { timestamps: true }

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import "./ForgotPassword.css";
+import "./ForgetPassword.css";
 import password from "./images/password.jpg";
 
 const CodeVerif = () => {
   const [code, setCode] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+
   const [error, setError] = useState("");
   const [countdown, setCountdown] = useState(600); // 10 minutes in seconds
   const location = useLocation();
@@ -33,7 +34,7 @@ const CodeVerif = () => {
     setError("");
 
     try {
-      const response = await fetch("/api/auth/verify-code", {
+      const response = await fetch("http://localhost:3000/api/auth/CodeVerif", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -53,7 +54,7 @@ const CodeVerif = () => {
       }
     } catch (err) {
       setError("An error occurred while verifying the code. Please try again.");
-      console.error("Verification error:", err);
+      console.error("Verification error:", err.message || err);
     } finally {
       setIsLoading(false);
     }
@@ -65,15 +66,19 @@ const CodeVerif = () => {
     setError("");
 
     try {
-      const response = await fetch("/api/auth/resend-code", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
+      const response = await fetch(
+        "http://localhost:3000/api/auth/resend-code",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        }
+      );
 
       const data = await response.json();
+      console.log("API response:", data);
 
       if (response.ok) {
         // Reset the countdown timer
@@ -122,7 +127,7 @@ const CodeVerif = () => {
   // Check if email exists in state
   useEffect(() => {
     if (!email) {
-      navigate("/forgot-password");
+      navigate("/forget-password");
     }
   }, [email, navigate]);
 

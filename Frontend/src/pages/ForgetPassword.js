@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "./ForgotPassword.css";
+import "./ForgetPassword.css";
 import password from "./images/password.jpg";
 
-const ForgotPassword = () => {
+const ForgetPassword = () => {
   const [email, setEmail] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const navigate = useNavigate();
@@ -14,10 +14,35 @@ const ForgotPassword = () => {
     "img/bg-img/hero3.jpg",
   ];
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (email.trim()) {
-      navigate("/CodeVerif"); // Or '/check-email' if you prefer
+    if (!email.trim()) return;
+
+    try {
+      const response = await fetch(
+        "http://localhost:3001/api/auth/forget-password",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem("resetEmail", email);
+
+        console.log("Redirection vers /CodeVerif");
+        navigate("/CodeVerif", { state: { email } });
+      } else {
+        alert(data.message || "Email not found");
+      }
+    } catch (error) {
+      console.error("Error sending email:", error);
+      alert("An error occurred. Please try again.");
     }
   };
 
@@ -113,7 +138,7 @@ const ForgotPassword = () => {
                       animation: "fadeIn 1.5s ease-out both",
                     }}
                   >
-                    Forgot Password
+                    Forget Password
                   </h2>
                 </div>
 
@@ -188,4 +213,4 @@ const ForgotPassword = () => {
   );
 };
 
-export default ForgotPassword;
+export default ForgetPassword;

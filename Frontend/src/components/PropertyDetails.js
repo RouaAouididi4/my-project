@@ -1,7 +1,7 @@
 // /src/components/PropertyDetails.jsx
 
-import React from 'react';
-import './PropertyDetails.css';
+import React from "react";
+import "./PropertyDetails.css";
 
 function PropertyDetails({ property, agent }) {
   return (
@@ -9,10 +9,10 @@ function PropertyDetails({ property, agent }) {
       {/* Left Column */}
       <div className="property-main">
         <h2 className="price">${property.price.toLocaleString()}</h2>
-        <h1 className="title">{property.title}</h1>
+        <h1 className="hometype">{property.hometype}</h1>
         <p className="address">{property.address}</p>
-        <p className="description">{property.description.repeat(1 )}</p>
-        <p className="description">{property.features.join(', ')}</p>
+        <p className="description">{property.description.repeat(1)}</p>
+        <p className="description">{property.features.join(", ")}</p>
         <div className="icons-row">
           <span>🛁 2</span>
           <span>🛏 2</span>
@@ -20,9 +20,11 @@ function PropertyDetails({ property, agent }) {
         </div>
 
         <ul className="features-list">
-          {[...new Set([...property.features, ...property.features])].map((feature, index) => (
-            <li key={index}>{feature}</li>
-          ))}
+          {[...new Set([...property.features, ...property.features])].map(
+            (feature, index) => (
+              <li key={index}>{feature}</li>
+            )
+          )}
         </ul>
 
         <div className="action-buttons">

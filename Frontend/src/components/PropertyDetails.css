@@ -16,10 +16,10 @@
 
 .price {
   font-size: 24px;
-  color: #916D4D;
+  color: #916d4d;
 }
 
-.title {
+.hometype {
   font-size: 32px;
   font-weight: bold;
   margin: 10px 0;
@@ -65,7 +65,7 @@
 }
 
 .btn-outline {
-  background: #A47C59;
+  background: #a47c59;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -121,7 +121,7 @@
 }
 
 .contact-form button {
-  background-color: #A47C59;
+  background-color: #a47c59;
   color: white;
   padding: 10px;
   border: none;

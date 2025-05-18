@@ -10,7 +10,6 @@ function Signup() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showEmailCheckMessage, setShowEmailCheckMessage] = useState(false);
-
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
 
@@ -27,6 +26,7 @@ function Signup() {
     email: "",
     password: "",
     confirmPassword: "",
+    role: "",
   });
 
   const [currentIndex, setCurrentIndex] = useState(0);

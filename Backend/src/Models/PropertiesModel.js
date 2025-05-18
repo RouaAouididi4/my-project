@@ -2,11 +2,16 @@ const mongoose = require("mongoose");
 
 const propertySchema = new mongoose.Schema(
   {
-    title: { type: String, required: true },
     streetAddress: { type: String, required: true },
     zip: { type: String, required: false },
     propertyID: { type: String, unique: true, required: true },
     type: { type: String, enum: ["rent", "sale"], required: true },
+    homeType: {
+      type: String,
+      enum: ["House", "Apartment", "Villa", "Studio"],
+      required: true,
+    },
+
     city: { type: String, required: true },
     bedrooms: { type: Number, required: false },
     bathrooms: { type: Number, required: false },
@@ -19,7 +24,7 @@ const propertySchema = new mongoose.Schema(
     },
     management: {
       type: String,
-      enum: ["Unmanaged", "Managed"],
+      enum: ["Managed", "Unmanaged"],
       default: "Unmanaged",
     },
     photos: { type: [String], required: true },

@@ -1,6 +1,8 @@
 import React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import NavBar from "./components/NavBar";
+import NavBar2 from "./components/NavBar2";
+import Activate from "./pages/Activate";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import PropertyListing from "./pages/PropertyListing";
@@ -13,26 +15,31 @@ import Preloader from "./components/Preloader";
 import Post from "./pages/Post";
 import PropertyByLocation from "./pages/PropertyByLocation";
 import HouseForSaleOrRent from "./pages/HouseForSaleOrRent";
+
 import Details from "./pages/Details";
-import Upload from "./pages/upload";
 import Footer from "./components/Footer";
 import Profile from "./pages/Profile";
-// import ForgotPassword from "./pages/ForgotPassword";
-import ForgotPassword from "./pages/ForgotPassword";
+import ForgetPassword from "./pages/ForgetPassword";
 import ResetPassword from "./pages/ResetPassword";
 import CodeVerif from "./pages/CodeVerif";
-import { AuthProvider } from "./context/auth";
+import { AuthProvider, useAuth } from "./context/auth"; // Import AuthProvider ET useAuth
 import EmailVerification from "./pages/EmailVerification";
-// import AdminDashboard from "./AdminDashboard";
 
-function App() {
+function AppContent() {
+  const { user, logout } = useAuth();
   const location = useLocation();
-  const hideNavAndFooter = location.pathname === "/AdminDashboard";
 
+  const hideNavAndFooter = location.pathname === "/AdminDashboard";
+  console.log("User in AppContent:", user);
+  const renderNavBar = () => {
+    if (!user || !user.role) return <NavBar />;
+    if (user.role === "client")
+      return <NavBar2 user={user} onLogout={logout} />;
+    return null; // admin ou agent → pas de navbar (ou ajouter DashboardNav ici)
+  };
   return (
-    <AuthProvider>
-      <Preloader />
-      {!hideNavAndFooter && <NavBar />}
+    <>
+      {!hideNavAndFooter && renderNavBar()}
 
       <div className="app-container p-4 bg-gray-100">
         <Routes>
@@ -48,25 +55,35 @@ function App() {
             path="/Property-By-Location"
             element={<PropertyByLocation />}
           />
+          <Route path="/activate" element={<Activate />} />
+
           <Route path="/services" element={<Services />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/verify/:token" element={<EmailVerification />} />{" "}
-          {/* ✅ mise à jour ici */}
+          <Route path="/verify/:token" element={<EmailVerification />} />
           <Route path="/details/:id" element={<Details />} />
-          <Route path="/upload" element={<Upload />} />
-          {/* <Route path="/AdminDashboard" element={<AdminDashboard />} /> */}
           <Route path="/profile" element={<Profile />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/forget-password" element={<ForgetPassword />} />
           <Route path="/CodeVerif" element={<CodeVerif />} />
-          <Route path="/resetPassword" element={<ResetPassword />} />{" "}
+          <Route path="/reset-password" element={<ResetPassword />} />
+          {/* Route admin dashboard ici */}
+          {/* <Route path="/AdminDashboard" element={<AdminDashboard />} /> */}
         </Routes>
       </div>
 
       {!hideNavAndFooter && <Footer />}
-    </AuthProvider>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <>
+      <Preloader />
+      <AppContent />
+    </>
   );
 }
 

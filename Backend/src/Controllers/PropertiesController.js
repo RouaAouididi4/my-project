@@ -1,6 +1,6 @@
-const { mongo } = require("mongoose");
 const Property = require("../Models/PropertiesModel");
 const catchAsync = require("../Utils/CatchAsync");
+const mongoose = require("mongoose");
 
 // Get all properties
 exports.getAllProperties = catchAsync(async (req, res, next) => {
@@ -42,33 +42,68 @@ exports.searchProperties = async (req, res) => {
   }
 };
 
-// Create a new property
 exports.createProperty = catchAsync(async (req, res) => {
+  console.log("Data received in req.body:", req.body);
+
   const {
     streetAddress,
+    title,
     type,
     price,
-    title,
+    hometype, // attention ici
     size,
     bedrooms,
     bathrooms,
-
     management,
+    city,
   } = req.body;
 
-  // Create a new property with the status and management specified by the customer
-  const newProperty = await Property.create({
-    streetAddress,
-    type,
-    price,
-    title,
-    size,
-    bedrooms,
-    bathrooms,
-    management: management || "Unmanaged", // 'managed' or 'unmanaged',
-  });
+  // Tester les deux variables pour debug (casse)
+  if (!hometype && !req.body.homeType) {
+    console.error(
+      "Error: Neither 'hometype' nor 'homeType' found in req.body!"
+    );
+  } else {
+    console.log("Received hometype:", hometype);
+    console.log("Received homeType:", req.body.homeType);
+  }
 
-  res.status(201).json({ message: "Listing added ✅", property: newProperty });
+  const propertyID = new mongoose.Types.ObjectId().toString();
+
+  let photos = [];
+  if (req.files && req.files.length > 0) {
+    photos = req.files.map((file) => `/uploads/photos/${file.filename}`);
+  }
+
+  try {
+    const newProperty = await Property.create({
+      propertyID,
+      streetAddress,
+      title,
+      type,
+      city,
+      price,
+      // IMPORTANT : utiliser la bonne casse ici (selon ton schéma)
+      homeType: hometype || req.body.homeType, // si ton schéma a 'homeType' avec un T majuscule
+      size,
+      bedrooms,
+      bathrooms,
+      management: management || "Unmanaged",
+      photos,
+    });
+
+    res
+      .status(201)
+      .json({ message: "Listing added ✅", property: newProperty });
+  } catch (error) {
+    console.error("Error creating property:", error);
+    res
+      .status(500)
+      .json({
+        message: "Erreur serveur lors de la création",
+        error: error.message,
+      });
+  }
 });
 
 // Update a property

@@ -8,32 +8,36 @@ export function AuthProvider({ children }) {
     user: null,
     isAuthenticated: false,
   });
-
-  const [user, setUser] = useState(null);
-
   useEffect(() => {
-    const initializeAuth = () => {
-      const token = localStorage.getItem("token");
-      const user = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
+    const user = JSON.parse(localStorage.getItem("user"));
 
-      if (token && user) {
-        setAuthState({
-          token,
-          user,
-          isAuthenticated: true,
-        });
-      }
-    };
-
-    initializeAuth();
+    // Vérification de validité minimale
+    if (token && user && user._id && user.role) {
+      setAuthState({
+        token,
+        user,
+        isAuthenticated: true,
+      });
+    } else {
+      setAuthState({
+        token: null,
+        user: null,
+        isAuthenticated: false,
+      });
+    }
   }, []);
 
   const login = (userData, token) => {
     if (!token || !userData?._id) {
-      // Changé de id à _id
       console.error("Invalid login data");
       return;
     }
+
+    if (!userData.role) {
+      userData.role = "client"; // Par défaut
+    }
+
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(userData));
     setAuthState({

@@ -97,7 +97,6 @@ function PostForSaleByOwnerListing() {
     city: "",
     location: { lat: 0, lng: 0 },
     hometype: "",
-    title: "",
     beds: "",
     baths: {
       fullBaths: 0,
@@ -121,59 +120,77 @@ function PostForSaleByOwnerListing() {
     }));
   };
 
+  // // Check if the user is logged in
+  // if (!isUserLoggedIn) {
+  //   alert("You must be logged in to post an ad");
+  //   navigate("/login");
+  //   return;
+  // }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check if the user is logged in
-    if (!isUserLoggedIn) {
-      alert("You must be logged in to post an ad");
-      navigate("/login");
-      return;
-    }
-
-    // Vérification si l'utilisateur a accepté les termes et conditions
     if (!formData.agreement) {
-      alert("Please agree to the terms and conditions");
+      alert("Veuillez accepter les termes et conditions");
       return;
     }
 
-    // Indiquer que la soumission est en cours
     setIsSubmitting(true);
 
-    // Créer un objet FormData pour envoyer des fichiers et des données sous forme de formulaire
     const formDataToSend = new FormData();
 
-    // Ajouter les fichiers à l'objet FormData
+    // Ajouter les fichiers photos
     uploadedFiles.forEach((file) => {
-      console.log("Appending file:", file);
       formDataToSend.append("photos", file);
     });
 
-    // Ajouter les autres données du formulaire (à l'exception des photos)
-    Object.keys(formData).forEach((key) => {
-      if (key !== "photos" && key !== "photo") {
-        console.log(`Appending data: ${key} = ${formData[key]}`);
-        formDataToSend.append(key, formData[key]);
-      }
-    });
+    // Ajouter les champs un par un, en adaptant les noms aux exigences du backend
+    formDataToSend.append("price", formData.price);
+    formDataToSend.append("streetAddress", formData.streetAddress);
+    formDataToSend.append("city", formData.city);
+    formDataToSend.append("type", formData.type || "rent");
+    formDataToSend.append("homeType", formData.hometype); // ✅ clé correcte
+
+    formDataToSend.append("size", formData.size || "100"); // Valeur par défaut si vide
+    formDataToSend.append("yearbuilt", formData.yearbuilt || "2000"); // par défaut
+    formDataToSend.append("phone", formData.phone);
+    formDataToSend.append("description", formData.description || "");
+
+    // Adapter les noms de champs pour le backend
+    formDataToSend.append("bedrooms", formData.beds); // beds devient bedrooms
+
+    // Convertir les différentes salles de bains en un total
+    const totalBaths = Object.values(formData.baths).reduce(
+      (sum, val) => sum + Number(val),
+      0
+    );
+    formDataToSend.append("bathrooms", totalBaths);
+
+    // Normaliser la casse du champ management (par exemple : "Unmanaged" ou "Managed")
+    const managementFormatted =
+      formData.management.charAt(0).toUpperCase() +
+      formData.management.slice(1).toLowerCase();
+    formDataToSend.append("management", managementFormatted);
+
+    console.log("Contenu de formDataToSend:");
+    for (const pair of formDataToSend.entries()) {
+      console.log(pair[0] + ": " + pair[1]);
+    }
 
     try {
-      // Envoyer la requête POST avec FormData
       const response = await fetch("http://localhost:3001/api/properties/add", {
         method: "POST",
         body: formDataToSend,
       });
 
-      // Vérification si la réponse est OK (status HTTP 2xx)
       if (!response.ok) {
         throw new Error(`HTTP Error: ${response.status}`);
       }
 
-      // Récupérer la réponse du serveur et afficher le message
       const data = await response.json();
-      alert("Property added successfully!");
+      alert("Annonce ajoutée avec succès ✅");
 
-      // Réinitialiser le formulaire après soumission
+      // Réinitialiser les champs
       setPhotos([]);
       setUploadedFiles([]);
       setFormData({
@@ -182,7 +199,7 @@ function PostForSaleByOwnerListing() {
         city: "",
         location: { lat: 0, lng: 0 },
         hometype: "",
-        title: "",
+        type: "",
         beds: "",
         baths: {
           fullBaths: 0,
@@ -198,11 +215,9 @@ function PostForSaleByOwnerListing() {
         agreement: false,
       });
     } catch (error) {
-      // En cas d'erreur lors de la soumission
-      console.error("Error:", error);
-      alert("Error submitting form: " + error.message);
+      console.error("Erreur :", error);
+      alert("Erreur lors de la soumission : " + error.message);
     } finally {
-      // Indiquer que la soumission est terminée
       setIsSubmitting(false);
     }
   };
@@ -538,21 +553,26 @@ function PostForSaleByOwnerListing() {
             </div>
             <div className="form-row">
               <div className="form-section" style={{ width: "70%" }}>
-                <label>Title</label>
-                <input
-                  type="text"
-                  placeholder="Enter A Title"
-                  name="title"
-                  value={formData.title}
+                <label>Type de bien</label>
+                <select
+                  name="hometype"
+                  value={formData.hometype}
                   onChange={handleInputChange}
-                />
+                >
+                  <option value="">-- Choisissez un type --</option>
+                  <option value="House">Maison</option>
+                  <option value="Apartment">Appartement</option>
+                  <option value="Villa">Villa</option>
+                  <option value="Studio">Studio</option>
+                </select>
               </div>
+
               <div className="form-section" style={{ width: "30%" }}>
                 <label htmlFor="type">Type :</label>
                 <select
                   id="type"
-                  name="hometype"
-                  value={formData.hometype}
+                  name="type"
+                  value={formData.type}
                   onChange={handleInputChange}
                 >
                   <option value="">Select type</option>

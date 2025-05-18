@@ -82,8 +82,8 @@ const Login = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: formData.email.trim(),
-          password: formData.password.trim(),
+          email: formData.email,
+          password: formData.password,
         }),
       });
 
@@ -270,8 +270,8 @@ const Login = () => {
                   {showPassword ? "🙈" : "👁️"}
                 </span>
               </div>
-              <div className="forgot-password">
-                <Link to="/forgot-password">Forgot Password?</Link>
+              <div className="forget-password">
+                <Link to="/forget-password">Forget Password?</Link>
               </div>
               <button type="submit" disabled={isLoading}>
                 {isLoading ? <span className="spinner" /> : "Login"}

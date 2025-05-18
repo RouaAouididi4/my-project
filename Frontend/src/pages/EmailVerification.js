@@ -14,7 +14,7 @@ const EmailVerification = () => {
     const verifyEmail = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/v1/users/verify/${token}`,
+          `http://localhost:3001/api//users/verify/${token}`,
           {
             method: "GET",
           }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
 import "./PropertyByLocation.css";
 import image1 from "./images/Listing1.jpg";
@@ -8,7 +8,6 @@ import image3 from "./images/Listing3.jpg";
 import image4 from "./images/Listing4.jpg";
 import image5 from "./images/Listing5.jpg";
 import image6 from "./images/Listing6.jpg";
-
 
 function PropertyByLocation() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -32,7 +31,6 @@ function PropertyByLocation() {
 
     return () => clearInterval(interval); // Clean up the interval on component unmount
   }, []);
- 
 
   return (
     <div className="property-listing-container">
@@ -281,7 +279,7 @@ function PropertyByLocation() {
 
         <div className="properties-grid">
           {/* Property Card 1 */}
-          <div className="property-card"style={{ height: "500px" }}>
+          <div className="property-card" style={{ height: "500px" }}>
             <div className="image-wrapper">
               <div
                 className="property-image"
@@ -320,9 +318,15 @@ function PropertyByLocation() {
                 dans le quartier prisé de Cité Nozha à Hergla.
               </p>
               <div className="button-container">
-                <button onClick={() => navigate(`/details/${property.id}`)} className="search-button"> Voir Détails</button>
+                <button
+                  onClick={() => navigate(`/details/${property.id}`)}
+                  className="search-button"
+                >
+                  {" "}
+                  Voir Détails
+                </button>
               </div>
-            </div> 
+            </div>
           </div>
           {/* Property Card 2 */}
           <div className="property-card">
@@ -357,7 +361,13 @@ function PropertyByLocation() {
                 cœur du prestigieux quartier touristique de Kantaoui.
               </p>
               <div className="button-container">
-                <button onClick={() => navigate(`/details/${property.id}`)} className="search-button"> Voir Détails</button>
+                <button
+                  onClick={() => navigate(`/details/${property.id}`)}
+                  className="search-button"
+                >
+                  {" "}
+                  Voir Détails
+                </button>
               </div>
             </div>
           </div>
@@ -394,14 +404,20 @@ function PropertyByLocation() {
                 quelques pas de la mer, idéal pour célibataires ou étudiants.
               </p>
               <div className="button-container">
-                <button onClick={() => navigate(`/details/${property.id}`)} className="search-button"> Voir Détails</button>
+                <button
+                  onClick={() => navigate(`/details/${property.id}`)}
+                  className="search-button"
+                >
+                  {" "}
+                  Voir Détails
+                </button>
               </div>
             </div>
           </div>
         </div>
         <div className="properties-grid">
           {/* Property Card 4 */}
-          <div className="property-card"style={{ height: "500px" }}>
+          <div className="property-card" style={{ height: "500px" }}>
             <div className="image-wrapper">
               <div
                 className="property-image"
@@ -433,7 +449,13 @@ function PropertyByLocation() {
                 petite famille ou un couple.
               </p>
               <div className="button-container">
-                <button onClick={() => navigate(`/details/${property.id}`)} className="search-button"> Voir Détails</button>
+                <button
+                  onClick={() => navigate(`/details/${property.id}`)}
+                  className="search-button"
+                >
+                  {" "}
+                  Voir Détails
+                </button>
               </div>
             </div>
           </div>
@@ -471,7 +493,13 @@ function PropertyByLocation() {
                 quelques pas de la mer, idéal pour célibataires ou étudiants.
               </p>
               <div className="button-container">
-                <button onClick={() => navigate(`/details/${property.id}`)} className="search-button"> Voir Détails</button>
+                <button
+                  onClick={() => navigate(`/details/${property.id}`)}
+                  className="search-button"
+                >
+                  {" "}
+                  Voir Détails
+                </button>
               </div>
             </div>
           </div>
@@ -508,7 +536,13 @@ function PropertyByLocation() {
                 quelques pas de la mer, idéal pour célibataires ou étudiants.
               </p>
               <div className="button-container">
-                <button onClick={() => navigate(`/details/${property.id}`)} className="search-button"> Voir Détails</button>
+                <button
+                  onClick={() => navigate(`/details/${property.id}`)}
+                  className="search-button"
+                >
+                  {" "}
+                  Voir Détails
+                </button>
               </div>
             </div>
           </div>

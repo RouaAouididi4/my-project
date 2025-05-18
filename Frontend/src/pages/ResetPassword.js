@@ -30,16 +30,42 @@ const ResetPassword = () => {
     "img/bg-img/hero3.jpg",
   ];
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!password || !confirm) {
-      alert("Veuillez remplir les deux champs.");
-    } else if (password !== confirm) {
-      alert("Les mots de passe ne correspondent pas.");
-    } else {
-      // Ajouter ici la logique d'appel à l'API si nécessaire
-      alert("Mot de passe réinitialisé avec succès !");
-      navigate("/login");
+      alert("Please fill in both fields.");
+      return;
+    }
+
+    if (password !== confirm) {
+      alert("Passwords do not match.");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:3000/api/auth/reset-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: localStorage.getItem("resetEmail"), // Make sure the email is stored in localStorage before reaching this point
+          newPassword: password,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("Password successfully reset!");
+        navigate("/login");
+      } else {
+        alert(data.message || "Error during password reset");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Server error");
     }
   };
 

@@ -1,76 +1,73 @@
 const User = require("../Models/User.js");
 const crypto = require("crypto");
-const catchAsync = require("./../Utils/catchAsync.js");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+require("dotenv").config();
+const { MailtrapTransport } = require("mailtrap");
 
+// Génération d'un code de vérification aléatoire
 const generateCode = () => Math.floor(100000 + Math.random() * 900000);
 
-const sendVerificationEmail = async (email, token) => {
-  console.log("Preparing to send email to:", email);
-  console.log("Token:", token);
-  const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
-    secure: false,
-    auth: {
-      user: process.env.EMAIL_USERNAME,
-      pass: process.env.EMAIL_PASSWORD,
-    },
-  });
+const mailTransporter = nodemailer.createTransport({
+  host: "sandbox.smtp.mailtrap.io",
+  port: 2525,
+  auth: {
+    user: process.env.MAILTRAP_USER,
+    pass: process.env.MAILTRAP_PASS,
+  },
+});
 
-  const mailOptionsVerif = {
-    from: '"CasaTech" <casatech@gmail.com>',
+const sendVerificationEmail = (email, token) => {
+  const encodedToken = encodeURIComponent(token);
+
+  const mailDetails = {
+    from: `"CasaTech" <contact@casatech.co>`,
     to: email,
-    subject: "Verify Your Account",
+    subject: "Activate Your Account",
     html: `
       <h2>Welcome to CasaTech</h2>
-      <p>Thank you for signing up. Please click the link below to activate your account:</p>
-      <a href="http://localhost:3000/login?token=${token}">Activate My Account</a>`,
+      <p>Thank you for signing up. Click the link below to activate your account:</p>
+      <a href="http://localhost:3000/activate?token=${encodedToken}">Activate My Account</a>
+    `,
   };
 
-  try {
-    await transporter.sendMail(mailOptionsVerif); // Envoi de l'email
-    console.log("✅ Verification email sent.");
-  } catch (error) {
-    console.error("❌ Error sending email:", error);
-  }
+  mailTransporter.sendMail(mailDetails, (err, data) => {
+    if (err) {
+      console.error("❌ Error while sending verification email:", err);
+    } else {
+      console.log("✅ Verification email sent successfully.");
+      console.log("📨 Message ID:", data.messageId);
+    }
+  });
 };
 
-const sendVerificationCodeEmail = async (email, code) => {
-  console.log("Preparing to send code to:", email);
-  const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
-    secure: false,
-    auth: {
-      user: process.env.EMAIL_USERNAME,
-      pass: process.env.EMAIL_PASSWORD,
-    },
-  });
-
-  const mailOptionsCode = {
-    from: '"CasaTech" <casatech@gmail.com>',
+const sendResetCodeEmail = (email, code) => {
+  const mailDetails = {
+    from: `"CasaTech" <contact@casatech.co>`,
     to: email,
     subject: "Password Reset Code",
     html: `
       <h2>Password Reset Request</h2>
-      <p>Here is your password reset code:</p>
-          <h3 style="background: #f4f4f4; padding: 10px; display: inline-block;">${code}</h3>
-      <p>The code is valid for 10 minutes.</p>
-      <p>Thank you, <br/> The CASA TECH team 👩‍💻</p>`,
+      <p>Here is your code to reset your password:</p>
+      <h3 style="background:#f4f4f4; padding:10px; display:inline-block;">${code}</h3>
+      <p>This code is valid for 10 minutes.</p>
+      <p>Thank you,<br/>The CasaTech Team 👩‍💻</p>
+    `,
   };
 
-  try {
-    await transporter.sendMail(mailOptionsCode); // Envoi du code de réinitialisation
-    console.log("✅ Password reset code sent.");
-  } catch (error) {
-    console.error("❌ Error sending password reset code:", error);
-  }
+  mailTransporter.sendMail(mailDetails, (err, data) => {
+    if (err) {
+      console.error("❌ Error while sending reset code email:", err);
+    } else {
+      console.log("✅ Reset code email sent successfully.");
+      console.log("📨 Message ID:", data.messageId);
+    }
+  });
 };
 
-exports.forgotPassword = async (req, res) => {
+// Fonction de réinitialisation du mot de passe (Forget Password)
+exports.forgetPassword = async (req, res) => {
   const { email } = req.body;
 
   // Vérifier si l'email est valide
@@ -78,162 +75,169 @@ exports.forgotPassword = async (req, res) => {
     return res.status(400).json({ message: "Invalid email" });
   }
 
-  // Recherche de l'utilisateur dans la base de données
+  // Trouver l'utilisateur dans la base de données
   const user = await User.findOne({ email });
-  if (!user) return res.status(404).json({ message: "User Not Found" });
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
 
-  const code = generateCode();
-  const expiration = Date.now() + 10 * 60 * 1000; // 10 minutes
+  // Générer un code de réinitialisation et une expiration
+  const newCode = generateCode();
+  const expiration = Date.now() + 10 * 60 * 1000; // Expiration dans 10 minutes
 
-  user.verificationCode = code;
+  // Sauvegarder le code et son expiration dans la base de données
+  user.verificationCode = newCode;
   user.verificationCodeExpires = expiration;
 
   await user.save();
-  await sendVerificationCodeEmail(email, code);
 
-  res
-    .status(200)
-    .json({ message: "Code sent to your email !", redirectUrl: "/CodeVerif" });
+  // Envoyer le code de réinitialisation par email
+  try {
+    await sendResetCodeEmail(email, newCode);
+    console.log("Code sent to:", email);
+    return res.status(200).json({ message: "Code sent to your email!" });
+  } catch (err) {
+    console.error("Email error:", err);
+    return res.status(500).json({ message: "Failed to send the code" });
+  }
 };
 
+// Fonction pour vérifier le code de réinitialisation
+exports.verifyResetCode = async (req, res) => {
+  const { email, code, newPassword } = req.body;
+
+  const user = await User.findOne({ email });
+
+  if (
+    !user ||
+    user.verificationCode !== code ||
+    Date.now() > user.verificationCodeExpires
+  ) {
+    return res.status(400).json({ message: "Invalid or expired code." });
+  }
+
+  // Le code est valide, on renvoie un message de succès
+  return res.status(200).json({ message: "Code successfully verified." });
+};
+
+// Fonction pour réinitialiser le mot de passe
 exports.resetPassword = async (req, res) => {
   const { email, newPassword } = req.body;
 
   const user = await User.findOne({ email });
   if (!user) return res.status(404).json({ message: "User Not Found" });
 
-  // Hashage du nouveau mot de passe avant de l'enregistrer
-  const hashedPassword = await bcrypt.hash(newPassword, 12); // 12 est le nombre de rounds pour le salage
-  user.password = hashedPassword;
-
-  // Réinitialisation du code de vérification
+  // Hashage du mot de passe
+  user.password = newPassword;
+  // Suppression des informations relatives au code de vérification
   user.verificationCode = undefined;
   user.verificationCodeExpires = undefined;
 
-  // Sauvegarde de l'utilisateur avec le mot de passe haché
   await user.save();
-
   res.status(200).json({ message: "Password updated successfully" });
 };
 
-// L'appel à la fonction sendVerificationEmail dans signup
 exports.signup = async (req, res) => {
   try {
     const { FullName, email, password, confirmPassword, role } = req.body;
 
     if (password !== confirmPassword) {
-      return res
-        .status(400)
-        .json({ status: "error", message: "Passwords do not match" });
+      return res.status(400).json({ message: "Passwords do not match" });
     }
 
     if (!email || !password) {
-      return res.status(400).json({
-        status: "error",
-        message: "Email and password are required",
-      });
+      return res
+        .status(400)
+        .json({ message: "Email and password are required" });
     }
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res
-        .status(400)
-        .json({ status: "error", message: "User already exists" });
+      return res.status(400).json({ message: "User already exists" });
     }
 
-    const verificationToken = crypto.randomBytes(32).toString("hex");
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const verificationToken = crypto.randomBytes(32).toString("hex"); // ✅ Token
+    console.log("📤 Token enregistré :", verificationToken);
 
     const user = await User.create({
+      verificationToken,
+      verificationTokenExpires: Date.now() + 3600000,
+
       FullName,
       email,
-      verificationToken,
       role: role || "Client",
       isVerified: false,
-      password,
+      password: hashedPassword,
     });
+    console.log("📝 Token stocké en base:", user.verificationToken);
 
-    await user.save();
+    await sendVerificationEmail(email, verificationToken); // ✅ Envoie le même token
+    console.log("📧 Token envoyé par email :", verificationToken);
 
-    await sendVerificationEmail(email, verificationToken);
-
-    res.status(201).json({
-      status: "success",
-      message: "User created successfully",
-    });
+    res.status(201).json({ message: "User created successfully" });
   } catch (err) {
-    console.error("❌ Erreur dans registerUser:", err);
-    res.status(500).json({ message: "Erreur serveur", error: err.message });
-  }
-};
-
-exports.sendCode = async (req, res) => {
-  const { email } = req.body;
-
-  const code = Math.floor(100000 + Math.random() * 900000); // Code à 6 chiffres
-
-  const user = await User.findOne({ email });
-  if (!user) {
-    return res.status(404).json({ message: "Utilisateur introuvable" });
-  }
-
-  user.verificationCode = code;
-  user.verificationCodeExpires = Date.now() + 10 * 60 * 1000; // expire dans 10 min
-  await user.save({ validateBeforeSave: false });
-
-  try {
-    await sendVerificationCode(email, code);
-    res.status(200).json({
-      status: "success",
-      message: "Code envoyé",
-    });
-  } catch (err) {
-    res.status(500).json({
-      status: "fail",
-      message: "Échec de l'envoi du code.",
-    });
+    console.error("❌ Error in signup:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
 
 exports.CodeVerif = async (req, res) => {
-  const { email, code } = req.body;
+  try {
+    const { email, code } = req.body;
 
-  const user = await User.findOne({ email });
-  if (
-    !user ||
-    String(user.verificationCode) !== String(code) ||
-    Date.now() > user.verificationCodeExpires
-  ) {
-    return res.status(400).json({ message: "Code invalide ou expiré" });
+    if (!email || !code) {
+      return res.status(400).json({ message: "Email and code are required." });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+    if (
+      !user.verificationCode ||
+      String(user.verificationCode) !== String(code)
+    ) {
+      console.log("Expected code:", user.verificationCode);
+      console.log("Provided code:", code);
+      return res.status(400).json({ message: "Incorrect code" });
+    }
+    if (
+      !user.verificationCodeExpires ||
+      Date.now() > user.verificationCodeExpires
+    ) {
+      console.log("Code expired at:", user.verificationCodeExpires);
+      return res.status(400).json({ message: "Code expired" });
+    }
+
+    // ممكن تحذف الكود من DB أو تعيد تعيينه إذا تريد
+    user.verificationCode = undefined;
+    user.verificationCodeExpires = undefined;
+    await user.save();
+
+    return res.status(200).json({ message: "Code verified successfully" });
+  } catch (error) {
+    console.error("Code verification error:", error);
+    return res.status(500).json({ message: "Server error" });
   }
-
-  res.status(200).json({ message: "Code verified successfully" });
 };
 
-// User Login (Authentication) - Version corrigée
+// Fonction login
 exports.login = async (req, res) => {
+  const { email, password } = req.body;
+
   try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({
-        status: "error",
-        message: "Please provide email and password",
-      });
-    }
-
     const user = await User.findOne({ email }).select("+password");
 
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(400).json({
-        status: "error",
-        message: "Incorrect Email or mot de passe .",
-      });
+    if (!user) {
+      return res.status(401).json({ message: "Incorrect email" });
     }
 
-    if (!user.isVerified) {
-      return res
-        .status(401)
-        .json({ status: "error", message: "Please    your email first." });
+    // تقارن كلمة السر اللي دخلها المستخدم مع اللي مخزنة
+    const isMatch = await user.correctPassword(password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Incorrect  password" });
     }
 
     const token = jwt.sign(
@@ -248,7 +252,7 @@ exports.login = async (req, res) => {
     );
 
     res.status(200).json({
-      status: "success login",
+      status: "success",
       token,
       id: user._id,
       FullName: user.FullName,
@@ -257,15 +261,12 @@ exports.login = async (req, res) => {
     });
   } catch (err) {
     console.error("Login error:", err);
-    res.status(500).json({
-      status: "error",
-      message: err.message,
-    });
+    res.status(500).json({ message: err.message });
   }
 };
 
-// Get Current User
-exports.getMe = async (req, res, next) => {
+// Fonction getMe pour obtenir les informations du profil de l'utilisateur connecté
+exports.getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
     if (!user) {
@@ -278,6 +279,6 @@ exports.getMe = async (req, res, next) => {
       phone: user.phone,
     });
   } catch (err) {
-    res.status(500).json({ message: "Erreur serveur", error: err.message });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };

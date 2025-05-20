@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const propertySchema = new mongoose.Schema(
   {
     streetAddress: { type: String, required: true },
-    zip: { type: String, required: false },
+    zip: { type: String },
     propertyID: { type: String, unique: true, required: true },
     type: { type: String, enum: ["rent", "sale"], required: true },
     homeType: {
@@ -11,25 +11,36 @@ const propertySchema = new mongoose.Schema(
       enum: ["House", "Apartment", "Villa", "Studio"],
       required: true,
     },
-
     city: { type: String, required: true },
-    bedrooms: { type: Number, required: false },
-    bathrooms: { type: Number, required: false },
+    beds: { type: Number },
+    baths: { type: Number },
     price: { type: Number, required: true },
-    size: { type: Number, required: false },
+    size: { type: Number },
     status: {
       type: String,
-      enum: ["On hold", "Online", "In management"],
-      default: "On hold",
+      enum: ["pending", "approved", "rejected"], // ou d'autres statuts que tu veux
+      default: "pending",
     },
+    description: { type: String },
     management: {
       type: String,
       enum: ["Managed", "Unmanaged"],
       default: "Unmanaged",
     },
-    photos: { type: [String], required: true },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now },
+    photos: [
+      {
+        url: String,
+        caption: String,
+        isPrimary: Boolean,
+      },
+    ],
+    yearBuilt: {
+      type: Number,
+      min: 1000,
+      max: new Date().getFullYear(),
+    },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true }
 );

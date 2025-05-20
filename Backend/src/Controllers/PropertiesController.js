@@ -64,15 +64,18 @@ exports.createProperty = catchAsync(async (req, res) => {
       "Error: Neither 'hometype' nor 'homeType' found in req.body!"
     );
   } else {
-    console.log("Received hometype:", hometype);
-    console.log("Received homeType:", req.body.homeType);
+    console.log("Received hometype:", hometype || req.body.homeType);
   }
 
   const propertyID = new mongoose.Types.ObjectId().toString();
 
   let photos = [];
   if (req.files && req.files.length > 0) {
-    photos = req.files.map((file) => `/uploads/photos/${file.filename}`);
+    photos = req.files.map((file) => ({
+      url: `/uploads/photos/${file.filename}`,
+      caption: "", // tu peux adapter ou laisser vide
+      isPrimary: false, // par défaut false, ou selon ta logique
+    }));
   }
 
   try {
@@ -97,12 +100,10 @@ exports.createProperty = catchAsync(async (req, res) => {
       .json({ message: "Listing added ✅", property: newProperty });
   } catch (error) {
     console.error("Error creating property:", error);
-    res
-      .status(500)
-      .json({
-        message: "Erreur serveur lors de la création",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "Erreur serveur lors de la création",
+      error: error.message,
+    });
   }
 });
 

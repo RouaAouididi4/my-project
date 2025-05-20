@@ -30,27 +30,6 @@ function PostForSaleByOwnerListing() {
     "img/bg-img/hero3.jpg",
   ];
 
-  // Check if the user is logged in when the component loads
-  useEffect(() => {
-    const checkAuthStatus = async () => {
-      try {
-        const response = await fetch("http://localhost:3001/api/auth/check", {
-          credentials: "include",
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setIsUserLoggedIn(data.isAuthenticated);
-        }
-      } catch (error) {
-        console.error("Error checking auth status:", error);
-        setIsUserLoggedIn(false);
-      }
-    };
-
-    checkAuthStatus();
-  }, []);
-
   const goToPrevSlide = () => {
     setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   };
@@ -120,13 +99,6 @@ function PostForSaleByOwnerListing() {
     }));
   };
 
-  // // Check if the user is logged in
-  // if (!isUserLoggedIn) {
-  //   alert("You must be logged in to post an ad");
-  //   navigate("/login");
-  //   return;
-  // }
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -181,6 +153,7 @@ function PostForSaleByOwnerListing() {
       const response = await fetch("http://localhost:3001/api/properties/add", {
         method: "POST",
         body: formDataToSend,
+        credentials: "include",
       });
 
       if (!response.ok) {
@@ -324,7 +297,7 @@ function PostForSaleByOwnerListing() {
           <div
             className="single-hero-slide"
             style={{
-              backgroundImage: `url(${images[currentIndex]})`,
+              backgroundImage: ` url(${images[currentIndex]})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
               backgroundRepeat: "no-repeat",

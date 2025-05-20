@@ -37,6 +37,7 @@ function Signup() {
     "img/bg-img/hero2.jpg",
     "img/bg-img/hero3.jpg",
   ];
+
   // Image carousel effect
   useEffect(() => {
     const interval = setInterval(() => {
@@ -165,9 +166,35 @@ function Signup() {
 
       if (response.ok) {
         setIsSuccess(true);
-        alert("✅ Compte créé. Veuillez vérifier votre email.");
         console.log("🎉 Account creation successful");
+        localStorage.setItem("token", data.token);
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            id: data.id,
+            email: data.email,
+            FullName: data.FullName,
+            role: data.role,
+          })
+        );
+
         setShowEmailCheckMessage(true);
+        setEmail(formData.email);
+
+        // NOUVELLE PARTIE AJOUTÉE POUR LA REDIRECTION
+        if (location.state?.from) {
+          // Si l'utilisateur venait d'une autre page (comme /post-property)
+          navigate(location.state.from);
+
+          // Optionnel: Afficher un message différent
+          alert(
+            "✅ Compte créé. Vous pouvez maintenant publier votre annonce."
+          );
+        } else {
+          // Redirection par défaut
+          navigate("/");
+          alert("✅ Compte créé. Veuillez vérifier votre email.");
+        }
       } else {
         console.log("❌ Server error:", data);
         setErrors({ server: data.message || "Une erreur est survenue." });
@@ -182,7 +209,6 @@ function Signup() {
       console.log("🛑 Form submission ended");
     }
   };
-
   return (
     <div>
       <section className="hero">

@@ -175,6 +175,18 @@ exports.signup = async (req, res) => {
     await sendVerificationEmail(email, verificationToken); // ✅ Envoie le même token
     console.log("📧 Token envoyé par email :", verificationToken);
 
+    // 🔐 Générer un token JWT comme dans le login
+    const token = jwt.sign(
+      {
+        id: user._id,
+        FullName: user.FullName,
+        email: user.email,
+        role: user.role,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
     res.status(201).json({ message: "User created successfully" });
   } catch (err) {
     console.error("❌ Error in signup:", err);

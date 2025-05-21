@@ -4,17 +4,17 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
-const { MailtrapTransport } = require("mailtrap");
 
 // Génération d'un code de vérification aléatoire
 const generateCode = () => Math.floor(100000 + Math.random() * 900000);
 
 const mailTransporter = nodemailer.createTransport({
-  host: "sandbox.smtp.mailtrap.io",
-  port: 2525,
+  host: process.env.EMAIL_HOST,
+  port: process.env.EMAIL_PORT,
+  secure: true, // important pour le port 465
   auth: {
-    user: process.env.MAILTRAP_USER,
-    pass: process.env.MAILTRAP_PASS,
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
 });
 
@@ -22,13 +22,13 @@ const sendVerificationEmail = (email, token) => {
   const encodedToken = encodeURIComponent(token);
 
   const mailDetails = {
-    from: `"CasaTech" <contact@casatech.co>`,
+    from: `"CasaTech" <${process.env.EMAIL_USER}>`,
     to: email,
     subject: "Activate Your Account",
     html: `
       <h2>Welcome to CasaTech</h2>
       <p>Thank you for signing up. Click the link below to activate your account:</p>
-      <a href="http://localhost:3000/activate?token=${encodedToken}">Activate My Account</a>
+      <a href="${process.env.FRONTEND_URL}/activate?token=${encodedToken}">Activate My Account</a>
     `,
   };
 

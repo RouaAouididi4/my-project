@@ -60,7 +60,6 @@ app.use("/api/meetings", MeetingRoutes);
 app.use("/api/users", UserRoutes);
 app.use("/api/contact", MessageRoutes);
 
-// Error handling middleware (should be after all routes)
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: "Internal Server Error" });

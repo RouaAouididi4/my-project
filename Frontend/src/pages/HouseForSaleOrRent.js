@@ -6,7 +6,7 @@ import image3 from "./images/Listing3.jpg";
 import image4 from "./images/Listing4.jpg";
 import image5 from "./images/Listing5.jpg";
 import image6 from "./images/Listing6.jpg";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function PropertyHouse() {
   const navigate = useNavigate();
@@ -92,122 +92,239 @@ function PropertyHouse() {
 
   return (
     <div className="property-listing-container">
-      {/* Hero Section */}
       <section className="hero-section">
-        <div
-          className="single-hero-slide"
-          style={{
-            backgroundImage: `url(${images[currentIndex]})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            height: "100vh",
-            marginLeft: "10px",
-            width: "100%",
-            transition: "background-image 0.5s ease-in-out",
-            position: "relative",
-          }}
-        >
+        <div className="hero-slides owl-carousel">
           <div
+            className="single-hero-slide"
             style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "rgba(48, 38, 2, 0.21)",
-              zIndex: 0,
-            }}
-          ></div>
-
-          <div
-            className="hero-content"
-            style={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              zIndex: 1,
+              backgroundImage: `url(${images[currentIndex]})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+              height: "100vh",
+              marginLeft: "10px",
               width: "100%",
-              textAlign: "center",
-              color: "white",
-              padding: "0 20px",
+              transition: "background-image 0.5s ease-in-out",
+              position: "relative",
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "30px" }}>
-              <span
-                onClick={goToPrevSlide}
+            {/* Overlay sombre */}
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: "rgba(48, 38, 2, 0.21)",
+                zIndex: 0,
+              }}
+            ></div>
+
+            <div
+              className="hero-content"
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                zIndex: 1,
+                width: "100%",
+                textAlign: "center",
+                color: "white",
+                textShadow: "1px 1px 3px rgba(0, 0, 0, 0.8)",
+                padding: "0 20px",
+              }}
+            >
+              <div
                 style={{
-                  fontSize: "40px",
-                  cursor: "pointer",
-                  opacity: 0.8,
-                  userSelect: "none",
-                  color: "#947054",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "30px",
                 }}
               >
-                ‹
-              </span>
+                <span
+                  onClick={goToPrevSlide}
+                  style={{
+                    fontSize: "40px",
+                    cursor: "pointer",
+                    opacity: 0.8,
+                    userSelect: "none",
+                    color: "#947054",
+                  }}
+                >
+                  ‹
+                </span>
 
-              <div style={{ display: "flex", flexDirection: "column" }}>
-                <h2 style={{
-                  fontSize: "clamp(32px, 6vw, 62px)",
-                  fontWeight: "200",
-                  letterSpacing: "3px",
-                  lineHeight: "1.2",
-                }}>
-                  House For Sale Or Rent
-                </h2>
-                <h2 className="search-home-title">Properties made for you.</h2>
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <h2
+                    style={{
+                      fontSize: "clamp(32px, 6vw, 62px)",
+                      fontWeight: "200",
+                      letterSpacing: "3px",
+                      lineHeight: "1.2",
+                      margin: "0 0 10px 0",
+                      animation: "fadeIn 1.5s ease-out both",
+                    }}
+                  >
+                    Discover our Location
+                  </h2>
+
+                  <div className="search-home-container">
+                    <h2 className="search-home-title">
+                      Properties made for you.
+                    </h2>
+                  </div>
+                </div>
+
+                <span
+                  onClick={goToNextSlide}
+                  style={{
+                    fontSize: "40px",
+                    cursor: "pointer",
+                    opacity: 0.8,
+                    userSelect: "none",
+                    color: "#947054",
+                  }}
+                >
+                  ›
+                </span>
               </div>
-
-              <span
-                onClick={goToNextSlide}
-                style={{
-                  fontSize: "40px",
-                  cursor: "pointer",
-                  opacity: 0.8,
-                  userSelect: "none",
-                  color: "#947054",
-                }}
-              >
-                ›
-              </span>
             </div>
+
+            <style jsx="true" global="true">{`
+              @keyframes fadeIn {
+                from {
+                  opacity: 0;
+                }
+                to {
+                  opacity: 1;
+                }
+              }
+            `}</style>
           </div>
         </div>
       </section>
 
-      {/* Featured Properties */}
+      <div className="filter-section">
+        
+          
+
+        <div className="filter-row">
+          <div className="filter-group">
+            <label className="filter-label" All>
+              Type
+            </label>
+            <select className="filter-select">
+              <option>Select a type</option>
+              <option>For rent</option>
+              <option>For sale</option>
+            </select>
+          </div>
+          <div className="filter-group">
+            <label className="filter-label">Bedrooms</label>
+            <select className="filter-select">
+              <option>Any</option>
+              <option>1</option>
+              <option>2</option>
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label className="filter-label">Bathrooms</label>
+            <select className="filter-select">
+              <option>Any</option>
+              <option>1</option>
+              <option>2</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="filter-row">
+          <div className="filter-group">
+            <label className="filter-label">Surface area</label>
+            <div style={{ display: "flex", gap: "10px" }}>
+              <input
+                type="number"
+                className="filter-input"
+                placeholder="Min"
+                style={{ flex: 1 }}
+              />
+              <span style={{ lineHeight: "35px" }}>-</span>
+              <input
+                type="number"
+                className="filter-input"
+                placeholder="Max"
+                style={{ flex: 1 }}
+              />
+              <span style={{ lineHeight: "35px", marginLeft: "5px" }}>
+                sq. ft
+              </span>
+            </div>
+          </div>
+
+          <div className="filter-group">
+            <label className="filter-label">Price range</label>
+            <div style={{ display: "flex", gap: "10px" }}>
+              <input
+                type="number"
+                className="filter-input"
+                placeholder="Min"
+                style={{ flex: 1 }}
+              />
+              <span style={{ lineHeight: "35px" }}>-</span>
+              <input
+                type="number"
+                className="filter-input"
+                placeholder="Max"
+                style={{ flex: 1 }}
+              />
+              <span style={{ lineHeight: "35px", marginLeft: "5px" }}>DT</span>
+            </div>
+          </div>
+        </div>
+        {/* Bouton MORE FILTERS */}
+        <div className="filters-footer">
+          <button className="search-button">SEARCH</button>
+        </div>
+      </div>
+
       <section className="featured-properties">
         <div className="section-header">
           <h2 className="animated-title">FEATURED PROPERTIES</h2>
           <p className="animated-paragraph">
-            Découvrez nos propriétés sélectionnées avec soin, prêtes à devenir votre nouveau chez-vous.
+            Découvrez nos propriétés sélectionnées avec soin, prêtes à devenir
+            votre nouveau chez-vous.
           </p>
         </div>
 
         <div className="properties-grid">
           {featuredProperties.map((property) => (
-            <div key={property.id} className="property-card" style={{ height: "500px" }}>
+            <div
+              key={property.id}
+              className="property-card"
+              style={{ height: "500px" }}
+            >
               <div className="image-wrapper">
                 <div
                   className="property-image"
-                  style={{
-                    backgroundImage: `url(${property.image})`,
-                  }}
+                  style={{ backgroundImage: `url(${property.image})` }}
                 >
                   <span className="property-badge">FOR SALE</span>
                 </div>
                 <div className="property-price">{property.price}</div>
               </div>
-
               <div className="property-info">
                 <h3 className="property-title">{property.title}</h3>
                 <p className="property-address">{property.address}</p>
                 <hr className="property-divider" />
                 <p className="property-description">{property.description}</p>
                 <div className="button-container">
-                  <button onClick={() => navigate(`/details/${property.id}`)} className="search-button">
+                  <button
+                    onClick={() => navigate(`/details/${property.id}`)}
+                    className="search-button"
+                  >
                     Voir Détails
                   </button>
                 </div>

@@ -1818,7 +1818,7 @@ img {
     padding: 0 30px 40px;
   }
 }
-.contact-realtor-wrapper .realtor--contact-form  {
+.contact-realtor-wrapper .realtor--contact-form {
   margin-bottom: 15px;
 }
 .contact-realtor-wrapper .realtor--contact-form .form-control {
@@ -2059,10 +2059,10 @@ img {
 .south-contact-area .contact-form h5 {
   margin-bottom: 50px;
 }
-.leave-comment-area .comment-form ,
-.leave-comment-area .contact-form ,
-.south-contact-area .comment-form ,
-.south-contact-area .contact-form  {
+.leave-comment-area .comment-form,
+.leave-comment-area .contact-form,
+.south-contact-area .comment-form,
+.south-contact-area .contact-form {
   margin-bottom: 10px;
 }
 .leave-comment-area .comment-form .form-control,

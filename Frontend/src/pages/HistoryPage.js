@@ -1,77 +1,59 @@
-import React, { useEffect, useState } from 'react';
-import './HistoryPage.css'; 
+import React, { useState } from "react";
+import "./HistoryPage.css";
+import { FaTrash } from "react-icons/fa";
 
 const HistoryPage = () => {
-  const [historyData, setHistoryData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // Données historiques initiales
+  const [historyData, setHistoryData] = useState([
+    {
+      id: 1,
+      title: "House in Sousse",
+      date: "2025-05-10",
+      status: "Published",
+    },
+    {
+      id: 2,
+      title: "Apartment in Tunis",
+      date: "2025-05-05",
+      status: "Rejected",
+    },
+    {
+      id: 3,
+      title: "Villa in Hammamet",
+      date: "2025-04-28",
+      status: "Approved",
+    },
+  ]);
 
-  const fetchHistory = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const res = await fetch('/api/user/history', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      const data = await res.json();
-      setHistoryData(data);
-    } catch (err) {
-      console.error('Fetch error:', err);
-    } finally {
-      setLoading(false);
-    }
+  // Supprimer un élément par id
+  const handleDelete = (id) => {
+    setHistoryData(historyData.filter((item) => item.id !== id));
   };
-
-  useEffect(() => {
-    fetchHistory();
-  }, []);
-
-  const handleDelete = async (id) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this item?");
-    if (!confirmDelete) return;
-
-    try {
-      const token = localStorage.getItem('token');
-      const res = await fetch(`/api/user/history/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (res.ok) {
-        setHistoryData(historyData.filter(item => item._id !== id));
-      } else {
-        console.error("Delete failed");
-      }
-    } catch (err) {
-      console.error("Error deleting item:", err);
-    }
-  };
-
-  if (loading) return <div className="history-container">⏳ Loading...</div>;
 
   return (
     <div className="history-container">
-      <h1 className="history-title">🕓 My Activity History</h1>
-      {historyData.length === 0 ? (
-        <p className="no-history">No history available.</p>
-      ) : (
-        <div className="history-list">
-          {historyData.map((item) => (
-            <div key={item._id} className="history-card">
-              <div className="history-info">
-                <h3 className="history-item-title">{item.title}</h3>
-                <p className="history-date">📅 {new Date(item.date).toLocaleString()}</p>
-                <p>📌 Status: <strong>{item.status}</strong></p>
+      <h2 className="history-title">Your Activity History</h2>
+      <div className="history-list">
+        {historyData.length === 0 ? (
+          <p className="no-history">No history available.</p>
+        ) : (
+          historyData.map((item) => (
+            <div key={item.id} className="history-card">
+              <div className="card-header">
+                <h3>{item.title}</h3>
+                <button
+                  className="delete-button"
+                  onClick={() => handleDelete(item.id)}
+                  aria-label={`Delete history item ${item.title}`}
+                >
+                  <FaTrash /> Delete
+                </button>
               </div>
-              <button className="delete-btn" onClick={() => handleDelete(item._id)}>
-                Supprimer
-              </button>
+              <p className="date">Date: {item.date}</p>
             </div>
-          ))}
-        </div>
-      )}
+          ))
+        )}
+      </div>
     </div>
   );
 };

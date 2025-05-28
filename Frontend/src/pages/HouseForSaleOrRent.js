@@ -18,6 +18,7 @@ function PropertyHouse() {
     "img/bg-img/hero3.jpg",
   ];
 
+  // Ajout de la propriété `type` (sale ou rent)
   const featuredProperties = [
     {
       id: 1,
@@ -26,7 +27,8 @@ function PropertyHouse() {
       title: "Individual Villa",
       address: "Hergla, Cité Nozha",
       description:
-        "Cette villa d'exception, située à seulement 150 m de la plage dans le quartier prisé de Cité Nozha à Hergla.",
+        "A stylish and peaceful villa in Hergla’s Cité Nozha, perfect for families.Features a modern design, garden, and bright interior near the beach.",
+      type: "sale",
     },
     {
       id: 2,
@@ -35,7 +37,8 @@ function PropertyHouse() {
       title: "Appartement Luxueux",
       address: "Kantaoui, Sousse",
       description:
-        "Un appartement haut standing avec vue sur la marina, situé au cœur du prestigieux quartier touristique de Kantaoui.",
+        "Modern 2-bedroom, 2-bathroom apartment in Kantaoui by the marina, with an open kitchen, bright living room, balcony, parking, fast internet, and close to the beach, shops, and cafés.",
+      type: "rent",
     },
     {
       id: 3,
@@ -44,7 +47,8 @@ function PropertyHouse() {
       title: "Studio Moderne",
       address: "Rue Orange, Monastir",
       description:
-        "Ce studio moderne offre un espace compact mais élégant à quelques pas de la mer, idéal pour célibataires ou étudiants.",
+        "This modern studio offers a compact yet stylish space just steps from the sea, ideal for singles or students.",
+      type: "sale",
     },
     {
       id: 4,
@@ -53,7 +57,8 @@ function PropertyHouse() {
       title: "Appartement YOSRA",
       address: "Nabeul",
       description:
-        "Un appartement lumineux avec balcon spacieux, parfait pour une petite famille ou un couple.",
+        "A bright apartment with a spacious balcony, perfect for a small family or a couple.",
+      type: "rent",
     },
     {
       id: 5,
@@ -63,6 +68,7 @@ function PropertyHouse() {
       address: "Rue Orange, Monastir",
       description:
         "Ce studio moderne offre un espace compact mais élégant à quelques pas de la mer, idéal pour célibataires ou étudiants.",
+      type: "sale",
     },
     {
       id: 6,
@@ -72,6 +78,7 @@ function PropertyHouse() {
       address: "Rue Orange, Monastir",
       description:
         "Ce studio moderne offre un espace compact mais élégant à quelques pas de la mer, idéal pour célibataires ou étudiants.",
+      type: "rent",
     },
   ];
 
@@ -108,7 +115,6 @@ function PropertyHouse() {
               position: "relative",
             }}
           >
-            {/* Overlay sombre */}
             <div
               style={{
                 position: "absolute",
@@ -208,9 +214,6 @@ function PropertyHouse() {
       </section>
 
       <div className="filter-section">
-        
-          
-
         <div className="filter-row">
           <div className="filter-group">
             <label className="filter-label" All>
@@ -294,8 +297,7 @@ function PropertyHouse() {
         <div className="section-header">
           <h2 className="animated-title">FEATURED PROPERTIES</h2>
           <p className="animated-paragraph">
-            Découvrez nos propriétés sélectionnées avec soin, prêtes à devenir
-            votre nouveau chez-vous.
+            Discover our carefully selected properties, ready to become your new home.
           </p>
         </div>
 
@@ -311,7 +313,13 @@ function PropertyHouse() {
                   className="property-image"
                   style={{ backgroundImage: `url(${property.image})` }}
                 >
-                  <span className="property-badge">FOR SALE</span>
+                  <span
+                    className={`property-badge ${
+                      property.type === "rent" ? "badge-rent" : "badge-sale"
+                    }`}
+                  >
+                    {property.type === "rent" ? "FOR RENT" : "FOR SALE"}
+                  </span>
                 </div>
                 <div className="property-price">{property.price}</div>
               </div>

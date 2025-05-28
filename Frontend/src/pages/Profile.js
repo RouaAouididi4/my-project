@@ -38,26 +38,6 @@ const Profile = () => {
     confirmPassword: "",
   });
 
-  // Vérification de l'authentification
-  useEffect(() => {
-    if (!isLoading && !user) {
-      setShowUnauthorized(true);
-      Swal.fire({
-        title: "Account Required",
-        text: "You need to be logged in to access your profile",
-        icon: "warning",
-        confirmButtonText: "Go to Sign Up",
-        showCancelButton: true,
-        cancelButtonText: "Cancel",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          navigate("/signup");
-        } else {
-          navigate("/");
-        }
-      });
-    }
-  }, [user, isLoading, navigate]);
 
   // Initialiser les données du formulaire avec les infos utilisateur
   useEffect(() => {
@@ -263,7 +243,7 @@ const Profile = () => {
               <FaHeart /> Favorites
             </li>
 
-            <li>
+            <li onClick={() => navigate("/history")}>
               <FaListAlt /> History
             </li>
             <li>
@@ -273,9 +253,11 @@ const Profile = () => {
               <FaBell /> Notifications
             </li>
           </ul>
-          <button className="logout" onClick={handleLogout}>
-            <FaSignOutAlt /> Log out
-          </button>
+         <button className="logout menu-item" onClick={handleLogout}>
+      <FaSignOutAlt /> <a href="/logout">
+              LOGOUT
+            </a>
+    </button>
         </div>
 
         <div className="profile-form">

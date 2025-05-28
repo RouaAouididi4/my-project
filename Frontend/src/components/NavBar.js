@@ -87,7 +87,7 @@ const Navbar = () => {
             </div>
 
             <div className="auth-links">
-              <Link to="/dashboard" className="menu-item">
+              <Link to="/Profile" className="menu-item">
                 PROFILE
               </Link>
               <button

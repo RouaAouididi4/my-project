@@ -48,6 +48,8 @@
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  padding: 0;
+  margin: 0
 }
 
 .features-list li {
@@ -55,6 +57,8 @@
   padding: 6px 10px;
   border-radius: 5px;
   font-size: 14px;
+  transition: transform 0.3s ease, color 0.3s ease;
+  cursor: pointer;
 }
 
 /* Buttons */
@@ -110,6 +114,14 @@
   flex-direction: column;
   gap: 10px;
   margin-top: 20px;
+   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 10px;
+}
+.contact-form:hover {
+  transform: scale(1.03);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
 .contact-form input,
@@ -125,6 +137,26 @@
   color: white;
   padding: 10px;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
   cursor: pointer;
+  padding: 15px;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInUp 0.8s ease-out forwards;
+  animation-delay: 0.6s; /* délai différent de .agent-card */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+}
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.features-list li:hover {
+   transform: translateX(10px); /* Move item to the right */
+  color: #fd950d; /* Bootstrap primary color */
+  font-weight: 500;
+   transform: scale(1.03);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }

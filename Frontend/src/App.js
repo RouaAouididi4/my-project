@@ -24,6 +24,7 @@ import ResetPassword from "./pages/ResetPassword";
 import CodeVerif from "./pages/CodeVerif";
 import { AuthProvider, useAuth } from "./context/auth"; // Import AuthProvider ET useAuth
 import EmailVerification from "./pages/EmailVerification";
+import HistoryPage from "./pages/HistoryPage";
 
 function AppContent() {
   const { user, logout } = useAuth();
@@ -68,6 +69,8 @@ function AppContent() {
           <Route path="/forget-password" element={<ForgetPassword />} />
           <Route path="/CodeVerif" element={<CodeVerif />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/history" element={<HistoryPage />} />
+
           {/* Route admin dashboard ici */}
           {/* <Route path="/AdminDashboard" element={<AdminDashboard />} /> */}
         </Routes>

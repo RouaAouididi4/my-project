@@ -606,6 +606,7 @@
 .checkbox-group {
   display: flex;
   gap: 20px;
+  
 }
 .checkbox-wrapper {
   display: flex;
@@ -708,3 +709,15 @@
   color: #333;
   font-size: 0.95rem;
 }
+
+.features-group {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.dropdown-group {
+  margin-bottom: 1rem;
+}
+

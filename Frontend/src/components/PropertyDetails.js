@@ -8,11 +8,10 @@ function PropertyDetails({ property, agent }) {
     <div className="property-details-container">
       {/* Left Column */}
       <div className="property-main">
-        <h2 className="price">${property.price.toLocaleString()}</h2>
+        <h2 className="price">{property.price.toLocaleString()} DT</h2>
         <h1 className="hometype">{property.hometype}</h1>
         <p className="address">{property.address}</p>
         <p className="description">{property.description.repeat(1)}</p>
-        <p className="description">{property.features.join(", ")}</p>
         <div className="icons-row">
           <span>🛁 2</span>
           <span>🛏 2</span>
@@ -23,6 +22,7 @@ function PropertyDetails({ property, agent }) {
           {[...new Set([...property.features, ...property.features])].map(
             (feature, index) => (
               <li key={index}>{feature}</li>
+              
             )
           )}
         </ul>

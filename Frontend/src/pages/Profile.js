@@ -4,27 +4,86 @@ import {
   FaHeart,
   FaCog,
   FaSignOutAlt,
-  FaListAlt,
   FaUser,
   FaLock,
+  FaHistory,
 } from "react-icons/fa";
 import "./Profile.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/auth";
-import Swal from "sweetalert2";
+import { AiFillHeart } from "react-icons/ai";
+import image1 from "./images/Listing1.jpg";
+import image2 from "./images/Listing2.jpg";
+import image3 from "./images/Listing3.jpg";
+
+
+
 
 const Profile = () => {
+  const settingsRef = useRef(null);
   const { user, logout, isLoading } = useAuth();
   const navigate = useNavigate();
   const infoRef = useRef(null);
   const favoritesRef = useRef(null);
+  const historyRef = useRef(null);
+const [fadingOutId, setFadingOutId] = useState(null);
+const [removedIds, setRemovedIds] = useState([]);
 
-  const [showUnauthorized, setShowUnauthorized] = useState(false);
-  const [favorites, setFavorites] = useState([
-    { id: 1, title: "Article 1", description: "Lorem ipsum..." },
-    { id: 2, title: "Produit 2", description: "Dolor sit amet..." },
-  ]);
+
   const [activeSection, setActiveSection] = useState("info");
+
+ 
+ const [favoriteProperties, setFavoriteProperties] = useState([
+  {
+    id: '1',
+    price:"2500000 DT" ,
+    title: 'Individual Villa',
+    location:'Hergla, Cité Nozha',
+    image: image1,
+  
+  },
+  {
+    id: '2',
+    price:"2500000 DT" ,
+    title: 'Appartement Luxueux',
+    location:'Kantaoui, Sousse',
+    image: image2,
+  },
+  {
+    id: '3',
+    price: 800000,
+    title: "Studio Moderne",
+   location:"Rue Orange, Monastir",
+    image: image3,
+  },
+]);
+
+ const handleRemoveWithFade = (id) => {
+  setFadingOutId(id);
+  setTimeout(() => {
+    setFavoriteProperties((prev) =>
+      prev.filter((property) => property.id !== id)
+    );
+    setRemovedIds((prev) => [...prev, id]);
+    setFadingOutId(null);
+  }, 400); // match fade-out duration in CSS
+};
+
+  const [searchHistory, setSearchHistory] = useState([
+    { id: '1',
+    query: "house for sale in Tunis", 
+
+    price:"2500000 DT" ,
+    title: 'Individual Villa',
+    location:'Hergla, Cité Nozha',
+    image: image1,
+    date: "2025-05-10",
+    },
+    { id: 2, query: "apartment for rent Sfax",
+      date: "2025-05-25",
+      price:"1.500.000 DT"
+    },
+  ]);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -38,8 +97,6 @@ const Profile = () => {
     confirmPassword: "",
   });
 
-
-  // Initialiser les données du formulaire avec les infos utilisateur
   useEffect(() => {
     if (user) {
       setFormData({
@@ -62,6 +119,8 @@ const Profile = () => {
       infoRef.current.scrollIntoView({ behavior: "smooth" });
     } else if (section === "favorites" && favoritesRef.current) {
       favoritesRef.current.scrollIntoView({ behavior: "smooth" });
+    } else if (section === "history" && historyRef.current) {
+      historyRef.current.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -71,7 +130,6 @@ const Profile = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // 👉 Ici tu peux appeler ton API pour mettre à jour les infos
     console.log("Submitted:", formData);
   };
 
@@ -80,13 +138,11 @@ const Profile = () => {
     "img/bg-img/hero2.jpg",
     "img/bg-img/hero3.jpg",
   ];
-
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const goToPrevSlide = () => {
     setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   };
-
   const goToNextSlide = () => {
     setCurrentIndex((prev) => (prev + 1) % images.length);
   };
@@ -94,134 +150,84 @@ const Profile = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 4000); // Change every 4 seconds
-
-    return () => clearInterval(interval); // Clean up the interval on component unmount
+    }, 4000);
+    return () => clearInterval(interval);
   }, [images.length]);
 
   const handleLogout = () => {
     logout();
   };
 
-  if (isLoading) {
-    return <div className="loading">Loading...</div>;
-  }
+  const handleScroll = (section) => {
+    setActiveSection(section);
+    const sectionRef =
+      section === "info"
+        ? infoRef
+        : section === "favorites"
+        ? favoritesRef
+        : settingsRef;
+    sectionRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
-  // if (!user) {
-  // return <div className="loading">Redirecting...</div>;
-  // }
+ 
+  if (isLoading) return <div className="loading">Loading...</div>;
 
   return (
     <div>
       <section className="hero">
-        <div className="hero-slides owl-carousel">
+        <div
+          className="single-hero-slide"
+          style={{
+            backgroundImage: `url(${images[currentIndex]})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            height: "100vh",
+            position: "relative",
+          }}
+        >
           <div
-            className="single-hero-slide"
             style={{
-              backgroundImage: `url(${images[currentIndex]})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
-              height: "100vh",
-              width: "100%",
-              transition: "background-image 0.5s ease-in-out",
-              position: "relative",
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0,0,0,0.3)",
+            }}
+          ></div>
+          <div
+            className="hero-content"
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              color: "white",
+              zIndex: 1,
             }}
           >
-            {/* Overlay sombre */}
             <div
               style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: "rgba(48, 38, 2, 0.21)",
-                zIndex: 0,
-              }}
-            ></div>
-            <div
-              className="hero-content"
-              style={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                zIndex: 1,
-                width: "100%",
-                textAlign: "center",
-                color: "white",
-                textShadow: "1px 1px 3px rgba(0, 0, 0, 0.8)",
-                padding: "0 20px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "30px",
               }}
             >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "30px",
-                }}
+              <span
+                onClick={goToPrevSlide}
+                style={{ fontSize: "40px", cursor: "pointer", color: "#fff" }}
               >
-                {/* Flèche gauche */}
-                <span
-                  onClick={goToPrevSlide}
-                  style={{
-                    fontSize: "40px",
-                    cursor: "pointer",
-                    opacity: 0.8,
-                    transition: "all 0.3s",
-                    userSelect: "none",
-                    color: "#947054",
-                  }}
-                >
-                  ‹
-                </span>
-
-                <div style={{ display: "flex", flexDirection: "column" }}>
-                  {/* Titre principal */}
-                  <h2
-                    style={{
-                      fontSize: "clamp(32px, 6vw, 62px)",
-                      fontWeight: "200",
-                      letterSpacing: "3px",
-                      lineHeight: "1.2",
-                      margin: "0 0 10px 0",
-                      animation: "fadeIn 1.5s ease-out both",
-                    }}
-                  >
-                    Your Profile
-                  </h2>
-                </div>
-
-                {/* Flèche droite */}
-                <span
-                  onClick={goToNextSlide}
-                  style={{
-                    fontSize: "40px",
-                    cursor: "pointer",
-                    opacity: 0.8,
-                    transition: "all 0.3s",
-                    userSelect: "none",
-                    color: "#947054",
-                  }}
-                >
-                  ›
-                </span>
-              </div>
+                ‹
+              </span>
+              <h2>Your Profile</h2>
+              <span
+                onClick={goToNextSlide}
+                style={{ fontSize: "40px", cursor: "pointer", color: "#fff" }}
+              >
+                ›
+              </span>
             </div>
-
-            {/* Animation minimaliste */}
-            <style jsx global>{`
-              @keyframes fadeIn {
-                from {
-                  opacity: 0;
-                }
-                to {
-                  opacity: 1;
-                }
-              }
-            `}</style>
           </div>
         </div>
       </section>
@@ -242,9 +248,11 @@ const Profile = () => {
             >
               <FaHeart /> Favorites
             </li>
-
-            <li onClick={() => navigate("/history")}>
-              <FaListAlt /> History
+            <li
+              className={activeSection === "history" ? "active" : ""}
+              onClick={() => scrollToSection("history")}
+            >
+              <FaHistory /> History
             </li>
             <li>
               <FaCog /> Setting
@@ -253,11 +261,9 @@ const Profile = () => {
               <FaBell /> Notifications
             </li>
           </ul>
-         <button className="logout menu-item" onClick={handleLogout}>
-      <FaSignOutAlt /> <a href="/logout">
-              LOGOUT
-            </a>
-    </button>
+          <button className="logout menu-item" onClick={handleLogout}>
+            <FaSignOutAlt /> LOGOUT
+          </button>
         </div>
 
         <div className="profile-form">
@@ -269,7 +275,8 @@ const Profile = () => {
               <p>{formData.location}</p>
             </div>
           </div>
-          <div className="profile-form">
+
+          <div className="profile-form-content">
             <div ref={infoRef}>
               {activeSection === "info" && (
                 <form onSubmit={handleSubmit}>
@@ -371,18 +378,69 @@ const Profile = () => {
                 </form>
               )}
             </div>
-            <div ref={favoritesRef}>
-              {activeSection === "favorites" && (
-                <div className="favorites-section">
-                  <h3>Your Favorites</h3>
-                  {favorites.length === 0 ? (
-                    <p>No favorites yet.</p>
+
+              <section ref={favoritesRef}>
+                {activeSection === "favorites" && (
+                  <div className="section">
+                    <h2>Favorite Properties</h2>
+                    {favoriteProperties.length === 0 ? (
+                      <p>You have no favorite properties.</p>
+                    ) : (
+                      <div className="favorites-list">
+                        {favoriteProperties.map((property) => (
+                          <div
+                            className={`favorite-card ${fadingOutId === property.id ? 'fade-out' : ''}`}
+                            key={property.id}
+                          >
+                            <img
+                              src={property.image || "/default-house.jpg"}
+                              alt={property.title}
+                              className="favorite-image"
+                            />
+                            <div className="favorite-details">
+                              <h4>{property.title}</h4>
+                              <p>{property.location}</p>
+                              <p>{property.price}</p>
+                              <button
+                                className="remove-btn"
+                                onClick={() => handleRemoveWithFade(property.id)}
+                                title="Remove from Favorites"
+                                aria-label="Remove from Favorites"
+                              >
+                                <AiFillHeart color="red" size={24} />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </section>
+
+        {/* Settings Section */}
+        <section ref={settingsRef}>
+          {activeSection === "settings" && (
+            <div className="section">
+              <h2>Account Settings</h2>
+              <p>Settings functionality will be added soon.</p>
+            </div>
+          )}
+        </section>
+
+            <div ref={historyRef}>
+              {activeSection === "history" && (
+                <div className="history-section">
+                  <h3>Your Search History</h3>
+                  {searchHistory.length === 0 ? (
+                    <p>No history found.</p>
                   ) : (
-                    <ul className="favorites-list">
-                      {favorites.map((item) => (
-                        <li key={item.id} className="favorite-item">
-                          <h4>{item.title}</h4>
-                          <p>{item.description}</p>
+                    <ul className="history-list">
+                      {searchHistory.map((item) => (
+                        <li key={item.id} className="history-item">
+                          <strong>{item.query}</strong>
+                          
+                          <span className="history-date">{item.date}</span>
                         </li>
                       ))}
                     </ul>

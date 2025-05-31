@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 function PropertyHouse() {
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [favorites, setFavorites] = useState([]);
 
   const images = [
     "img/bg-img/hero1.jpg",
@@ -18,7 +19,6 @@ function PropertyHouse() {
     "img/bg-img/hero3.jpg",
   ];
 
-  // Ajout de la propriété `type` (sale ou rent)
   const featuredProperties = [
     {
       id: 1,
@@ -27,7 +27,7 @@ function PropertyHouse() {
       title: "Individual Villa",
       address: "Hergla, Cité Nozha",
       description:
-        "A stylish and peaceful villa in Hergla’s Cité Nozha, perfect for families.Features a modern design, garden, and bright interior near the beach.",
+        "A stylish and peaceful villa in Hergla's Cité Nozha, perfect for families.Features a modern design, garden, and bright interior near the beach.",
       type: "sale",
     },
     {
@@ -88,6 +88,17 @@ function PropertyHouse() {
 
   const goToNextSlide = () => {
     setCurrentIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const toggleFavorite = (property) => {
+    setFavorites((prevFavorites) => {
+      const isFavorite = prevFavorites.some((fav) => fav.id === property.id);
+      if (isFavorite) {
+        return prevFavorites.filter((fav) => fav.id !== property.id);
+      } else {
+        return [...prevFavorites, property];
+      }
+    });
   };
 
   useEffect(() => {
@@ -287,7 +298,6 @@ function PropertyHouse() {
             </div>
           </div>
         </div>
-        {/* Bouton MORE FILTERS */}
         <div className="filters-footer">
           <button className="search-button">SEARCH</button>
         </div>
@@ -333,7 +343,15 @@ function PropertyHouse() {
                     onClick={() => navigate(`/details/${property.id}`)}
                     className="search-button"
                   >
-                    Voir Détails
+                    View Details
+                  </button>
+                  <button 
+                    onClick={() => toggleFavorite(property)}
+                    className="favorite-button"
+                  >
+                    {favorites.some((fav) => fav.id === property.id)
+                      ? "Remove ❤️"
+                      : "Add ❤️"}
                   </button>
                 </div>
               </div>
@@ -341,8 +359,10 @@ function PropertyHouse() {
           ))}
         </div>
       </section>
+
+          
     </div>
   );
 }
 
-export default PropertyHouse;
+export default PropertyHouse; 

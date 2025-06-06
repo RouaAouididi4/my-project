@@ -8,141 +8,177 @@ exports.getAllProperties = catchAsync(async (req, res, next) => {
   res.status(200).json({ status: "success", data: properties });
 });
 
-// Get a property by ID
-exports.searchProperties = async (req, res) => {
-  try {
-    const {
-      streetAddress,
-      type,
-      minPrice,
-      maxPrice,
-      bedrooms,
-      minSize,
-      maxSize,
-    } = req.query;
-    const query = {};
-
-    console.log(req.body);
-
-    if (!address || !propertyID) {
-      return res
-        .status(400)
-        .json({ message: "Address and PropertyID are required" });
-    }
-    const properties = await Property.find(query);
-    res.status(200).json({
-      status: "success",
-      results: properties.length,
-      properties,
-    });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ status: "error", message: "Server error", error: error.message });
-  }
-};
-
-exports.createProperty = catchAsync(async (req, res) => {
-  console.log("Data received in req.body:", req.body);
-
+// Search properties
+exports.searchProperties = catchAsync(async (req, res, next) => {
   const {
     streetAddress,
-    title,
-    type,
-    price,
-    hometype, // attention ici
-    size,
-    bedrooms,
-    bathrooms,
-    management,
     city,
+    type,
+    minPrice,
+    maxPrice,
+    beds,
+    homeType,
+    management,
+    "features.garden": garden,
+    "features.parking": parking,
+    "features.swimming-pool": swimmingPool,
+    "features.balcony": balcony,
+    "features.deseginType": deseginType,
+  } = req.query;
+
+  const query = {};
+
+  if (streetAddress)
+    query.streetAddress = { $regex: streetAddress, $options: "i" };
+  if (city) query.city = { $regex: city, $options: "i" };
+  if (type) query.type = type;
+  if (homeType) query.homeType = homeType;
+  if (management) query.management = management;
+
+  // Price range
+  if (minPrice || maxPrice) {
+    query.price = {};
+    if (minPrice) query.price.$gte = Number(minPrice);
+    if (maxPrice) query.price.$lte = Number(maxPrice);
+  }
+
+  if (beds) query.beds = { $gte: Number(beds) };
+
+  // Features
+  if (garden) query["features.garden"] = garden === "true";
+  if (parking) query["features.parking"] = parking === "true";
+  if (swimmingPool) query["features.swimming-pool"] = swimmingPool === "true";
+  if (balcony) query["features.balcony"] = balcony === "true";
+  if (deseginType) query["features.deseginType"] = deseginType;
+
+  const properties = await Property.find(query);
+
+  res.status(200).json({
+    status: "success",
+    results: properties.length,
+    data: properties,
+  });
+});
+
+// Create a property
+exports.createProperty = catchAsync(async (req, res, next) => {
+  const {
+    streetAddress,
+    unit,
+    zip,
+    city,
+    type,
+    homeType,
+    beds,
+    baths,
+    price,
+    yearBuilt,
+    management,
+    phone,
+    features,
+    Kitchen,
+    agreement,
   } = req.body;
 
-  // Tester les deux variables pour debug (casse)
-  if (!hometype && !req.body.homeType) {
-    console.error(
-      "Error: Neither 'hometype' nor 'homeType' found in req.body!"
-    );
-  } else {
-    console.log("Received hometype:", hometype || req.body.homeType);
-  }
-
-  const propertyID = new mongoose.Types.ObjectId().toString();
-
+  // Handle photos upload
   let photos = [];
   if (req.files && req.files.length > 0) {
-    photos = req.files.map((file) => ({
-      url: `/uploads/photos/${file.filename}`,
-      caption: "", // tu peux adapter ou laisser vide
-      isPrimary: false, // par défaut false, ou selon ta logique
-    }));
+    photos = req.files.map((file) => `/uploads/photos/${file.filename}`);
   }
 
-  try {
-    const newProperty = await Property.create({
-      propertyID,
-      streetAddress,
-      title,
-      type,
-      city,
-      price,
-      // IMPORTANT : utiliser la bonne casse ici (selon ton schéma)
-      homeType: hometype || req.body.homeType, // si ton schéma a 'homeType' avec un T majuscule
-      size,
-      bedrooms,
-      bathrooms,
-      management: management || "Unmanaged",
-      photos,
-    });
+  // Create the property
+  const newProperty = await Property.create({
+    streetAddress,
+    unit,
+    zip,
+    city,
+    type,
+    homeType,
+    beds,
+    baths: {
+      fullBaths: baths?.fullBaths || 0,
+      halfBaths: baths?.halfBaths || 0,
+    },
+    price,
+    yearBuilt,
+    management,
+    phone,
+    features: {
+      garden: features?.garden || false,
+      parking: features?.parking || false,
+      "swimming-pool": features?.["swimming-pool"] || false,
+      balcony: features?.balcony || false,
+      balconyLocation: features?.balconyLocation || [],
+      deseginType: features?.deseginType,
+    },
+    Kitchen: {
+      kitchenCount: Kitchen?.kitchenCount || 0,
+      types: Kitchen?.types || [],
+    },
+    photos,
+    agreement,
+  });
 
-    res
-      .status(201)
-      .json({ message: "Listing added ✅", property: newProperty });
-  } catch (error) {
-    console.error("Error creating property:", error);
-    res.status(500).json({
-      message: "Erreur serveur lors de la création",
-      error: error.message,
-    });
-  }
+  res.status(201).json({
+    status: "success",
+    data: newProperty,
+  });
 });
 
 // Update a property
-
 exports.updateProperty = catchAsync(async (req, res, next) => {
-  const { status, management } = req.body;
+  const { id } = req.params;
+  const updateData = req.body;
 
-  // Check if a status or management is provided
-  const updatedProperty = await Property.findByIdAndUpdate(
-    req.params.id,
-    {
-      management: management || undefined, // If management is provided, update it
-      // You can also add other fields if needed
-    },
-    {
-      new: true,
-      runValidators: true,
-    }
-  );
-
-  if (!updatedProperty) {
-    return res
-      .status(404)
-      .json({ status: "error", message: "Property not found" });
+  // Handle photos update if needed
+  if (req.files && req.files.length > 0) {
+    updateData.photos = req.files.map(
+      (file) => `/uploads/photos/${file.filename}`
+    );
   }
 
-  res.status(200).json({ status: "success", data: updatedProperty });
-});
-// Delete a property
-exports.deleteProperty = catchAsync(async (req, res, next) => {
-  await Property.findByIdAndDelete(req.params.id);
-  res.status(204).json({ status: "success", data: null });
+  const updatedProperty = await Property.findByIdAndUpdate(id, updateData, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!updatedProperty) {
+    return res.status(404).json({
+      status: "error",
+      message: "Property not found",
+    });
+  }
+
+  res.status(200).json({
+    status: "success",
+    data: updatedProperty,
+  });
 });
 
+// Delete a property
+exports.deleteProperty = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+
+  const property = await Property.findByIdAndDelete(id);
+
+  if (!property) {
+    return res.status(404).json({
+      status: "error",
+      message: "Property not found",
+    });
+  }
+
+  res.status(204).json({
+    status: "success",
+    data: null,
+  });
+});
+
+// Get property by ID
 exports.getPropertyById = catchAsync(async (req, res, next) => {
   const { id } = req.params;
 
-  if (!mongoose.types.ObjectId.isValid(id)) {
+  if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({
       status: "error",
       message: "Invalid property ID format",
@@ -150,10 +186,16 @@ exports.getPropertyById = catchAsync(async (req, res, next) => {
   }
 
   const property = await Property.findById(id);
+
   if (!property) {
-    return res
-      .status(404)
-      .json({ status: "error", message: "Property not found" });
+    return res.status(404).json({
+      status: "error",
+      message: "Property not found",
+    });
   }
-  res.status(200).json({ status: "success", data: property });
+
+  res.status(200).json({
+    status: "success",
+    data: property,
+  });
 });

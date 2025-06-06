@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import {
   FaBell,
   FaHeart,
+  FaEnvelope,
   FaCog,
   FaSignOutAlt,
   FaUser,
@@ -16,9 +17,6 @@ import image1 from "./images/Listing1.jpg";
 import image2 from "./images/Listing2.jpg";
 import image3 from "./images/Listing3.jpg";
 
-
-
-
 const Profile = () => {
   const settingsRef = useRef(null);
   const { user, logout, isLoading } = useAuth();
@@ -26,72 +24,71 @@ const Profile = () => {
   const infoRef = useRef(null);
   const favoritesRef = useRef(null);
   const historyRef = useRef(null);
-const [fadingOutId, setFadingOutId] = useState(null);
-const [removedIds, setRemovedIds] = useState([]);
-
+  const [fadingOutId, setFadingOutId] = useState(null);
+  const [removedIds, setRemovedIds] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [activeSection, setActiveSection] = useState("info");
 
- 
- const [favoriteProperties, setFavoriteProperties] = useState([
-  {
-    id: '1',
-    price:"2500000 DT" ,
-    title: 'Individual Villa',
-    location:'Hergla, Cité Nozha',
-    image: image1,
-  
-  },
-  {
-    id: '2',
-    price:"2500000 DT" ,
-    title: 'Appartement Luxueux',
-    location:'Kantaoui, Sousse',
-    image: image2,
-  },
-  {
-    id: '3',
-    price: 800000,
-    title: "Studio Moderne",
-   location:"Rue Orange, Monastir",
-    image: image3,
-  },
-]);
+  const [favoriteProperties, setFavoriteProperties] = useState([
+    {
+      id: "1",
+      price: "2500000 DT",
+      title: "Individual Villa",
+      location: "Hergla, Cité Nozha",
+      image: image1,
+    },
+    {
+      id: "2",
+      price: "2500000 DT",
+      title: "Appartement Luxueux",
+      location: "Kantaoui, Sousse",
+      image: image2,
+    },
+    {
+      id: "3",
+      price: "800000 DT",
+      title: "Studio Moderne",
+      location: "Rue Orange, Monastir",
+      image: image3,
+    },
+  ]);
 
- const handleRemoveWithFade = (id) => {
-  setFadingOutId(id);
-  setTimeout(() => {
-    setFavoriteProperties((prev) =>
-      prev.filter((property) => property.id !== id)
-    );
-    setRemovedIds((prev) => [...prev, id]);
-    setFadingOutId(null);
-  }, 400); // match fade-out duration in CSS
-};
+  const handleRemoveWithFade = (id) => {
+    setFadingOutId(id);
+    setTimeout(() => {
+      setFavoriteProperties((prev) =>
+        prev.filter((property) => property.id !== id)
+      );
+      setRemovedIds((prev) => [...prev, id]);
+      setFadingOutId(null);
+    }, 400); // match fade-out duration in CSS
+  };
 
   const [searchHistory, setSearchHistory] = useState([
-    { id: '1',
-    query: "house for sale in Tunis", 
+    {
+      id: "1",
+      query: "house for sale in Tunis",
 
-    price:"2500000 DT" ,
-    title: 'Individual Villa',
-    location:'Hergla, Cité Nozha',
-    image: image1,
-    date: "2025-05-10",
+      price: "2500000 DT",
+      title: "Individual Villa",
+      location: "Hergla, Cité Nozha",
+      image: image1,
+      date: "2025-05-10",
     },
-    { id: 2, query: "apartment for rent Sfax",
+    {
+      id: 2,
+      query: "apartment for rent Sfax",
       date: "2025-05-25",
-      price:"1.500.000 DT"
+      price: "1.500.000 DT",
     },
   ]);
 
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    FullName: "",
     email: "",
     phone: "",
     location: "",
-    postalCode: "",
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
@@ -100,12 +97,10 @@ const [removedIds, setRemovedIds] = useState([]);
   useEffect(() => {
     if (user) {
       setFormData({
-        firstName: user.firstName || "",
-        lastName: user.lastName || "",
+        FullName: user.FullName || "",
         email: user.email || "",
         phone: user.phone || "",
         location: user.location || "",
-        postalCode: user.postalCode || "",
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
@@ -123,7 +118,64 @@ const [removedIds, setRemovedIds] = useState([]);
       historyRef.current.scrollIntoView({ behavior: "smooth" });
     }
   };
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          throw new Error("No authentication token found");
+        }
 
+        // Fetch user profile
+        const profileResponse = await fetch("/api/users/me", {
+          method: "GET",
+
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!profileResponse.ok) {
+          throw new Error("Failed to fetch profile");
+        }
+
+        const profileData = await profileResponse.json();
+        setFormData({
+          FullName: profileData.FullName || "",
+          email: profileData.email || "",
+          phone: profileData.phone || "",
+          location: profileData.location || "",
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+
+        // Fetch favorites
+        const favoritesResponse = await fetch("/api/favorites", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (favoritesResponse.ok) {
+          const favoritesData = await favoritesResponse.json();
+          setFavoriteProperties(favoritesData);
+        }
+
+        // Fetch history
+        const historyResponse = await fetch("/api/search-history", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (historyResponse.ok) {
+          const historyData = await historyResponse.json();
+          setSearchHistory(historyData);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -164,13 +216,12 @@ const [removedIds, setRemovedIds] = useState([]);
       section === "info"
         ? infoRef
         : section === "favorites"
-        ? favoritesRef
-        : settingsRef;
+          ? favoritesRef
+          : settingsRef;
     sectionRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
- 
-  if (isLoading) return <div className="loading">Loading...</div>;
+  if (loading) return <div className="loading">Loading...</div>;
 
   return (
     <div>
@@ -269,9 +320,7 @@ const [removedIds, setRemovedIds] = useState([]);
         <div className="profile-form">
           <div className="user-header">
             <div className="user-info">
-              <h3>
-                {formData.firstName} {formData.lastName}
-              </h3>
+              <h3>{formData.FullName}</h3>
               <p>{formData.location}</p>
             </div>
           </div>
@@ -282,38 +331,19 @@ const [removedIds, setRemovedIds] = useState([]);
                 <form onSubmit={handleSubmit}>
                   <div className="form-row">
                     <div className="form-group">
-                      <label>First Name</label>
+                      <label>Full Name</label>
                       <input
-                        name="firstName"
-                        value={formData.firstName}
+                        name="FullName"
+                        value={formData.FullName}
                         onChange={handleChange}
                       />
                     </div>
                     <div className="form-group">
-                      <label>Last Name</label>
-                      <input
-                        name="lastName"
-                        value={formData.lastName}
-                        onChange={handleChange}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label>Email Address</label>
+                      <label>Email</label>
                       <input
                         name="email"
                         type="email"
                         value={formData.email}
-                        onChange={handleChange}
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label>Phone Number</label>
-                      <input
-                        name="phone"
-                        value={formData.phone}
                         onChange={handleChange}
                       />
                     </div>
@@ -329,10 +359,10 @@ const [removedIds, setRemovedIds] = useState([]);
                       />
                     </div>
                     <div className="form-group">
-                      <label>Postal Code</label>
+                      <label>Phone Number</label>
                       <input
-                        name="postalCode"
-                        value={formData.postalCode}
+                        name="phone"
+                        value={formData.phone}
                         onChange={handleChange}
                       />
                     </div>
@@ -379,54 +409,54 @@ const [removedIds, setRemovedIds] = useState([]);
               )}
             </div>
 
-              <section ref={favoritesRef}>
-                {activeSection === "favorites" && (
-                  <div className="section">
-                    <h2>Favorite Properties</h2>
-                    {favoriteProperties.length === 0 ? (
-                      <p>You have no favorite properties.</p>
-                    ) : (
-                      <div className="favorites-list">
-                        {favoriteProperties.map((property) => (
-                          <div
-                            className={`favorite-card ${fadingOutId === property.id ? 'fade-out' : ''}`}
-                            key={property.id}
-                          >
-                            <img
-                              src={property.image || "/default-house.jpg"}
-                              alt={property.title}
-                              className="favorite-image"
-                            />
-                            <div className="favorite-details">
-                              <h4>{property.title}</h4>
-                              <p>{property.location}</p>
-                              <p>{property.price}</p>
-                              <button
-                                className="remove-btn"
-                                onClick={() => handleRemoveWithFade(property.id)}
-                                title="Remove from Favorites"
-                                aria-label="Remove from Favorites"
-                              >
-                                <AiFillHeart color="red" size={24} />
-                              </button>
-                            </div>
+            <section ref={favoritesRef}>
+              {activeSection === "favorites" && (
+                <div className="section">
+                  <h2>Favorite Properties</h2>
+                  {favoriteProperties.length === 0 ? (
+                    <p>You have no favorite properties.</p>
+                  ) : (
+                    <div className="favorites-list">
+                      {favoriteProperties.map((property) => (
+                        <div
+                          className={`favorite-card ${fadingOutId === property.id ? "fade-out" : ""}`}
+                          key={property.id}
+                        >
+                          <img
+                            src={property.image || "/default-house.jpg"}
+                            alt={property.title}
+                            className="favorite-image"
+                          />
+                          <div className="favorite-details">
+                            <h4>{property.title}</h4>
+                            <p>{property.location}</p>
+                            <p>{property.price}</p>
+                            <button
+                              className="remove-btn"
+                              onClick={() => handleRemoveWithFade(property.id)}
+                              title="Remove from Favorites"
+                              aria-label="Remove from Favorites"
+                            >
+                              <AiFillHeart color="red" size={24} />
+                            </button>
                           </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </section>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </section>
 
-        {/* Settings Section */}
-        <section ref={settingsRef}>
-          {activeSection === "settings" && (
-            <div className="section">
-              <h2>Account Settings</h2>
-              <p>Settings functionality will be added soon.</p>
-            </div>
-          )}
-        </section>
+            {/* Settings Section */}
+            <section ref={settingsRef}>
+              {activeSection === "settings" && (
+                <div className="section">
+                  <h2>Account Settings</h2>
+                  <p>Settings functionality will be added soon.</p>
+                </div>
+              )}
+            </section>
 
             <div ref={historyRef}>
               {activeSection === "history" && (
@@ -439,7 +469,7 @@ const [removedIds, setRemovedIds] = useState([]);
                       {searchHistory.map((item) => (
                         <li key={item.id} className="history-item">
                           <strong>{item.query}</strong>
-                          
+
                           <span className="history-date">{item.date}</span>
                         </li>
                       ))}

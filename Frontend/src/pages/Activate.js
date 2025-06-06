@@ -5,9 +5,9 @@ const Activate = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
-  const [countdown, setCountdown] = useState(3); // Compte à rebours de 3 secondes
+  const [countdown, setCountdown] = useState(3); // 3-second countdown
 
-  console.log("Token dans React Activate:", token);
+  console.log("Token in React Activate:", token);
 
   useEffect(() => {
     if (!token) {
@@ -16,9 +16,9 @@ const Activate = () => {
     }
 
     const decodedToken = decodeURIComponent(token);
-    console.log("🔍 Token décodé dans React:", decodedToken);
+    console.log("🔍 Decoded token in React:", decodedToken);
 
-    // Démarrer le compte à rebours
+    // Start countdown
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
@@ -41,24 +41,24 @@ const Activate = () => {
           throw new Error(
             data.error ||
               data.message ||
-              "Échec de l'activation sans message d'erreur"
+              "Activation failed with no error message"
           );
         }
 
-        console.log("Succès:", data);
+        console.log("Success:", data);
         localStorage.setItem("isActivated", "true");
 
-        // Redirection après 3 secondes
+        // Redirect after 3 seconds
         setTimeout(() => {
-          navigate("/login");
+          navigate("/");
         }, 3000);
       })
       .catch((err) => {
-        console.error("Erreur d'activation:", err);
+        console.error("Activation error:", err);
 
-        // Redirection après 3 secondes en cas d'erreur
+        // Redirect after 3 seconds on error
         setTimeout(() => {
-          navigate("/login");
+          navigate("/");
         }, 3000);
       });
 
@@ -66,10 +66,19 @@ const Activate = () => {
   }, [token, navigate]);
 
   return (
-    <div style={{ padding: 20, textAlign: "center" }}>
-      <h2>Activation en cours...</h2>
+    <div
+      style={{
+        height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column",
+        textAlign: "center",
+      }}
+    >
+      <h2>Activation...</h2>
       <p>
-        Merci de patienter, vous serez redirigé dans {countdown} seconde
+        Please wait, you will be redirected in {countdown} second
         {countdown !== 1 ? "s" : ""}.
       </p>
     </div>

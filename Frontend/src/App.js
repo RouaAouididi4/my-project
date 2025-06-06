@@ -15,7 +15,8 @@ import Preloader from "./components/Preloader";
 import Post from "./pages/Post";
 import PropertyByLocation from "./pages/PropertyByLocation";
 import HouseForSaleOrRent from "./pages/HouseForSaleOrRent";
-
+import AdminDashboard from "./pages/AdminDashboard";
+import AgentDashboard from "./pages/AgentDashboard";
 import Details from "./pages/Details";
 import Footer from "./components/Footer";
 import Profile from "./pages/Profile";
@@ -47,6 +48,8 @@ function AppContent() {
           <Route path="/About" element={<About />} />
           <Route path="/Property-Listing" element={<PropertyListing />} />
           <Route path="/Post" element={<Post />} />
+          <Route path="/AdminDashboard" element={<AdminDashboard />} />
+          <Route path="/AgentDashboard" element={<AgentDashboard />} />
           <Route
             path="/House-For-Sale-Or-Rent"
             element={<HouseForSaleOrRent />}

@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FaPhone, FaGoogle, FaEye, FaEyeSlash } from "react-icons/fa";
+import {
+  FaPhone,
+  FaGoogle,
+  FaEye,
+  FaEyeSlash,
+  FaMapMarkerAlt,
+} from "react-icons/fa";
 import "./Signup.css";
 import { useNavigate } from "react-router-dom";
 
@@ -16,6 +22,8 @@ function Signup() {
   const [touched, setTouched] = useState({
     FullName: false,
     email: false,
+    phone: false,
+    location: false,
     password: false,
     confirmPassword: false,
   });
@@ -25,8 +33,10 @@ function Signup() {
     FullName: "",
     email: "",
     password: "",
+    phone: "",
+    location: "",
     confirmPassword: "",
-    role: "",
+    role: "client",
   });
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -77,7 +87,7 @@ function Signup() {
 
   const validateField = (name, value) => {
     let error = "";
-    if (!touched[name]) return true;
+    if (!touched[name] && !isSubmitting) return true;
 
     switch (name) {
       case "FullName":
@@ -88,6 +98,12 @@ function Signup() {
         if (!value) error = "Email is required";
         else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
           error = "Invalid email format";
+        break;
+      case "phone":
+        if (!value) error = "Phone number is required";
+
+        break;
+      case "location":
         break;
       case "password":
         if (!value) error = "Password is required";
@@ -142,6 +158,8 @@ function Signup() {
     console.log("✅ Form is valid. Sending data:", {
       FullName: formData.FullName,
       email: formData.email,
+      phone: formData.phone,
+      location: formData.location,
       password: formData.password,
       confirmPassword: formData.confirmPassword,
       role: formData.role,
@@ -154,6 +172,8 @@ function Signup() {
         body: JSON.stringify({
           FullName: formData.FullName,
           email: formData.email,
+          phone: formData.phone,
+          location: formData.location,
           password: formData.password,
           confirmPassword: formData.confirmPassword,
           role: formData.role,
@@ -163,8 +183,38 @@ function Signup() {
       const data = await response.json();
 
       console.log("📬 Server response:", data);
+      if (response.ok) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            id: data.id,
+            email: data.email,
+            FullName: data.FullName,
+            role: data.role,
+          })
+        );
+        alert("✅ Account created. Please verify your email.");
+        navigate("/");
+        // Redirect based on role
+        const email = data.user.email;
+
+        if (email.endsWith("@admin.com")) {
+          navigate("/AdminDashboard"); // For other roles (admin/agent)
+        } else if (email.endsWith("@agent.com")) {
+          navigate("/AgentDashboard"); // For other roles (admin/agent)
+        }
+      } else {
+        navigate("/"); // For other roles (admin/agent)
+      }
 
       if (response.ok) {
+        if (data.error?.includes("email")) {
+          setErrors({ email: "This email is already registered" });
+        } else {
+          setErrors({ server: data.message || "Registration failed" });
+        }
+
         setIsSuccess(true);
         console.log("🎉 Account creation successful");
         localStorage.setItem("token", data.token);
@@ -177,6 +227,12 @@ function Signup() {
             role: data.role,
           })
         );
+        navigate("/", {
+          state: {
+            message: "Account created successfully!",
+            from: location.state?.from,
+          },
+        });
 
         setShowEmailCheckMessage(true);
         setEmail(formData.email);
@@ -187,17 +243,17 @@ function Signup() {
           navigate(location.state.from);
 
           // Optionnel: Afficher un message différent
-          alert(
-            "✅ Compte créé. Vous pouvez maintenant publier votre annonce."
-          );
+          alert("✅ Account created. You can now post your ad.");
         } else {
           // Redirection par défaut
           navigate("/");
-          alert("✅ Compte créé. Veuillez vérifier votre email.");
+          alert("✅ Account created. Please verify your email.");
         }
       } else {
         console.log("❌ Server error:", data);
-        setErrors({ server: data.message || "Une erreur est survenue." });
+        setErrors({
+          server: data.message || "An error occurred. Please try again..",
+        });
         setIsSuccess(false);
       }
     } catch (err) {
@@ -358,7 +414,48 @@ function Signup() {
                   <div className="invalid-feedback">{errors.email}</div>
                 )}
               </div>
+              <div className="form-group">
+                <label htmlFor="phone" className="form-label">
+                  Phone Number*
+                </label>
+                <div className="input-group">
+                  <input
+                    type="tel"
+                    className={`form-control ${errors.phone ? "is-invalid" : ""}`}
+                    id="phone"
+                    name="phone"
+                    placeholder="+216 12 345 678"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  {errors.phone && (
+                    <div className="invalid-feedback">{errors.phone}</div>
+                  )}
+                </div>
+              </div>
 
+              {/* Nouveau champ Location */}
+              <div className="form-group">
+                <label htmlFor="location" className="form-label">
+                  Location*
+                </label>
+                <div className="input-group">
+                  <input
+                    type="text"
+                    className={`form-control ${errors.location ? "is-invalid" : ""}`}
+                    id="location"
+                    name="location"
+                    placeholder="Your city or address"
+                    value={formData.location}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  {errors.location && (
+                    <div className="invalid-feedback">{errors.location}</div>
+                  )}
+                </div>
+              </div>
               <div className="form-group">
                 <label htmlFor="password" className="form-label">
                   Password*
@@ -423,8 +520,12 @@ function Signup() {
                 </div>
               </div>
 
-              <button type="submit" className="signup-btn">
-                Create account
+              <button
+                type="submit"
+                className="signup-btn"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Creating account..." : "Create account"}
               </button>
 
               <div className="auth-buttons">

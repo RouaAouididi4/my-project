@@ -7,7 +7,13 @@ require("dotenv").config();
 
 // Génération d'un code de vérification aléatoire
 const generateCode = () => Math.floor(100000 + Math.random() * 900000);
-
+const generateToken = (user) => {
+  return jwt.sign(
+    { id: user._id, email: user.email, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: "30d" }
+  );
+};
 const mailTransporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
   port: process.env.EMAIL_PORT,
@@ -139,12 +145,27 @@ exports.resetPassword = async (req, res) => {
 
 exports.signup = async (req, res) => {
   try {
-    const { FullName, email, password, confirmPassword, role } = req.body;
+    const {
+      FullName,
+      email,
+      phone,
+      location,
+      password,
+      confirmPassword,
+      role,
+    } = req.body;
 
     if (password !== confirmPassword) {
       return res.status(400).json({ message: "Passwords do not match" });
     }
+    let rolee = "client"; // Par défaut
 
+    if (email.endsWith("@admin.com")) rolee = "admin";
+    else if (email.endsWith("@agent.com")) rolee = "agent";
+
+    const userr = new User({ ...req.body, rolee });
+    await userr.save();
+    res.status(201).json({ token: generateToken(userr), userr });
     if (!email || !password) {
       return res
         .status(400)
@@ -165,8 +186,10 @@ exports.signup = async (req, res) => {
       verificationTokenExpires: Date.now() + 3600000,
 
       FullName,
+      phone,
+      location,
       email,
-      role: role || "Client",
+      role: role || "client",
       isVerified: false,
       password: hashedPassword,
     });
@@ -181,13 +204,27 @@ exports.signup = async (req, res) => {
         id: user._id,
         FullName: user.FullName,
         email: user.email,
+        phone: user.phone,
+        location: user.location,
+
         role: user.role,
       },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
 
-    res.status(201).json({ message: "User created successfully" });
+    res.status(201).json({
+      message: "User created successfully",
+      token,
+      user: {
+        id: user._id,
+        FullName: user.FullName,
+        email: user.email,
+        phone: user.phone,
+        location: user.location,
+        role: user.role,
+      },
+    });
   } catch (err) {
     console.error("❌ Error in signup:", err);
     res.status(500).json({ message: "Server error", error: err.message });
@@ -257,6 +294,8 @@ exports.login = async (req, res) => {
         id: user._id,
         FullName: user.FullName,
         email: user.email,
+        phone: user.phone,
+        location: user.location,
         role: user.role,
       },
       process.env.JWT_SECRET,
@@ -269,6 +308,8 @@ exports.login = async (req, res) => {
       id: user._id,
       FullName: user.FullName,
       email: user.email,
+      phone: user.phone,
+      location: user.location,
       role: user.role,
     });
   } catch (err) {
@@ -280,7 +321,9 @@ exports.login = async (req, res) => {
 // Fonction getMe pour obtenir les informations du profil de l'utilisateur connecté
 exports.getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.user.id).select(
+      "FullName email location phone"
+    );
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -288,6 +331,7 @@ exports.getMe = async (req, res) => {
     res.status(200).json({
       FullName: user.FullName,
       email: user.email,
+      location: user.location,
       phone: user.phone,
     });
   } catch (err) {

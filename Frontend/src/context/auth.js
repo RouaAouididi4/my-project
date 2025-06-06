@@ -45,6 +45,11 @@ export function AuthProvider({ children }) {
       user: userData,
       isAuthenticated: true,
     });
+    setAuthState({
+      user: userData,
+      token,
+      isLoading: false,
+    });
   };
 
   const logout = () => {

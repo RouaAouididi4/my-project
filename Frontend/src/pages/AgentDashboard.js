@@ -1,14 +1,28 @@
-import React from "react";
-import ManageClients from "../sections/ManageClients";
-import ManageProperties from "../sections/ManageProperties";
-import ModifyProperty from "../sections/ModifyProperty";
-import ArchiveProperty from "../sections/ArchiveProperty";
-import ViewClientHistory from "../sections/ViewClientHistory";
+// import React from "react";
+// import ManageClients from "../sections/ManageClients";
+// import ManageProperties from "../sections/ManageProperties";
+// import ModifyProperty from "../sections/ModifyProperty";
+// import ArchiveProperty from "../sections/ArchiveProperty";
+// import ViewClientHistory from "../sections/ViewClientHistory";
+
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import NavBar2 from "../components/NavBar2";
 
 const AgentDashboard = () => {
+  const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  useEffect(() => {
+    if (!user || !user.email.endsWith("@agent.com")) {
+      navigate("/login"); // Redirige si l'utilisateur n'est pas un agent
+    }
+  }, [user, navigate]);
   return (
     <div>
-      <h1>Agent Dashboard</h1>
+      <NavBar2 />
+
+      {/* <h1>Agent Dashboard</h1>
 
       <section>
         <h2>Gestion des Clients</h2>
@@ -33,7 +47,7 @@ const AgentDashboard = () => {
       <section>
         <h2>Historique des Clients</h2>
         <ViewClientHistory />
-      </section>
+      </section> */}
     </div>
   );
 };

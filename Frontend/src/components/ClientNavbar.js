@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import logoImage from "../pages/images/8.png";
 
-const Navbar2 = () => {
+const ClientNavbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -232,4 +232,4 @@ const Navbar2 = () => {
   );
 };
 
-export default Navbar2;
+export default ClientNavbar;

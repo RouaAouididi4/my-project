@@ -97,31 +97,42 @@ const Login = () => {
         throw new Error("No authentication token received");
       }
 
+      console.log(data);
+
       localStorage.setItem("token", data.token);
       localStorage.setItem(
         "user",
         JSON.stringify({
-          id: data.user._id,
-          FullName: data.user.FullName,
-          email: data.user.email,
-          role: data.user.role,
+          id: data.id,
+          FullName: data.FullName,
+          email: data.email,
+          role: data.role,
         })
       );
 
       login(
         {
-          id: data.user._id,
-          FullName: data.user.FullName || "",
-          email: data.user.email,
-          phone: data.user.phone || "",
+          id: data.id,
+          FullName: data.FullName || "",
+          email: data.email,
+          phone: data.phone || "",
+          role: data.role || "client",
         },
         data.token
       );
 
       setIsSuccess(true);
-      setTimeout(() => {
+
+      if (data.role === "client") {
         navigate("/");
-      }, 2000);
+      } else if (data.role === "agent") {
+        navigate("/agent/dashboard");
+      } else if (data.role === "admin") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/");
+      }
+      location.reload();
     } catch (err) {
       setError(err.message || "Login failed. Please try again.");
       console.error("Login error:", err);

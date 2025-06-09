@@ -5,7 +5,15 @@ const AuthMiddleware = require("../middleware/AuthMiddleware"); // Assure-toi qu
 const router = express.Router();
 
 // Define routes for user operations
-router.route("/").get(userController.getAllUsers); // Get all users
+router.get("/users", async (req, res, next) => {
+  try {
+    const users = await User.find();
+    res.status(200).json({ status: "success", data: users });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ status: "error", message: err.message });
+  }
+});
 // Ajoutez cette route existante
 router.put("/password", AuthMiddleware, async (req, res) => {
   const { currentPassword, newPassword } = req.body;

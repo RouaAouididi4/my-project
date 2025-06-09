@@ -89,18 +89,6 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-// Middleware pour hacher le mot de passe avant sauvegarde
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-
-  try {
-    this.password = await bcrypt.hash(this.password, 12);
-    next();
-  } catch (err) {
-    next(err);
-  }
-});
-
 // Méthode pour comparer les mots de passe
 userSchema.methods.correctPassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);

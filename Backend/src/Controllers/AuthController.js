@@ -158,14 +158,7 @@ exports.signup = async (req, res) => {
     if (password !== confirmPassword) {
       return res.status(400).json({ message: "Passwords do not match" });
     }
-    let rolee = "client"; // Par défaut
 
-    if (email.endsWith("@admin.com")) rolee = "admin";
-    else if (email.endsWith("@agent.com")) rolee = "agent";
-
-    const userr = new User({ ...req.body, rolee });
-    await userr.save();
-    res.status(201).json({ token: generateToken(userr), userr });
     if (!email || !password) {
       return res
         .status(400)
@@ -220,8 +213,6 @@ exports.signup = async (req, res) => {
         id: user._id,
         FullName: user.FullName,
         email: user.email,
-        phone: user.phone,
-        location: user.location,
         role: user.role,
       },
     });

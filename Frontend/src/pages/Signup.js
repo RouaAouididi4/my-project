@@ -36,7 +36,6 @@ function Signup() {
     phone: "",
     location: "",
     confirmPassword: "",
-    role: "client",
   });
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -147,6 +146,7 @@ function Signup() {
 
     setIsSubmitting(true);
     setIsSuccess(false);
+    setErrors({});
 
     // Vérification des champs du formulaire
     if (!validateForm()) {
@@ -155,15 +155,13 @@ function Signup() {
       return;
     }
 
-    console.log("✅ Form is valid. Sending data:", {
-      FullName: formData.FullName,
-      email: formData.email,
-      phone: formData.phone,
-      location: formData.location,
-      password: formData.password,
-      confirmPassword: formData.confirmPassword,
-      role: formData.role,
-    });
+    let role = "client";
+    const email = formData.email;
+    if (email.endsWith("@admin.com")) {
+      role = "admin";
+    } else if (email.endsWith("@agent.com")) {
+      role = "agent";
+    }
 
     try {
       const response = await fetch("http://localhost:3001/api/auth/signup", {
@@ -171,95 +169,49 @@ function Signup() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           FullName: formData.FullName,
-          email: formData.email,
+          email,
           phone: formData.phone,
           location: formData.location,
           password: formData.password,
           confirmPassword: formData.confirmPassword,
-          role: formData.role,
+          role,
         }),
       });
 
       const data = await response.json();
 
       console.log("📬 Server response:", data);
-      if (response.ok) {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            id: data.id,
-            email: data.email,
-            FullName: data.FullName,
-            role: data.role,
-          })
-        );
-        alert("✅ Account created. Please verify your email.");
-        navigate("/");
-        // Redirect based on role
-        const email = data.user.email;
 
-        if (email.endsWith("@admin.com")) {
-          navigate("/AdminDashboard"); // For other roles (admin/agent)
-        } else if (email.endsWith("@agent.com")) {
-          navigate("/AgentDashboard"); // For other roles (admin/agent)
-        }
-      } else {
-        navigate("/"); // For other roles (admin/agent)
+      if (!response.ok) {
+        // Gestion des erreurs du serveur
+        throw new Error(data.message || "Registration failed");
       }
 
-      if (response.ok) {
-        if (data.error?.includes("email")) {
-          setErrors({ email: "This email is already registered" });
-        } else {
-          setErrors({ server: data.message || "Registration failed" });
-        }
+      // Enregistrement réussi
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
 
-        setIsSuccess(true);
-        console.log("🎉 Account creation successful");
-        localStorage.setItem("token", data.token);
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            id: data.id,
-            email: data.email,
-            FullName: data.FullName,
-            role: data.role,
-          })
-        );
-        navigate("/", {
-          state: {
-            message: "Account created successfully!",
-            from: location.state?.from,
-          },
-        });
+      // Update state
+      setIsSuccess(true);
+      setShowEmailCheckMessage(true);
+      setEmail(data.user.email);
 
-        setShowEmailCheckMessage(true);
-        setEmail(formData.email);
+      // Show success message
+      alert("✅ Account created successfully!");
 
-        // NOUVELLE PARTIE AJOUTÉE POUR LA REDIRECTION
-        if (location.state?.from) {
-          // Si l'utilisateur venait d'une autre page (comme /post-property)
-          navigate(location.state.from);
-
-          // Optionnel: Afficher un message différent
-          alert("✅ Account created. You can now post your ad.");
-        } else {
-          // Redirection par défaut
-          navigate("/");
-          alert("✅ Account created. Please verify your email.");
-        }
+      // Redirect based on email
+      if (data.user.email.endsWith("@admin.com")) {
+        navigate("/admin/dashboard");
+      } else if (data.user.email.endsWith("@agent.com")) {
+        navigate("/agent/dashboard");
       } else {
-        console.log("❌ Server error:", data);
-        setErrors({
-          server: data.message || "An error occurred. Please try again..",
-        });
-        setIsSuccess(false);
+        navigate("/");
       }
     } catch (err) {
-      console.log("❌ Network error:", err);
-      setErrors({ server: "Network error. Please try again." });
-      setIsSuccess(false);
+      console.error("❌ Error:", err);
+      setErrors({
+        server: err.message || "An error occurred. Please try again.",
+      });
     } finally {
       setIsSubmitting(false);
       console.log("🛑 Form submission ended");

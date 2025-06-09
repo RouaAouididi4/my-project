@@ -1,16 +1,15 @@
-
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-    background-color:#eaded2;
+  background-color: #eaded2;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 .footer-container {
@@ -23,8 +22,8 @@ code {
   width: 100%;
   height: 100%;
   border-color: rgb(43, 37, 37);
-border-radius: 10px;
-border: solid 1px;
+  border-radius: 10px;
+  border: solid 1px;
 }
 
 .footer-container .footer-section {
@@ -58,18 +57,22 @@ border: solid 1px;
   font-size: 1.2rem;
 }
 .testimonials {
-background-color: #271f0262;}
-
-
-
+  background-color: #271f0262;
+}
 
 /**/
 * {
   box-sizing: border-box;
 }
 
-html, body {
+html {
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
+  overflow: auto;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }

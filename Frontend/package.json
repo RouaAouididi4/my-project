@@ -26,6 +26,7 @@
     "express": "^5.1.0",
     "express-session": "^1.18.1",
     "fs": "^0.0.1-security",
+    "ionicons": "^8.0.9",
     "jquery": "^3.7.1",
     "jquery-ui-dist": "^1.13.3",
     "leaflet": "^1.9.4",

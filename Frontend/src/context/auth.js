@@ -29,7 +29,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = (userData, token) => {
-    if (!token || !userData?._id) {
+    if (!token || !userData?.id) {
       console.error("Invalid login data");
       return;
     }

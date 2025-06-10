@@ -51,6 +51,20 @@ export function AuthProvider({ children }) {
       isLoading: false,
     });
   };
+  const [user, setUser] = useState(null); // Utilisez 'user' au lieu de 'User'
+
+  useEffect(() => {
+    // Charger l'utilisateur au montage
+    const loadUser = async () => {
+      try {
+        const response = await api.get("/me");
+        setUser(response.data); // Stocker les données utilisateur
+      } catch (err) {
+        setUser(null);
+      }
+    };
+    loadUser();
+  }, []);
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -63,7 +77,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ ...authState, login, logout }}>
+    <AuthContext.Provider value={{ ...authState, login, logout, user }}>
       {children}
     </AuthContext.Provider>
   );

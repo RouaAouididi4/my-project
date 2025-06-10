@@ -4,41 +4,145 @@
   padding: 2rem;
   background-color: #f9f9f9;
   border-radius: 12px;
-  font-family: Arial, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.5s ease-out;
+}
 
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .client-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   background: white;
   border-radius: 10px;
   overflow: hidden;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.client-table:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
 }
 
 .client-table th,
 .client-table td {
-  padding: 12px 16px;
-  border-bottom: 1px solid #ddd;
+  padding: 14px 18px;
+  border-bottom: 1px solid #e0e0e0;
   text-align: left;
+  transition: all 0.2s ease;
 }
 
 .client-table th {
   background-color: #007bff;
   color: white;
   text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.client-table th::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.5);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.client-table th:hover::after {
+  transform: scaleX(1);
+}
+
+.client-table tr {
+  transition: all 0.3s ease;
+}
+
+.client-table tr:not(:last-child) {
+  border-bottom: 1px solid #eee;
 }
 
 .client-table tr:hover {
   background-color: #e0f7fa;
+  transform: translateX(5px);
+}
+
+.client-table tr:hover td {
+  color: #00796b;
+  font-weight: 500;
 }
 
 .client-details {
-  margin-top: 20px;
-  padding: 15px;
+  margin-top: 25px;
+  padding: 20px;
   border: 1px solid #00796b;
   background-color: #e0f2f1;
-  border-radius: 5px;
+  border-radius: 8px;
+  animation: slideUp 0.4s ease-out;
+  box-shadow: 0 2px 10px rgba(0, 121, 107, 0.1);
+  transition: all 0.3s ease;
+}
+
+.client-details:hover {
+  transform: scale(1.01);
+  box-shadow: 0 5px 15px rgba(0, 121, 107, 0.15);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Add some pulse animation for important cells */
+.highlight-cell {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    background-color: rgba(0, 123, 255, 0.1);
+  }
+  50% {
+    background-color: rgba(0, 123, 255, 0.3);
+  }
+  100% {
+    background-color: rgba(0, 123, 255, 0.1);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .client-table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .client-table tr:hover {
+    transform: none;
+  }
 }

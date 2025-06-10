@@ -1,0 +1,62 @@
+.send-message-container {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.send-message-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.send-message-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.send-message-form label {
+  margin-bottom: 15px;
+  font-weight: 600;
+  color: #555;
+}
+
+.send-message-form input[type="text"],
+.send-message-form textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: vertical;
+  font-size: 16px;
+}
+
+.send-message-form textarea {
+  min-height: 100px;
+}
+
+.send-message-form button {
+  padding: 12px;
+  background-color: #007bff;
+  border: none;
+  color: white;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.send-message-form button:hover {
+  background-color: #0056b3;
+}
+
+.success-msg {
+  margin-top: 15px;
+  color: green;
+  font-weight: 600;
+  text-align: center;
+}

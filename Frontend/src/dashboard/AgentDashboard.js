@@ -3,6 +3,10 @@ import { useAuth } from "../context/auth";
 import "./AgentDashboard.css";
 import { useNavigate } from "react-router-dom";
 import ClientManagement from "./../pages/ClientManagement";
+import PropertyLayout from "../pages/PropertyLayout";
+import HistoryLayout from "../pages/HistoryLayout";
+import PasswordLayout from "../pages/PasswordLayout";
+import AgentsLayout from "../pages/AgentsLayout";
 
 const AgentDashboard = () => {
   const [activeTab, setActiveTab] = useState("clients");
@@ -18,15 +22,30 @@ const AgentDashboard = () => {
       case "clients":
         return <ClientManagement />;
       case "properties":
-        return <div>Properties Content</div>;
-      case "post":
-        return <div>Post Property Form</div>;
+        return (
+          <div>
+            <PropertyLayout />
+          </div>
+        );
+
       case "history":
-        return <div>Client History</div>;
+        return (
+          <div>
+            <HistoryLayout />
+          </div>
+        );
       case "password":
-        return <div>Change Password</div>;
+        return (
+          <div>
+            <PasswordLayout />
+          </div>
+        );
       case "agents":
-        return <div>Agents Management</div>;
+        return (
+          <div>
+            <AgentsLayout />
+          </div>
+        );
       default:
         return <ClientManagement />;
     }
@@ -55,14 +74,6 @@ const AgentDashboard = () => {
           >
             <ion-icon name="home-outline"></ion-icon>
             <span>Properties</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab("post")}
-            className={activeTab === "post" ? "active" : ""}
-          >
-            <ion-icon name="cloud-upload-outline"></ion-icon>
-            <span>Post Property</span>
           </button>
 
           <button

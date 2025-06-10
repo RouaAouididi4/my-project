@@ -1,0 +1,207 @@
+.property-page {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background: #fafafa;
+  min-height: 100vh;
+  animation: fadeInPage 1s ease forwards;
+}
+
+@keyframes fadeInPage {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.search-section {
+  background-color: #f7f7f7;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 8px rgba(148, 112, 84, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.search-section:hover {
+  box-shadow: 0 8px 20px rgba(148, 112, 84, 0.3);
+}
+
+.search-title {
+  margin-bottom: 15px;
+  font-size: 24px;
+  color: #5a3e1b;
+  font-weight: 700;
+  letter-spacing: 1px;
+  animation: slideInLeft 0.8s ease forwards;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.search-form {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  animation: fadeInUp 1s ease forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.search-input,
+.search-select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  flex: 1;
+  font-size: 16px;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.search-input:focus,
+.search-select:focus {
+  outline: none;
+  border-color: #947054;
+  box-shadow: 0 0 8px rgba(148, 112, 84, 0.6);
+}
+
+.search-button {
+  background-color: #947054;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+}
+
+.search-button:hover {
+  background-color: #7a5a3c;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(122, 90, 60, 0.6);
+}
+
+.properties-section {
+  margin-top: 30px;
+}
+
+.section-header {
+  font-size: 22px;
+  margin-bottom: 20px;
+  color: #5a3e1b;
+  font-weight: 700;
+  animation: fadeInDown 1s ease forwards;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.properties-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.property-card {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition:
+    transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  position: relative;
+  animation: fadeInScale 0.5s ease forwards;
+}
+
+.property-card:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(-10px) scale(1.03);
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.property-image {
+  height: 200px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  transition: transform 0.4s ease;
+}
+
+.property-card:hover .property-image {
+  transform: scale(1.1);
+  filter: brightness(0.85);
+  transition:
+    transform 0.4s ease,
+    filter 0.4s ease;
+}
+
+.property-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: #947054;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 8px rgba(148, 112, 84, 0.5);
+  transition: background-color 0.3s ease;
+}
+
+.property-card:hover .property-badge {
+  background-color: #7a5a3c;
+}
+
+.property-info {
+  padding: 15px;
+  font-size: 16px;
+  color: #333;
+}

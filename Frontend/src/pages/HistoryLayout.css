@@ -1,0 +1,71 @@
+/* HistoryLayout.css */
+.history-layout {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.history-icon {
+  font-size: 1.5rem;
+  color: #4a6fa5;
+}
+
+.no-history {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+}
+
+.history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s;
+}
+
+.history-item:hover {
+  background-color: #f9f9f9;
+}
+
+.history-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.history-query {
+  font-size: 1rem;
+  color: #333;
+}
+
+.history-price,
+.history-title {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.history-date {
+  font-size: 0.8rem;
+  color: #888;
+  white-space: nowrap;
+  margin-left: 1rem;
+}

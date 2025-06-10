@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, navigate } from "react-router-dom";
 
 import "./PropertyByLocation.css";
 import image1 from "./images/Listing1.jpg";
@@ -11,6 +11,7 @@ import image6 from "./images/Listing6.jpg";
 
 function PropertyByLocation() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const navigate = useNavigate();
 
   const images = [
     "img/bg-img/hero1.jpg",

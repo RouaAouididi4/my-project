@@ -1,5 +1,4 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import NavBar from "./components/NavBar";
 import Activate from "./pages/Activate";
@@ -24,11 +23,14 @@ import ClientManagement from "./pages/ClientManagement";
 import ForgetPassword from "./pages/ForgetPassword";
 import ResetPassword from "./pages/ResetPassword";
 import CodeVerif from "./pages/CodeVerif";
-import { AuthProvider, useAuth } from "./context/auth"; // Import AuthProvider ET useAuth
 import EmailVerification from "./pages/EmailVerification";
-import AgentLayout from "./components/layout/AgentLayout";
+import SendMessage from "./pages/SendMessage";
+import HistoryCLayout from "./pages/HistoryCLayout";
+import HistoryLayout from "./pages/HistoryLayout";
+import AgentLayout from "./pages/AgentsLayout"; // corrigé le chemin selon ton code
+import AdminLayout from "./components/layout/AdminLayout";
 import AuthLayout from "./components/layout/AuthLayout";
-import { useNavigate } from "react-router-dom";
+import PropertyLayout from "./pages/PropertyLayout";
 
 function AppContent() {
   const [user, setUser] = useState(null);
@@ -39,7 +41,13 @@ function AppContent() {
       setUser(storedUser);
     };
 
+    window.addEventListener("storage", handleStorageChange);
+
     handleStorageChange();
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
   }, []);
 
   return (
@@ -48,6 +56,7 @@ function AppContent() {
 
       <div className="app-container p-4 bg-gray-100">
         <Routes>
+          {/* Routes publiques */}
           <Route path="/" element={<Home />} />
           <Route path="/Property-Listing" element={<PropertyListing />} />
           <Route path="/About" element={<About />} />
@@ -64,7 +73,6 @@ function AppContent() {
           <Route path="/blog" element={<Blog />} />
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Login />} />
-
           <Route path="/signup" element={<Signup />} />
           <Route path="/verify/:token" element={<EmailVerification />} />
           <Route path="/details/:id" element={<Details />} />
@@ -72,16 +80,29 @@ function AppContent() {
           <Route path="/CodeVerif" element={<CodeVerif />} />
           <Route path="/reset-password" element={<ResetPassword />} />
 
+          {/* Routes protégées */}
           <Route element={<AuthLayout />}>
             <Route path="/Post" element={<Post />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/profile" element={<Profile />} />
 
+            {/* Routes agent */}
             <Route path="/agent" element={<AgentLayout />}>
               <Route index element={<AgentDashboard />} />
-              <Route path="/agent/dashboard" element={<AgentDashboard />} />
-              <Route index element={<div>Default dashboard content</div>} />
+              <Route path="dashboard" element={<AgentDashboard />} />
               <Route path="users" element={<ClientManagement />} />
+              <Route path="send-message" element={<SendMessage />} />
+            </Route>
+
+            {/* Routes admin */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="dashboard" element={<AdminDashboard />} />
+
+              <Route path="users" element={<ClientManagement />} />
+              <Route path="properties" element={<PropertyLayout />} />
+              <Route path="history-clients" element={<HistoryCLayout />} />
+              <Route path="history-agents" element={<HistoryLayout />} />
             </Route>
           </Route>
         </Routes>
@@ -96,11 +117,6 @@ function App() {
   return (
     <>
       <Preloader />
-      <div>
-        <Routes>
-          <Route path="/AdminDashboard" element={<AdminDashboard />} />
-        </Routes>
-      </div>
       <AppContent />
     </>
   );

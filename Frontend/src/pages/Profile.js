@@ -285,7 +285,7 @@ const Profile = () => {
 
       <div className="profile-wrapper" style={{ marginTop: "100px" }}>
         <div className="sidebar">
-          <h2>User Profile</h2>
+          <h2>User Profile </h2>
           <ul>
             <li
               className={activeSection === "info" ? "active" : ""}
@@ -320,7 +320,7 @@ const Profile = () => {
         <div className="profile-form">
           <div className="user-header">
             <div className="user-info">
-              <h3>{formData.FullName}</h3>
+               <h3>{formData.FullName}</h3>
               <p>{formData.location}</p>
             </div>
           </div>

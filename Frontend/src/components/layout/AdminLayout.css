@@ -1,0 +1,36 @@
+.admin-dashboard-container {
+  display: flex;
+  height: 100vh;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.sidebar {
+  width: 220px;
+  background-color: #34495e;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.sidebar nav a {
+  color: #ecf0f1;
+  padding: 12px;
+  margin-bottom: 10px;
+  text-decoration: none;
+  border-radius: 5px;
+  display: block;
+  transition: background-color 0.3s ease;
+}
+
+.sidebar nav a.active,
+.sidebar nav a:hover {
+  background-color: #1abc9c;
+  color: white;
+}
+
+.content {
+  flex-grow: 1;
+  padding: 25px;
+  background-color: #ecf0f1;
+  overflow-y: auto;
+}

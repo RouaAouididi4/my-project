@@ -1,153 +1,123 @@
-// import React, { useEffect, useState } from "react";
-// import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-// import { Button } from "@/components/ui/button";
-// import { Card, CardContent } from "@/components/ui/card";
+import { useState } from "react";
+import { useAuth } from "../context/auth";
+import "./AdminDashboard.css";
+import { useNavigate, Link } from "react-router-dom";
+
+import ClientManagement from "../pages/ClientManagement";
+
+import HistoryCLayout from "../pages/HistoryCLayout";
+import HistoryLayout from "../pages/HistoryLayout";
+import SendMessage from "../pages/SendMessage";
+import AgentLayout from "../pages/AgentsLayout";
+import PropertyLayout from "../pages/PropertyLayout";
 
 const AdminDashboard = () => {
-  //   const [clients, setClients] = useState([]);
-  //   const [agentRequests, setAgentRequests] = useState([]);
-  //   const [properties, setProperties] = useState([]);
-  //   const [history, setHistory] = useState([]);
-  //   useEffect(() => {
-  //     fetchClients();
-  //     fetchAgentRequests();
-  //     fetchProperties();
-  //     fetchClientHistory();
-  //   }, []);
-  //   const fetchClients = async () => {
-  //     setClients([
-  //       { id: 1, name: "Ali", email: "ali@mail.com" },
-  //       { id: 2, name: "Sarra", email: "sarra@mail.com" },
-  //     ]);
-  //   };
-  //   const fetchAgentRequests = async () => {
-  //     setAgentRequests([{ id: 3, name: "Ahmed", email: "ahmed@mail.com" }]);
-  //   };
-  //   const fetchProperties = async () => {
-  //     setProperties([
-  //       { id: 1, title: "Villa S+3", status: "active" },
-  //       { id: 2, title: "Studio Meublé", status: "archived" },
-  //     ]);
-  //   };
-  //   const fetchClientHistory = async () => {
-  //     setHistory([{ client: "Ali", actions: "Reserved property on 01/05/2025" }]);
-  //   };
-  //   const deleteUser = (id) => {
-  //     setClients((prev) => prev.filter((user) => user.id !== id));
-  //   };
-  //   const approveAgent = (id) => {
-  //     setAgentRequests((prev) => prev.filter((user) => user.id !== id));
-  //   };
-  //   const archiveProperty = (id) => {
-  //     setProperties((prev) =>
-  //       prev.map((p) => (p.id === id ? { ...p, status: "archived" } : p))
-  //     );
-  //   };
-  //   const modifyProperty = (id) => {
-  //     alert(`Redirect to edit page for property ${id}`);
-  //   };
-  //   return (
-  //     <div className="p-6">
-  //       <h1 className="text-3xl font-bold mb-4">Admin Dashboard</h1>
-  //       <Tabs defaultValue="agents" className="w-full">
-  //         <TabsList className="grid grid-cols-4 w-full">
-  //           <TabsTrigger value="agents">Manage Agents</TabsTrigger>
-  //           <TabsTrigger value="clients">Manage Clients</TabsTrigger>
-  //           <TabsTrigger value="history">Client History</TabsTrigger>
-  //           <TabsTrigger value="properties">Manage Properties</TabsTrigger>
-  //         </TabsList>
-  //         {/* Agent Requests */}
-  //         <TabsContent value="agents">
-  //           <div className="mt-4 space-y-4">
-  //             {agentRequests.map((agent) => (
-  //               <Card key={agent.id}>
-  //                 <CardContent className="flex justify-between items-center p-4">
-  //                   <div>
-  //                     <p className="font-medium">{agent.name}</p>
-  //                     <p className="text-sm text-gray-500">{agent.email}</p>
-  //                   </div>
-  //                   <div className="space-x-2">
-  //                     <Button onClick={() => approveAgent(agent.id)}>
-  //                       Accepter
-  //                     </Button>
-  //                     <Button
-  //                       variant="destructive"
-  //                       onClick={() => deleteUser(agent.id)}
-  //                     >
-  //                       Supprimer
-  //                     </Button>
-  //                   </div>
-  //                 </CardContent>
-  //               </Card>
-  //             ))}
-  //           </div>
-  //         </TabsContent>
-  //         {/* Clients */}
-  //         <TabsContent value="clients">
-  //           <div className="mt-4 space-y-4">
-  //             {clients.map((client) => (
-  //               <Card key={client.id}>
-  //                 <CardContent className="flex justify-between items-center p-4">
-  //                   <div>
-  //                     <p className="font-medium">{client.name}</p>
-  //                     <p className="text-sm text-gray-500">{client.email}</p>
-  //                   </div>
-  //                   <Button
-  //                     variant="destructive"
-  //                     onClick={() => deleteUser(client.id)}
-  //                   >
-  //                     Supprimer
-  //                   </Button>
-  //                 </CardContent>
-  //               </Card>
-  //             ))}
-  //           </div>
-  //         </TabsContent>
-  //         {/* History */}
-  //         <TabsContent value="history">
-  //           <div className="mt-4 space-y-4">
-  //             {history.map((h, i) => (
-  //               <Card key={i}>
-  //                 <CardContent className="p-4">
-  //                   <p>
-  //                     <strong>{h.client}</strong> – {h.actions}
-  //                   </p>
-  //                 </CardContent>
-  //               </Card>
-  //             ))}
-  //           </div>
-  //         </TabsContent>
-  //         {/* Properties */}
-  //         <TabsContent value="properties">
-  //           <div className="mt-4 space-y-4">
-  //             {properties.map((property) => (
-  //               <Card key={property.id}>
-  //                 <CardContent className="flex justify-between items-center p-4">
-  //                   <div>
-  //                     <p className="font-medium">{property.title}</p>
-  //                     <p className="text-sm text-gray-500">
-  //                       Status: {property.status}
-  //                     </p>
-  //                   </div>
-  //                   <div className="space-x-2">
-  //                     <Button onClick={() => modifyProperty(property.id)}>
-  //                       Modifier
-  //                     </Button>
-  //                     <Button
-  //                       variant="outline"
-  //                       onClick={() => archiveProperty(property.id)}
-  //                     >
-  //                       Archiver
-  //                     </Button>
-  //                   </div>
-  //                 </CardContent>
-  //               </Card>
-  //             ))}
-  //           </div>
-  //         </TabsContent>
-  //       </Tabs>
-  //     </div>
-  //   );
+  // Correction: on utilise "users" comme clé cohérente partout
+  const [activeTab, setActiveTab] = useState("users");
+  const { logout } = useAuth();
+
+  const navigate = useNavigate();
+
+  const logoutHandler = () => {
+    logout();
+    navigate("/login");
+  };
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case "users":
+        return <ClientManagement />;
+      case "agents":
+        return <AgentLayout />;
+      case "properties":
+        return <PropertyLayout />;
+      case "clientHistory":
+        return <HistoryCLayout />;
+      case "agentHistory":
+        return <HistoryLayout />;
+      case "messages":
+        return <SendMessage />;
+      default:
+        return <ClientManagement />;
+    }
+  };
+
+  return (
+    <div className="dashboard-container">
+      <div className="sidebar">
+        <div className="logo-container">
+          {/* Pour ion-icons (voir remarque ci-dessous) */}
+          <ion-icon name="settings-outline"></ion-icon>
+          <span>Admin Panel</span>
+        </div>
+
+        <nav>
+          <button
+            onClick={() => setActiveTab("users")}
+            className={activeTab === "users" ? "active" : ""}
+          >
+            <ion-icon name="person-outline"></ion-icon>
+            <span>Manage Clients</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("agents")}
+            className={activeTab === "agents" ? "active" : ""}
+          >
+            <ion-icon name="people-outline"></ion-icon>
+            <span>Manage Agents</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("properties")}
+            className={activeTab === "properties" ? "active" : ""}
+          >
+            <ion-icon name="home-outline"></ion-icon>
+            <span>Manage Properties</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("clientHistory")}
+            className={activeTab === "clientHistory" ? "active" : ""}
+          >
+            <ion-icon name="time-outline"></ion-icon>
+            <span>Client History</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("agentHistory")}
+            className={activeTab === "agentHistory" ? "active" : ""}
+          >
+            <ion-icon name="document-text-outline"></ion-icon>
+            <span>Agent History</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("messages")}
+            className={activeTab === "messages" ? "active" : ""}
+          >
+            <ion-icon name="chatbox-ellipses-outline"></ion-icon>
+            <span>Messages</span>
+          </button>
+
+          <button className="logout-btn" onClick={logoutHandler}>
+            <ion-icon name="log-out-outline"></ion-icon>
+            <span>Logout</span>
+          </button>
+        </nav>
+      </div>
+
+      <div className="main-content">
+        <header className="content-header">
+          <div className="search-bar">
+            <input type="text" placeholder="Search..." />
+          </div>
+        </header>
+
+        <div className="content-area">{renderContent()}</div>
+      </div>
+    </div>
+  );
 };
 
 export default AdminDashboard;

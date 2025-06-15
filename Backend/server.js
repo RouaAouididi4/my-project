@@ -16,6 +16,8 @@ dotenv.config();
 const app = express();
 
 // Middleware
+app.use(cors());
+
 app.use(express.json()); // For parsing application/json
 app.use(
   cors({
@@ -23,6 +25,7 @@ app.use(
     credentials: true,
   })
 ); // Enable CORS
+app.use(express.urlencoded({ extended: true }));
 
 // Session configuration (MUST come after app initialization)
 app.use(
@@ -38,8 +41,8 @@ app.use(
   })
 );
 
-// Serve static files from 'uploads' directory
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// backend/index.js or app.js
+app.use("/uploads", express.static("uploads"));
 
 // Database connection
 mongoose

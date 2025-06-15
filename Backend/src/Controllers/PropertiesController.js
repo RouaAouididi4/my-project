@@ -1,6 +1,94 @@
+const imageValidationService = require("../services/imageValidationService");
+
 const Property = require("../Models/PropertiesModel");
 const catchAsync = require("../Utils/CatchAsync");
 const mongoose = require("mongoose");
+
+exports.createProperty = catchAsync(async (req, res, next) => {
+  const {
+    streetAddress,
+
+    city,
+    type,
+    homeType,
+    beds,
+    baths,
+    price,
+    yearBuilt,
+    management,
+    phone,
+    features,
+    Kitchen,
+    agreement,
+  } = req.body;
+
+  console.log(agreement);
+  console.log(typeof agreement);
+
+  let validatedPhotos = [];
+
+  if (req.files && req.files.length > 0) {
+    for (const file of req.files) {
+      const imagePath = file.path;
+      // const validation = await imageValidationService.validateImage(imagePath);
+
+      validatedPhotos.push({
+        url: `/uploads/photos/${file.filename}`,
+        // isValid: validation.isValid,
+        // validationScore: validation.confidence,
+        // validationDetails: {
+        //   isRealEstate: validation.isValid,
+        //   categories: validation.categories,
+        //   confidence: validation.confidence,
+        // },
+      });
+    }
+  }
+
+  // const hasValidImage = validatedPhotos.some((img) => img.isValid);
+
+  const newProperty = await Property.create({
+    streetAddress,
+
+    city,
+    type,
+    homeType,
+    beds,
+    baths: {
+      fullBaths: baths?.fullBaths || 0,
+      halfBaths: baths?.halfBaths || 0,
+    },
+    price,
+    yearBuilt,
+    management,
+    phone,
+    features: {
+      garden: features?.garden || false,
+      parking: features?.parking || false,
+      "swimming-pool": features?.["swimming-pool"] || false,
+      balcony: features?.balcony || false,
+      balconyLocation: features?.balconyLocation || [],
+      deseginType: features?.deseginType,
+    },
+    Kitchen: {
+      kitchenCount: Kitchen?.kitchenCount || 0,
+      types: Kitchen?.types || [],
+    },
+    photos: validatedPhotos,
+    agreement,
+    // status: hasValidImage ? "approved" : "pending",
+    status: "pending",
+  });
+
+  res.status(201).json({
+    status: "success",
+    data: newProperty,
+    // message: hasValidImage
+    //   ? "Propriété créée avec succès"
+    //   : "Propriété créée mais en attente de validation des images",
+    message: "Propriété créée mais en attente de validation des images",
+  });
+});
 
 // Get all properties
 exports.getAllProperties = catchAsync(async (req, res, next) => {
@@ -57,71 +145,6 @@ exports.searchProperties = catchAsync(async (req, res, next) => {
     status: "success",
     results: properties.length,
     data: properties,
-  });
-});
-
-// Create a property
-exports.createProperty = catchAsync(async (req, res, next) => {
-  const {
-    streetAddress,
-    unit,
-    zip,
-    city,
-    type,
-    homeType,
-    beds,
-    baths,
-    price,
-    yearBuilt,
-    management,
-    phone,
-    features,
-    Kitchen,
-    agreement,
-  } = req.body;
-
-  // Handle photos upload
-  let photos = [];
-  if (req.files && req.files.length > 0) {
-    photos = req.files.map((file) => `/uploads/photos/${file.filename}`);
-  }
-
-  // Create the property
-  const newProperty = await Property.create({
-    streetAddress,
-    unit,
-    zip,
-    city,
-    type,
-    homeType,
-    beds,
-    baths: {
-      fullBaths: baths?.fullBaths || 0,
-      halfBaths: baths?.halfBaths || 0,
-    },
-    price,
-    yearBuilt,
-    management,
-    phone,
-    features: {
-      garden: features?.garden || false,
-      parking: features?.parking || false,
-      "swimming-pool": features?.["swimming-pool"] || false,
-      balcony: features?.balcony || false,
-      balconyLocation: features?.balconyLocation || [],
-      deseginType: features?.deseginType,
-    },
-    Kitchen: {
-      kitchenCount: Kitchen?.kitchenCount || 0,
-      types: Kitchen?.types || [],
-    },
-    photos,
-    agreement,
-  });
-
-  res.status(201).json({
-    status: "success",
-    data: newProperty,
   });
 });
 
@@ -199,3 +222,89 @@ exports.getPropertyById = catchAsync(async (req, res, next) => {
     data: property,
   });
 });
+
+////////////////////////////////////////////////////////
+const path = require("path");
+
+// Revalider une image
+exports.revalidateImage = async (req, res) => {
+  try {
+    const { estateId, imageIndex } = req.params;
+
+    const estate = await Estate.findById(estateId);
+    if (!estate) {
+      return res.status(404).json({
+        success: false,
+        message: "Bien immobilier non trouvé",
+      });
+    }
+
+    const image = estate.images[imageIndex];
+    if (!image) {
+      return res.status(404).json({
+        success: false,
+        message: "Image non trouvée",
+      });
+    }
+
+    const imagePath = path.join(
+      __dirname,
+      "..",
+      "uploads",
+      "estates",
+      path.basename(image.url)
+    );
+    const validation = await imageValidationService.validateImage(imagePath);
+
+    estate.images[imageIndex] = {
+      ...image,
+      isValid: validation.isValid,
+      validationScore: validation.confidence,
+      validationDetails: {
+        isRealEstate: validation.isValid,
+        categories: validation.categories,
+        confidence: validation.confidence,
+      },
+    };
+
+    await estate.save();
+
+    res.json({
+      success: true,
+      data: estate.images[imageIndex],
+      message: "Image revalidée avec succès",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Erreur lors de la revalidation",
+      error: error.message,
+    });
+  }
+};
+
+// Obtenir tous les biens avec filtres
+exports.getEstates = async (req, res) => {
+  try {
+    const { status, validImagesOnly } = req.query;
+
+    let filter = {};
+    if (status) filter.status = status;
+    if (validImagesOnly === "true") {
+      filter["images.isValid"] = true;
+    }
+
+    const estates = await Estate.find(filter).sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      data: estates,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Erreur lors de la récupération",
+      error: error.message,
+    });
+  }
+};

@@ -1,16 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Link, navigate } from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
 import "./PropertyByLocation.css";
-import image1 from "./images/Listing1.jpg";
-import image2 from "./images/Listing2.jpg";
-import image3 from "./images/Listing3.jpg";
-import image4 from "./images/Listing4.jpg";
-import image5 from "./images/Listing5.jpg";
-import image6 from "./images/Listing6.jpg";
+import { getAllProperties } from "../services/propertyService";
 
 function PropertyByLocation() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [properties, setProperties] = useState([]);
   const navigate = useNavigate();
 
   const images = [
@@ -18,6 +13,7 @@ function PropertyByLocation() {
     "img/bg-img/hero2.jpg",
     "img/bg-img/hero3.jpg",
   ];
+
   const goToPrevSlide = () => {
     setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   };
@@ -25,12 +21,26 @@ function PropertyByLocation() {
   const goToNextSlide = () => {
     setCurrentIndex((prev) => (prev + 1) % images.length);
   };
+
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 4000); // Change every 4 seconds
+    }, 4000);
 
-    return () => clearInterval(interval); // Clean up the interval on component unmount
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        const response = await getAllProperties();
+        setProperties(response?.data.data || []);
+      } catch (error) {
+        console.error("Error fetching properties:", error);
+      }
+    };
+
+    fetchProperties();
   }, []);
 
   return (
@@ -47,12 +57,9 @@ function PropertyByLocation() {
               height: "100vh",
               marginLeft: "10px",
               width: "100%",
-              transition: "background-image 0.5s ease-in-out", // Ajoutez cette ligne
-
-              // position: "relative",
+              transition: "background-image 0.5s ease-in-out",
             }}
           >
-            {/* Overlay sombre */}
             <div
               style={{
                 position: "absolute",
@@ -87,7 +94,6 @@ function PropertyByLocation() {
                   gap: "30px",
                 }}
               >
-                {/* Flèche gauche */}
                 <span
                   onClick={goToPrevSlide}
                   style={{
@@ -103,7 +109,6 @@ function PropertyByLocation() {
                 </span>
 
                 <div style={{ display: "flex", flexDirection: "column" }}>
-                  {/* Titre principal */}
                   <h2
                     style={{
                       fontSize: "clamp(32px, 6vw, 62px)",
@@ -124,7 +129,6 @@ function PropertyByLocation() {
                   </div>
                 </div>
 
-                {/* Flèche droite */}
                 <span
                   onClick={goToNextSlide}
                   style={{
@@ -141,7 +145,6 @@ function PropertyByLocation() {
               </div>
             </div>
 
-            {/* Animation minimaliste */}
             <style jsx global>{`
               @keyframes fadeIn {
                 from {
@@ -155,15 +158,20 @@ function PropertyByLocation() {
           </div>
         </div>
       </section>
+
       <div className="filter-section">
         <div className="filter-row">
           <div className="filter-group">
-            <label className="filter-label">Title</label>
-            <input
-              type="text"
-              className="filter-input"
-              placeholder="Enter a title..."
-            />
+            <label className="filter-label" All>
+              Home Type
+            </label>
+            <select className="filter-select">
+              <option>Select a HomeType</option>
+              <option>House</option>
+              <option>Apartment</option>
+              <option>Villa</option>
+              <option>Studio</option>
+            </select>
           </div>
 
           <div className="filter-group">
@@ -179,23 +187,18 @@ function PropertyByLocation() {
             <select className="filter-select">
               <option>Select city</option>
               <option>Djerba</option>
-
               <option>Grand Tunis</option>
               <option>Monastir</option>
-
               <option>Nabeul</option>
               <option>Sousse</option>
             </select>
           </div>
         </div>
 
-        {/* Bouton MORE FILTERS */}
         <div className="filters-footer">
           <button className="search-button">SEARCH</button>
         </div>
       </div>
-
-      {/* Featured Properties Section */}
       <section className="featured-properties">
         <div className="section-header">
           <h2 className="animated-title">FEATURED PROPERTIES</h2>
@@ -205,275 +208,75 @@ function PropertyByLocation() {
           </p>
         </div>
 
-        <div className="properties-grid">
-          {/* Property Card 1 */}
-          <div className="property-card" style={{ height: "500px" }}>
-            <div className="image-wrapper">
-              <div
-                className="property-image"
-                style={{
-                  backgroundImage: `url(${image1})`,
-                }}
-              >
-                {/* Badge NEW */}
-                <span className="property-badge">FOR sALE</span>
+        <div
+          style={{
+            display: "flex",
+            gap: "12px",
+            flexWrap: "wrap",
+            paddingTop: "12px",
+          }}
+        >
+          {properties?.map((property) => (
+            <div
+              className="property-card"
+              style={{ height: "500px", minWidth: "400px" }}
+            >
+              <div className="image-wrapper">
+                <div
+                  className="property-image"
+                  style={{
+                    backgroundImage: `url(${"http://localhost:3001" + property?.photos[0]?.url})`,
+                  }}
+                >
+                  {/* Badge NEW */}
+                  <span className="property-badge">FOR Sale</span>
 
-                {/* Caractéristiques avec icônes */}
-                <div className="property-features">
-                  <span className="feature">
-                    <i className="fas fa-bed"></i> 2
-                  </span>
-                  <span className="feature">
-                    <i className="fas fa-bath"></i> 2
-                  </span>
-                  <span className="feature">
-                    <i className="fas fa-ruler-combined"></i> 120 sq ft
-                  </span>
+                  {/* Caractéristiques avec icônes */}
+                  <div className="property-features">
+                    <span className="feature">
+                      <i className="fas fa-bed"></i> {property?.beds || 0}
+                    </span>
+                    <span className="feature">
+                      <i className="fas fa-bath"></i>{" "}
+                      {property?.baths?.fullBaths +
+                        property?.baths?.halfBaths || 0}
+                    </span>
+                    <span className="feature">
+                      <i className="fas fa-ruler-combined"></i> -- sq ft
+                    </span>
+                  </div>
                 </div>
+
+                {/* Type et prix */}
+
+                <div className="property-price">{property?.price}DT</div>
               </div>
 
-              {/* Type et prix */}
-
-              <div className="property-price">1.500.000DT</div>
-            </div>
-
-            <div className="property-info">
-              <h3 className="property-title">Individual Villa</h3>
-              <p className="property-address">Hergla, Cité Nozha</p>
-              <hr className="property-divider" />
-              <p className="property-description">
-                Ctte villa d'exception, située à seulement 150 m de la plage
-                dans le quartier prisé de Cité Nozha à Hergla.
-              </p>
-              <div className="button-container">
-                <button
-                  onClick={() => navigate(`/details/${property.id}`)}
-                  className="search-button"
-                >
-                  {" "}
-                  Voir Détails
-                </button>
-              </div>
-            </div>
-          </div>
-          {/* Property Card 2 */}
-          <div className="property-card">
-            <div className="image-wrapper">
-              <div
-                className="property-image"
-                style={{
-                  backgroundImage: `url(${image2})`,
-                }}
-              >
-                <span className="property-badge">FOR SALE</span>
-                <div className="property-features">
-                  <span className="feature">
-                    <i className="fas fa-bed"></i> 3
-                  </span>
-                  <span className="feature">
-                    <i className="fas fa-bath"></i> 2
-                  </span>
-                  <span className="feature">
-                    <i className="fas fa-ruler-combined"></i> 150 sq ft
-                  </span>
+              <div className="property-info">
+                <h3 className="property-title">{property?.title}</h3>
+                <p className="property-address">{property?.streetAddress}</p>
+                <hr className="property-divider" />
+                <p className="property-description">{property?.description}</p>
+                <div className="button-container">
+                  <button
+                    onClick={() => navigate(`/details/${property?._id}`)}
+                    className="search-button"
+                  >
+                    {" "}
+                    Voir Détails
+                  </button>
+                  {/* <button
+                    onClick={() => toggleFavorite(property)}
+                    className="favorite-button"
+                  >
+                    {favorites.some((fav) => fav.id === property.id)
+                      ? "Remove ❤️"
+                      : "Add ❤️"}
+                  </button> */}
                 </div>
               </div>
-              <div className="property-price">2.500.000DT</div>
             </div>
-            <div className="property-info">
-              <h3 className="property-title">Appartement Luxueux</h3>
-              <p className="property-address">Kantaoui, Sousse</p>
-              <hr className="property-divider" />
-              <p className="property-description">
-                Un appartement haut standing avec vue sur la marina, situé au
-                cœur du prestigieux quartier touristique de Kantaoui.
-              </p>
-              <div className="button-container">
-                <button
-                  onClick={() => navigate(`/details/${property.id}`)}
-                  className="search-button"
-                >
-                  {" "}
-                  Voir Détails
-                </button>
-              </div>
-            </div>
-          </div>
-          {/* Property Card 3 */}
-          <div className="property-card">
-            <div className="image-wrapper">
-              <div
-                className="property-image"
-                style={{
-                  backgroundImage: `url(${image3})`,
-                }}
-              >
-                <span className="property-badge">FOR SALE</span>
-                <div className="property-features">
-                  <span className="feature">
-                    <i className="fas fa-bed"></i> 1
-                  </span>
-                  <span className="feature">
-                    <i className="fas fa-bath"></i> 1
-                  </span>
-                  <span className="feature">
-                    <i className="fas fa-ruler-combined"></i> 75 sq ft
-                  </span>
-                </div>
-              </div>
-              <div className="property-price">800.000DT</div>
-            </div>
-            <div className="property-info">
-              <h3 className="property-title">Studio Moderne</h3>
-              <p className="property-address">Rue Orange, Monastir</p>
-              <hr className="property-divider" />
-              <p className="property-description">
-                Ce studio moderne offre un espace compact mais élégant à
-                quelques pas de la mer, idéal pour célibataires ou étudiants.
-              </p>
-              <div className="button-container">
-                <button
-                  onClick={() => navigate(`/details/${property.id}`)}
-                  className="search-button"
-                >
-                  {" "}
-                  Voir Détails
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="properties-grid">
-          {/* Property Card 4 */}
-          <div className="property-card" style={{ height: "500px" }}>
-            <div className="image-wrapper">
-              <div
-                className="property-image"
-                style={{
-                  backgroundImage: `url(${image4})`,
-                }}
-              >
-                <span className="property-badge">FOR SALE</span>
-                <div className="property-features">
-                  <span className="feature">
-                    <i className="fas fa-bed"></i> 2
-                  </span>
-                  <span className="feature">
-                    <i className="fas fa-bath"></i> 1
-                  </span>
-                  <span className="feature">
-                    <i className="fas fa-ruler-combined"></i> 95 sq ft
-                  </span>
-                </div>
-              </div>
-              <div className="property-price">1.200.000DT</div>
-            </div>
-            <div className="property-info">
-              <h3 className="property-title">Appartement YOSRA</h3>
-              <p className="property-address">Nabeul</p>
-              <hr className="property-divider" />
-              <p className="property-description">
-                Un appartement lumineux avec balcon spacieux, parfait pour une
-                petite famille ou un couple.
-              </p>
-              <div className="button-container">
-                <button
-                  onClick={() => navigate(`/details/${property.id}`)}
-                  className="search-button"
-                >
-                  {" "}
-                  Voir Détails
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Property Card 5 */}
-          <div className="property-card">
-            <div className="image-wrapper">
-              <div
-                className="property-image"
-                style={{
-                  backgroundImage: `url(${image5})`,
-                }}
-              >
-                <span className="property-badge">FOR SALE</span>
-                <div className="property-features">
-                  <span className="feature">
-                    <i className="fas fa-bed"></i> 1
-                  </span>
-                  <span className="feature">
-                    <i className="fas fa-bath"></i> 1
-                  </span>
-                  <span className="feature">
-                    <i className="fas fa-ruler-combined"></i> 75 sq ft
-                  </span>
-                </div>
-              </div>
-              <div className="property-price">800.000DT</div>
-            </div>
-            <div className="property-info">
-              <h3 className="property-title">Studio Moderne</h3>
-              <p className="property-address">Rue Orange, Monastir</p>
-              <hr className="property-divider" />
-              <p className="property-description">
-                Ce studio moderne offre un espace compact mais élégant à
-                quelques pas de la mer, idéal pour célibataires ou étudiants.
-              </p>
-              <div className="button-container">
-                <button
-                  onClick={() => navigate(`/details/${property.id}`)}
-                  className="search-button"
-                >
-                  {" "}
-                  Voir Détails
-                </button>
-              </div>
-            </div>
-          </div>
-          {/* Property Card 6 */}
-          <div className="property-card">
-            <div className="image-wrapper">
-              <div
-                className="property-image"
-                style={{
-                  backgroundImage: `url(${image6})`,
-                }}
-              >
-                <span className="property-badge">FOR SALE</span>
-                <div className="property-features">
-                  <span className="feature">
-                    <i className="fas fa-bed"></i> 1
-                  </span>
-                  <span className="feature">
-                    <i className="fas fa-bath"></i> 1
-                  </span>
-                  <span className="feature">
-                    <i className="fas fa-ruler-combined"></i> 75 sq ft
-                  </span>
-                </div>
-              </div>
-              <div className="property-price">800.000DT</div>
-            </div>
-            <div className="property-info">
-              <h3 className="property-title">Studio Moderne</h3>
-              <p className="property-address">Rue Orange, Monastir</p>
-              <hr className="property-divider" />
-              <p className="property-description">
-                Ce studio moderne offre un espace compact mais élégant à
-                quelques pas de la mer, idéal pour célibataires ou étudiants.
-              </p>
-              <div className="button-container">
-                <button
-                  onClick={() => navigate(`/details/${property.id}`)}
-                  className="search-button"
-                >
-                  {" "}
-                  Voir Détails
-                </button>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
       </section>
     </div>

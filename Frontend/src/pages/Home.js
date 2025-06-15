@@ -195,11 +195,7 @@ const Home = () => {
               Listings
             </a>
           </li>
-          <li className="nav-item">
-            <a className="nav-link nav-link-white" href="/blog-news">
-              Blog
-            </a>
-          </li>
+
           <li className="nav-item">
             <a className="nav-link nav-link-white" href="/contact">
               Contact
@@ -769,7 +765,6 @@ const Home = () => {
           />
         </div>
       </div>
-
     </div>
   );
 };

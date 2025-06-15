@@ -1,93 +1,26 @@
 import React, { useState, useEffect } from "react";
-import "./HouseForSaleOrRent.css";
+import "./PropertyListing.css";
 import image1 from "./images/Listing1.jpg";
 import image2 from "./images/Listing2.jpg";
 import image3 from "./images/Listing3.jpg";
 import image4 from "./images/Listing4.jpg";
 import image5 from "./images/Listing5.jpg";
 import image6 from "./images/Listing6.jpg";
-import { useNavigate } from "react-router-dom";
+import { getAllProperties } from "../services/propertyService";
 
-function PropertyHouse() {
-  const navigate = useNavigate();
-  const [currentIndex, setCurrentIndex] = useState(0);
+function PropertyByLocation() {
   const [favorites, setFavorites] = useState([]);
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [properties, setProperties] = useState([]);
 
   const images = [
     "img/bg-img/hero1.jpg",
     "img/bg-img/hero2.jpg",
     "img/bg-img/hero3.jpg",
   ];
-
-  const featuredProperties = [
-    {
-      id: 1,
-      image: image1,
-      price: "1.500.000DT",
-      title: "Individual Villa",
-      address: "Hergla, Cité Nozha",
-      description:
-        "A stylish and peaceful villa in Hergla's Cité Nozha, perfect for families.Features a modern design, garden, and bright interior near the beach.",
-      type: "sale",
-    },
-    {
-      id: 2,
-      image: image2,
-      price: "2.500.000DT",
-      title: "Appartement Luxueux",
-      address: "Kantaoui, Sousse",
-      description:
-        "Modern 2-bedroom, 2-bathroom apartment in Kantaoui by the marina, with an open kitchen, bright living room, balcony, parking, fast internet, and close to the beach, shops, and cafés.",
-      type: "rent",
-    },
-    {
-      id: 3,
-      image: image3,
-      price: "800.000DT",
-      title: "Studio Moderne",
-      address: "Rue Orange, Monastir",
-      description:
-        "This modern studio offers a compact yet stylish space just steps from the sea, ideal for singles or students.",
-      type: "sale",
-    },
-    {
-      id: 4,
-      image: image4,
-      price: "1.200.000DT",
-      title: "Appartement YOSRA",
-      address: "Nabeul",
-      description:
-        "A bright apartment with a spacious balcony, perfect for a small family or a couple.",
-      type: "rent",
-    },
-    {
-      id: 5,
-      image: image5,
-      price: "800.000DT",
-      title: "Studio Moderne",
-      address: "Rue Orange, Monastir",
-      description:
-        "Ce studio moderne offre un espace compact mais élégant à quelques pas de la mer, idéal pour célibataires ou étudiants.",
-      type: "sale",
-    },
-    {
-      id: 6,
-      image: image6,
-      price: "800.000DT",
-      title: "Studio Moderne",
-      address: "Rue Orange, Monastir",
-      description:
-        "Ce studio moderne offre un espace compact mais élégant à quelques pas de la mer, idéal pour célibataires ou étudiants.",
-      type: "rent",
-    },
-  ];
-
   const goToPrevSlide = () => {
     setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-  };
-
-  const goToNextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % images.length);
   };
 
   const toggleFavorite = (property) => {
@@ -100,13 +33,33 @@ function PropertyHouse() {
       }
     });
   };
-
+  const goToNextSlide = () => {
+    setCurrentIndex((prev) => (prev + 1) % images.length);
+  };
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 4000);
-    return () => clearInterval(interval);
+    }, 4000); // Change every 4 seconds
+
+    return () => clearInterval(interval); // Clean up the interval on component unmount
   }, []);
+
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        const response = await getAllProperties();
+        setProperties(response?.data.data || []);
+      } catch (error) {
+        console.error("Error fetching properties:", error);
+      }
+    };
+
+    fetchProperties();
+  }, []);
+
+  useEffect(() => {
+    console.log("properties", properties);
+  }, [properties]);
 
   return (
     <div className="property-listing-container">
@@ -257,44 +210,28 @@ function PropertyHouse() {
 
         <div className="filter-row">
           <div className="filter-group">
-            <label className="filter-label">Surface area</label>
-            <div style={{ display: "flex", gap: "10px" }}>
-              <input
-                type="number"
-                className="filter-input"
-                placeholder="Min"
-                style={{ flex: 1 }}
-              />
-              <span style={{ lineHeight: "35px" }}>-</span>
-              <input
-                type="number"
-                className="filter-input"
-                placeholder="Max"
-                style={{ flex: 1 }}
-              />
-              <span style={{ lineHeight: "35px", marginLeft: "5px" }}>
-                sq. ft
-              </span>
-            </div>
+            <label className="filter-label" All>
+              Home Type
+            </label>
+            <select className="filter-select">
+              <option>Select a HomeType</option>
+              <option>House</option>
+              <option>Apartment</option>
+              <option>Villa</option>
+              <option>Studio</option>
+            </select>
           </div>
 
           <div className="filter-group">
-            <label className="filter-label">Price range</label>
+            <label className="filter-label">Price </label>
             <div style={{ display: "flex", gap: "10px" }}>
               <input
                 type="number"
                 className="filter-input"
-                placeholder="Min"
+                placeholder="Price"
                 style={{ flex: 1 }}
               />
-              <span style={{ lineHeight: "35px" }}>-</span>
-              <input
-                type="number"
-                className="filter-input"
-                placeholder="Max"
-                style={{ flex: 1 }}
-              />
-              <span style={{ lineHeight: "35px", marginLeft: "5px" }}>DT</span>
+              <span style={{ lineHeight: "35px" }}></span>
             </div>
           </div>
         </div>
@@ -302,67 +239,88 @@ function PropertyHouse() {
           <button className="search-button">SEARCH</button>
         </div>
       </div>
-
       <section className="featured-properties">
         <div className="section-header">
           <h2 className="animated-title">FEATURED PROPERTIES</h2>
           <p className="animated-paragraph">
-            Discover our carefully selected properties, ready to become your new home.
+            Découvrez nos propriétés sélectionnées avec soin, prêtes à devenir
+            votre nouveau chez-vous.
           </p>
         </div>
 
-        <div className="properties-grid">
-          {featuredProperties.map((property) => (
+        <div
+          style={{
+            display: "flex",
+            gap: "12px",
+            flexWrap: "wrap",
+            paddingTop: "12px",
+          }}
+        >
+          {properties?.map((property) => (
             <div
-              key={property.id}
               className="property-card"
-              style={{ height: "500px" }}
+              style={{ height: "500px", minWidth: "400px" }}
             >
               <div className="image-wrapper">
                 <div
                   className="property-image"
-                  style={{ backgroundImage: `url(${property.image})` }}
+                  style={{
+                    backgroundImage: `url(${"http://localhost:3001" + property?.photos[0]?.url})`,
+                  }}
                 >
-                  <span
-                    className={`property-badge ${
-                      property.type === "rent" ? "badge-rent" : "badge-sale"
-                    }`}
-                  >
-                    {property.type === "rent" ? "FOR RENT" : "FOR SALE"}
-                  </span>
+                  {/* Badge NEW */}
+                  <span className="property-badge">FOR Sale</span>
+
+                  {/* Caractéristiques avec icônes */}
+                  <div className="property-features">
+                    <span className="feature">
+                      <i className="fas fa-bed"></i> {property?.beds || 0}
+                    </span>
+                    <span className="feature">
+                      <i className="fas fa-bath"></i>{" "}
+                      {property?.baths?.fullBaths +
+                        property?.baths?.halfBaths || 0}
+                    </span>
+                    <span className="feature">
+                      <i className="fas fa-ruler-combined"></i> -- sq ft
+                    </span>
+                  </div>
                 </div>
-                <div className="property-price">{property.price}</div>
+
+                {/* Type et prix */}
+
+                <div className="property-price">{property?.price}DT</div>
               </div>
+
               <div className="property-info">
-                <h3 className="property-title">{property.title}</h3>
-                <p className="property-address">{property.address}</p>
+                <h3 className="property-title">{property?.title}</h3>
+                <p className="property-address">{property?.streetAddress}</p>
                 <hr className="property-divider" />
-                <p className="property-description">{property.description}</p>
+                <p className="property-description">{property?.description}</p>
                 <div className="button-container">
                   <button
-                    onClick={() => navigate(`/details/${property.id}`)}
+                    onClick={() => navigate(`/details/${property?._id}`)}
                     className="search-button"
                   >
-                    View Details
+                    {" "}
+                    Voir Détails
                   </button>
-                  <button 
+                  {/* <button
                     onClick={() => toggleFavorite(property)}
                     className="favorite-button"
                   >
                     {favorites.some((fav) => fav.id === property.id)
                       ? "Remove ❤️"
                       : "Add ❤️"}
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </div>
           ))}
         </div>
       </section>
-
-          
     </div>
   );
 }
 
-export default PropertyHouse; 
+export default PropertyByLocation;

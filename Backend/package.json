@@ -4,6 +4,8 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
+    "install-tf": "npm install @tensorflow/tfjs-node@3.18.0 --build-from-source",
+    "install-sharp": "npm install sharp --ignore-scripts",
     "start": "nodemon server.js"
   },
   "author": "",
@@ -23,7 +25,7 @@
     "mailtrap": "^4.1.0",
     "mongoose": "^8.10.1",
     "multer": "^1.4.5-lts.2",
-    "nodemailer": "^7.0.3",
+    "nodemailer": "^6.10.1",
     "nodemon": "^3.1.10"
   }
 }

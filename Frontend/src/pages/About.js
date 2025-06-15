@@ -1,10 +1,6 @@
 import React, { useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import {
-  FaShieldAlt,
-  FaUsers,
-  FaAward,
-} from "react-icons/fa";
+import { FaShieldAlt, FaUsers, FaAward } from "react-icons/fa";
 import "./About.css";
 
 const AboutUs = () => {
@@ -21,7 +17,6 @@ const AboutUs = () => {
 
   const sectionRef = React.useRef(null);
   const streetRef = React.useRef(null);
-  const unitRef = React.useRef(null);
   const cityRef = React.useRef(null);
   const zipRef = React.useRef(null);
 

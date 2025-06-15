@@ -107,6 +107,7 @@ const Login = () => {
           FullName: data.FullName,
           email: data.email,
           role: data.role,
+          location: data.location || "",
         })
       );
 
@@ -117,6 +118,7 @@ const Login = () => {
           email: data.email,
           phone: data.phone || "",
           role: data.role || "client",
+          location: data.location || "",
         },
         data.token
       );
@@ -126,9 +128,9 @@ const Login = () => {
       if (data.role === "client") {
         navigate("/");
       } else if (data.role === "agent") {
-        navigate("/agent/dashboard");
+        navigate("/agent/agent-dashboard");
       } else if (data.role === "admin") {
-        navigate("/admin/dashboard");
+        navigate("/agent/admin-dashboard");
       } else {
         navigate("/");
       }

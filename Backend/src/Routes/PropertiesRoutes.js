@@ -5,8 +5,6 @@ const fs = require("fs");
 const analyzeImage = require("../Utils/analyzeImage.js");
 const PropertiesController = require("../Controllers/PropertiesController.js");
 
-const router = express.Router();
-
 // Configuration du stockage Multer
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -24,6 +22,19 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
+
+const router = express.Router();
+// Créer un bien avec images
+// router.post("/", upload.array("images", 10), estateController.createEstate);
+
+// Obtenir tous les biens
+router.get("/", PropertiesController.getAllProperties);
+
+// Revalider une image
+// router.post(
+//   "/:propertyId/images/:imageIndex/revalidate",
+//   estateController.revalidateImage
+// );
 
 // Route pour télécharger des fichiers
 router.post("/upload", upload.array("photos", 10), (req, res) => {

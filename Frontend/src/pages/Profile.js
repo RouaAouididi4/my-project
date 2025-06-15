@@ -84,14 +84,24 @@ const Profile = () => {
     },
   ]);
 
-  const [formData, setFormData] = useState({
-    FullName: "",
-    email: "",
-    phone: "",
-    location: "",
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
+  useEffect(() => {
+    console.log(user?.FullName);
+  }, []);
+
+  const [formData, setFormData] = useState(() => {
+    const { FullName, email, phone, location } = JSON.parse(
+      localStorage.getItem("user")
+    );
+
+    return {
+      FullName,
+      email,
+      phone,
+      location,
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    };
   });
 
   useEffect(() => {
@@ -320,7 +330,7 @@ const Profile = () => {
         <div className="profile-form">
           <div className="user-header">
             <div className="user-info">
-               <h3>{formData.FullName}</h3>
+              <h3>{JSON.parse(localStorage.getItem("user")).FullName}</h3>
               <p>{formData.location}</p>
             </div>
           </div>

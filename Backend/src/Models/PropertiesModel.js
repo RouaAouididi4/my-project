@@ -3,10 +3,7 @@ const mongoose = require("mongoose");
 const propertySchema = new mongoose.Schema(
   {
     streetAddress: { type: String, required: true },
-    unit: { type: String },
-    zip: { type: String },
     city: { type: String, required: true },
-    propertyID: { type: String, unique: true, required: true },
     type: { type: String, enum: ["rent", "sale"], required: true },
     homeType: {
       type: String,
@@ -38,14 +35,24 @@ const propertySchema = new mongoose.Schema(
       kitchenCount: { type: Number, default: 0 },
       types: [{ type: String, enum: ["Open", "Close", ""] }],
     },
-    photos: [{ type: String }], // Stocke les URLs des photos
+    photos: [
+      {
+        url: String,
+        isValid: Boolean,
+        validationScore: Number,
+        validationDetails: {
+          isRealEstate: Boolean,
+          categories: [String],
+          confidence: Number,
+        },
+      },
+    ],
     status: {
       type: String,
       enum: ["pending", "approved", "rejected"],
       default: "pending",
     },
-    description: { type: String },
-    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    createdAt: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     agreement: { type: Boolean, required: true },
   },
@@ -53,12 +60,12 @@ const propertySchema = new mongoose.Schema(
 );
 
 // Génération automatique de propertyID avant la sauvegarde
-propertySchema.pre("save", function (next) {
-  if (!this.propertyID) {
-    this.propertyID =
-      "PROP-" + Date.now() + "-" + Math.floor(Math.random() * 1000);
-  }
-  next();
-});
+// propertySchema.pre("save", function (next) {
+//   if (!this.propertyID) {
+//     this.propertyID =
+//       "PROP-" + Date.now() + "-" + Math.floor(Math.random() * 1000);
+//   }
+//   next();
+// });
 
 module.exports = mongoose.model("Property", propertySchema);

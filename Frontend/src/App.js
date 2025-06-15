@@ -6,7 +6,6 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import PropertyListing from "./pages/PropertyListing";
 import Services from "./pages/Services";
-import Blog from "./pages/Blog";
 import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -27,10 +26,13 @@ import EmailVerification from "./pages/EmailVerification";
 import SendMessage from "./pages/SendMessage";
 import HistoryCLayout from "./pages/HistoryCLayout";
 import HistoryLayout from "./pages/HistoryLayout";
-import AgentLayout from "./pages/AgentsLayout"; // corrigé le chemin selon ton code
+import AgentLayout from "./components/layout/AgentLayout"; // corrigé le chemin selon ton code
 import AdminLayout from "./components/layout/AdminLayout";
 import AuthLayout from "./components/layout/AuthLayout";
 import PropertyLayout from "./pages/PropertyLayout";
+import PasswordLayout from "./pages/PasswordLayout";
+import Agents from "./pages/agents/agents";
+import ClientNavbar from "./components/ClientNavbar";
 
 function AppContent() {
   const [user, setUser] = useState(null);
@@ -54,6 +56,8 @@ function AppContent() {
     <>
       {!user && <NavBar />}
 
+      {user && user?.role === "client" && <ClientNavbar />}
+
       <div className="app-container p-4 bg-gray-100">
         <Routes>
           {/* Routes publiques */}
@@ -70,7 +74,6 @@ function AppContent() {
           />
           <Route path="/activate" element={<Activate />} />
           <Route path="/services" element={<Services />} />
-          <Route path="/blog" element={<Blog />} />
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
@@ -88,21 +91,15 @@ function AppContent() {
 
             {/* Routes agent */}
             <Route path="/agent" element={<AgentLayout />}>
-              <Route index element={<AgentDashboard />} />
-              <Route path="dashboard" element={<AgentDashboard />} />
+              <Route path="agent-dashboard" element={<AgentDashboard />} />
               <Route path="users" element={<ClientManagement />} />
               <Route path="send-message" element={<SendMessage />} />
-            </Route>
-
-            {/* Routes admin */}
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<AdminDashboard />} />
-              <Route path="dashboard" element={<AdminDashboard />} />
-
-              <Route path="users" element={<ClientManagement />} />
+              <Route path="admin-dashboard" element={<AdminDashboard />} />
               <Route path="properties" element={<PropertyLayout />} />
               <Route path="history-clients" element={<HistoryCLayout />} />
               <Route path="history-agents" element={<HistoryLayout />} />
+              <Route path="password" element={<PasswordLayout />} />
+              <Route path="agents" element={<Agents />} />
             </Route>
           </Route>
         </Routes>

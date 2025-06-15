@@ -201,9 +201,9 @@ function Signup() {
 
       // Redirect based on email
       if (data.user.email.endsWith("@admin.com")) {
-        navigate("/admin/dashboard");
+        navigate("/agent/admin-dashboard");
       } else if (data.user.email.endsWith("@agent.com")) {
-        navigate("/agent/dashboard");
+        navigate("/agent/agent-dashboard");
       } else {
         navigate("/");
       }

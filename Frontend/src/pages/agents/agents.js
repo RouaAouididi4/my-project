@@ -1,5 +1,4 @@
-import React from "react";
-import "./AgentsLayout.css";
+import "./agents.css";
 
 const agents = [
   {
@@ -22,9 +21,9 @@ const agents = [
   },
 ];
 
-const AgentLayout = () => {
+const Agents = () => {
   return (
-    <div className="agent-layout container py-5">
+    <div>
       <h2 className="title text-center mb-5">Meet Our Team</h2>
       <div className="agents-grid">
         {agents.map((agent, index) => (
@@ -44,4 +43,4 @@ const AgentLayout = () => {
   );
 };
 
-export default AgentLayout;
+export default Agents;

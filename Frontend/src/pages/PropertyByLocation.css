@@ -1,6 +1,5 @@
 .hero-section {
-  
-  height: 100vh; 
+  height: 100vh;
   position: relative;
   margin-left: -190px;
   margin-right: -170px;
@@ -10,24 +9,23 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* important */
+  justify-content: space-between;
   height: 100%;
   padding: 1rem;
   background-color: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .property-card:hover {
-  transform: scale(1.05); 
+  transform: scale(1.05);
 }
 
 .properties-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 30px;
+  gap: 20px;
 }
-
 
 .property-info {
   flex-grow: 1;
@@ -38,8 +36,8 @@
 
 .button-container {
   display: flex;
-  justify-content: flex-end; /* Right */
-  margin-top: auto; /* Push to bottom */
+  justify-content: flex-end;
+  margin-top: auto;
 }
 
 .search-btn {

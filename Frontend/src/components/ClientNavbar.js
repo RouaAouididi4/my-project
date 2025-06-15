@@ -59,9 +59,6 @@ const ClientNavbar = () => {
             <a href="/Post" className="menu-item">
               Post
             </a>
-            <a href="/blog" className="menu-item">
-              Blog
-            </a>
 
             <div className="dropdown">
               <button className="menu-item">

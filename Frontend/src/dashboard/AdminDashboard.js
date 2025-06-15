@@ -8,7 +8,7 @@ import ClientManagement from "../pages/ClientManagement";
 import HistoryCLayout from "../pages/HistoryCLayout";
 import HistoryLayout from "../pages/HistoryLayout";
 import SendMessage from "../pages/SendMessage";
-import AgentLayout from "../pages/AgentsLayout";
+import AgentLayout from "../components/layout/AgentLayout";
 import PropertyLayout from "../pages/PropertyLayout";
 
 const AdminDashboard = () => {

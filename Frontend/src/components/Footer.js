@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { useState, useEffect } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
 import {
   FaFacebookF,
   FaInstagram,
@@ -11,10 +11,9 @@ import {
   FaEnvelope,
 } from "react-icons/fa";
 const Footer = () => {
-    return (
-  
-    <div> 
-    {/* Footer */}
+  return (
+    <div>
+      {/* Footer */}
       <footer className="footer-section bg-dark text-light pt-5 pb-4">
         <div className="container  ">
           <div className="row">
@@ -88,11 +87,7 @@ const Footer = () => {
                     Listings
                   </a>
                 </li>
-                <li className="mb-2">
-                  <a href="/blog" className="footer-link">
-                    Blog News
-                  </a>
-                </li>
+
                 <li>
                   <a href="/contact" className="footer-link">
                     Contact
@@ -168,9 +163,8 @@ const Footer = () => {
           </div>
         </div>
       </footer>
-      </div>
+    </div>
   );
-}
+};
 
 export default Footer;
- 

@@ -1,9 +1,57 @@
 .hero-section {
-  
-  height: 100vh; 
+  height: 100vh;
   position: relative;
   margin-left: -190px;
   margin-right: -170px;
+}
+.filter-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* padding: 40px 20px; */
+  text-align: center;
+}
+
+.filter-intro-text {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin: 20px auto;
+  text-align: center;
+  color: #333; /* couleur de texte neutre */
+  max-width: 600px;
+  background: none; /* supprime tout fond */
+  border: none; /* supprime les bordures */
+  box-shadow: none; /* supprime toute ombre */
+  padding: 0; /* enlève les marges internes s'il y en a */
+}
+
+.animated-intro {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeSlideUp 1s ease-out forwards;
+}
+
+@keyframes fadeSlideUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.search-button {
+  padding: 12px 25px;
+  font-size: 1rem;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.search-button:hover {
+  background-color: #45a049;
 }
 
 .property-card {
@@ -15,11 +63,11 @@
   padding: 1rem;
   background-color: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .property-card:hover {
-  transform: scale(1.05); 
+  transform: scale(1.05);
 }
 
 .properties-grid {
@@ -27,7 +75,6 @@
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: 30px;
 }
-
 
 .property-info {
   flex-grow: 1;

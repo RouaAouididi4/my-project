@@ -64,9 +64,6 @@ const Navbar = () => {
               <Link to="/Post" className="menu-item">
                 Post
               </Link>
-              <Link to="/blog" className="menu-item">
-                Blog
-              </Link>
 
               <div className="dropdown">
                 <button className="menu-item">
@@ -284,9 +281,6 @@ const Navbar = () => {
             </Link>
             <Link to="/Post" className="menu-item">
               Post
-            </Link>
-            <Link to="/blog" className="menu-item">
-              Blog
             </Link>
 
             <div className="dropdown">

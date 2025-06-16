@@ -3,10 +3,11 @@ import "./Contact.css";
 import contactImage from "./images/cont.jpg";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaPhone, FaEnvelope } from "react-icons/fa";
+import { getAllUsers } from "../services/userService";
 
 function Contact() {
   const [selectedAgent, setSelectedAgent] = useState("");
-  const agents = ["Mohammed Nsir", "Achref Aissa", "Hiba Gaîed"]; // 👉 Tu peux changer les noms ici
+  const [agents, setAgents] = useState([]);
 
   const [subject, setSubject] = useState("");
   const [formData, setFormData] = useState({
@@ -117,6 +118,22 @@ function Contact() {
   const goToNextSlide = () => {
     setCurrentIndex((prev) => (prev + 1) % images.length);
   };
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await getAllUsers();
+        const allUsers = response?.data.data || [];
+        const agents = allUsers.filter((user) => user.role === "agent");
+        console.log(agents);
+        setAgents(agents);
+      } catch (error) {
+        console.error("Error fetching properties:", error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -347,9 +364,9 @@ function Contact() {
                           required
                         >
                           <option value="">Select an agent</option>
-                          {agents.map((agent, index) => (
-                            <option key={index} value={agent}>
-                              {agent}
+                          {agents?.map((agent, index) => (
+                            <option key={index} value={agent._id}>
+                              {agent.FullName}
                             </option>
                           ))}
                         </select>

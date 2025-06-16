@@ -177,7 +177,11 @@ function Signup() {
           role,
         }),
       });
-
+      req.session.user = {
+        id: user._id,
+        email: user.email,
+        role: user.role,
+      };
       const data = await response.json();
 
       console.log("📬 Server response:", data);

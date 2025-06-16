@@ -65,7 +65,6 @@ const Login = () => {
   };
 
   const isEmpty = (field) => !formData[field] && touched[field];
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -99,17 +98,19 @@ const Login = () => {
 
       console.log(data);
 
-      localStorage.setItem("token", data.token);
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          id: data.id,
-          FullName: data.FullName,
-          email: data.email,
-          role: data.role,
-          location: data.location || "",
-        })
-      );
+      if (typeof localStorage !== "undefined") {
+        window.localStorage.setItem("token", data.token);
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            id: data.id,
+            FullName: data.FullName,
+            email: data.email,
+            role: data.role,
+            location: data.location || "",
+          })
+        );
+      }
 
       login(
         {
@@ -134,7 +135,8 @@ const Login = () => {
       } else {
         navigate("/");
       }
-      location.reload();
+
+      // location.reload(); <-- À retirer
     } catch (err) {
       setError(err.message || "Login failed. Please try again.");
       console.error("Login error:", err);
@@ -142,6 +144,7 @@ const Login = () => {
       setIsLoading(false);
     }
   };
+
   return (
     <div>
       <section className="hero">

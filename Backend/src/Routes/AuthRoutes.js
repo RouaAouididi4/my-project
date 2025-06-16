@@ -95,4 +95,12 @@ router.post("/activate", async (req, res) => {
     res.status(500).json({ error: "Erreur serveur" });
   }
 });
+
+router.get("/test-session", (req, res) => {
+  if (req.session.user) {
+    res.status(200).json({ session: true, user: req.session.user });
+  } else {
+    res.status(200).json({ session: false, message: "No session" });
+  }
+});
 module.exports = router;

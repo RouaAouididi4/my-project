@@ -54,10 +54,7 @@ exports.createProperty = catchAsync(async (req, res, next) => {
     type,
     homeType,
     beds,
-    baths: {
-      fullBaths: baths?.fullBaths || 0,
-      halfBaths: baths?.halfBaths || 0,
-    },
+    baths,
     price,
     yearBuilt,
     management,
@@ -68,10 +65,10 @@ exports.createProperty = catchAsync(async (req, res, next) => {
       "swimming-pool": features?.["swimming-pool"] || false,
       balcony: features?.balcony || false,
       balconyLocation: features?.balconyLocation || [],
-      deseginType: features?.deseginType,
+      designType: features?.designType,
     },
     Kitchen: {
-      kitchenCount: Kitchen?.kitchenCount || 0,
+      kitchenCount: req.body["kitchenCount"],
       types: Kitchen?.types || [],
     },
     photos: validatedPhotos,
@@ -111,7 +108,7 @@ exports.searchProperties = catchAsync(async (req, res, next) => {
     "features.parking": parking,
     "features.swimming-pool": swimmingPool,
     "features.balcony": balcony,
-    "features.deseginType": deseginType,
+    "features.designType": designType,
   } = req.query;
 
   const query = {};
@@ -137,7 +134,7 @@ exports.searchProperties = catchAsync(async (req, res, next) => {
   if (parking) query["features.parking"] = parking === "true";
   if (swimmingPool) query["features.swimming-pool"] = swimmingPool === "true";
   if (balcony) query["features.balcony"] = balcony === "true";
-  if (deseginType) query["features.deseginType"] = deseginType;
+  if (designType) query["features.designType"] = designType;
 
   const properties = await Property.find(query);
 
@@ -182,7 +179,7 @@ exports.updateProperty = catchAsync(async (req, res, next) => {
 exports.deleteProperty = catchAsync(async (req, res, next) => {
   const { id } = req.params;
 
-  const property = await Property.findByIdAndDelete(id);
+  const estate = await estate.findByIdAndDelete(id);
 
   if (!property) {
     return res.status(404).json({

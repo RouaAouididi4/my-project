@@ -203,6 +203,7 @@ function PropertyByLocation() {
         >
           {properties?.map((property) => (
             <div
+              key={property._id}
               className="property-card"
               style={{ height: "500px", minWidth: "400px" }}
             >

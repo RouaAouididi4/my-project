@@ -1,7 +1,7 @@
 const express = require("express");
 const userController = require("../Controllers/UserController");
 const AuthMiddleware = require("../middleware/AuthMiddleware"); // Assure-toi que le chemin est correct
-
+const User = require("../Models/User");
 const router = express.Router();
 
 // Define routes for user operations

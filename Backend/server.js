@@ -2,49 +2,50 @@ const express = require("express");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const session = require("express-session");
+
 const PropertiesRoutes = require("./src/Routes/PropertiesRoutes");
 const MeetingRoutes = require("./src/Routes/MeetingRoutes.js");
 const UserRoutes = require("./src/Routes/UserRoutes.js");
 const AuthRoutes = require("./src/Routes/AuthRoutes");
-const path = require("path");
-const session = require("express-session");
+const testSessionRoutes = require("./src/Routes/testSessionRoutes.js");
 const MessageRoutes = require("./src/Routes/MessageRoutes.js");
+
 // Load environment variables
 dotenv.config();
 
-// Initialize Express app
 const app = express();
 
-// Middleware
-app.use(cors());
-
-app.use(express.json()); // For parsing application/json
+// CORS Middleware - must be before session and routes
 app.use(
   cors({
     origin: "http://localhost:3000",
     credentials: true,
   })
-); // Enable CORS
+);
+
+// Parsers
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Session configuration (MUST come after app initialization)
+// Session middleware
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "YourFallbackSecretKey", // Always use environment variables for secrets
+    secret: process.env.SESSION_SECRET || "YosraSessionKey!123456789",
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: false,
-      httpOnly: true, // Helps prevent XSS attacks
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      secure: false, // true si HTTPS en prod
+      httpOnly: true,
+      maxAge: 48 * 60 * 60 * 1000, // 1 jour
     },
   })
 );
 
-// backend/index.js or app.js
+// Static files
 app.use("/uploads", express.static("uploads"));
 
-// Database connection
+// Connect to MongoDB
 mongoose
   .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
@@ -57,12 +58,14 @@ mongoose
   });
 
 // Routes
+app.use("/api/", testSessionRoutes);
 app.use("/api/auth", AuthRoutes);
 app.use("/api/properties", PropertiesRoutes);
 app.use("/api/meetings", MeetingRoutes);
 app.use("/api/users", UserRoutes);
 app.use("/api/contact", MessageRoutes);
 
+// Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: "Internal Server Error" });

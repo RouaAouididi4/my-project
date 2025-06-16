@@ -1,6 +1,7 @@
 const User = require("../Models/User.js");
 const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
+
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
@@ -142,7 +143,6 @@ exports.resetPassword = async (req, res) => {
   await user.save();
   res.status(200).json({ message: "Password updated successfully" });
 };
-
 exports.signup = async (req, res) => {
   try {
     const {
@@ -155,14 +155,15 @@ exports.signup = async (req, res) => {
       role,
     } = req.body;
 
-    if (password !== confirmPassword) {
-      return res.status(400).json({ message: "Passwords do not match" });
-    }
-
+    // 🔐 Vérification des champs
     if (!email || !password) {
       return res
         .status(400)
         .json({ message: "Email and password are required" });
+    }
+
+    if (password !== confirmPassword) {
+      return res.status(400).json({ message: "Passwords do not match" });
     }
 
     const existingUser = await User.findOne({ email });
@@ -171,13 +172,9 @@ exports.signup = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
-    const verificationToken = crypto.randomBytes(32).toString("hex"); // ✅ Token
-    console.log("📤 Token enregistré :", verificationToken);
+    const verificationToken = crypto.randomBytes(32).toString("hex");
 
     const user = await User.create({
-      verificationToken,
-      verificationTokenExpires: Date.now() + 3600000,
-
       FullName,
       phone,
       location,
@@ -185,13 +182,22 @@ exports.signup = async (req, res) => {
       role: role || "client",
       isVerified: false,
       password: hashedPassword,
+      verificationToken,
+      verificationTokenExpires: Date.now() + 3600000, // 1h
     });
-    console.log("📝 Token stocké en base:", user.verificationToken);
 
-    await sendVerificationEmail(email, verificationToken); // ✅ Envoie le même token
-    console.log("📧 Token envoyé par email :", verificationToken);
+    // ✅ Créer la session
+    req.session.user = {
+      id: user._id,
+      email: user.email,
+      role: user.role,
+      sessionId: req.sessionID,
+    };
 
-    // 🔐 Générer un token JWT comme dans le login
+    // 📧 Envoi email
+    await sendVerificationEmail(email, verificationToken);
+
+    // 🔐 Génération du token JWT
     const token = jwt.sign(
       {
         id: user._id,
@@ -199,13 +205,13 @@ exports.signup = async (req, res) => {
         email: user.email,
         phone: user.phone,
         location: user.location,
-
         role: user.role,
       },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
 
+    // ✅ Réponse
     res.status(201).json({
       message: "User created successfully",
       token,
@@ -281,34 +287,29 @@ exports.login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      {
-        id: user._id,
-        FullName: user.FullName,
-        email: user.email,
-        phone: user.phone,
-        location: user.location,
-        role: user.role,
-      },
+      { id: user._id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      {
+        expiresIn: process.env.JWT_EXPIRES_IN || "1d",
+      }
     );
 
     res.status(200).json({
-      status: "success",
       token,
       id: user._id,
       FullName: user.FullName,
       email: user.email,
+      role: user.role,
       phone: user.phone,
       location: user.location,
-      role: user.role,
+      status: "success",
+      message: "Login successful",
     });
   } catch (err) {
     console.error("Login error:", err);
     res.status(500).json({ message: err.message });
   }
 };
-
 // Fonction getMe pour obtenir les informations du profil de l'utilisateur connecté
 exports.getMe = async (req, res) => {
   try {

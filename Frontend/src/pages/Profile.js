@@ -34,21 +34,18 @@ const Profile = () => {
     {
       id: "1",
       price: "2500000 DT",
-      title: "Individual Villa",
       location: "Hergla, Cité Nozha",
       image: image1,
     },
     {
       id: "2",
       price: "2500000 DT",
-      title: "Appartement Luxueux",
       location: "Kantaoui, Sousse",
       image: image2,
     },
     {
       id: "3",
       price: "800000 DT",
-      title: "Studio Moderne",
       location: "Rue Orange, Monastir",
       image: image3,
     },
@@ -71,7 +68,6 @@ const Profile = () => {
       query: "house for sale in Tunis",
 
       price: "2500000 DT",
-      title: "Individual Villa",
       location: "Hergla, Cité Nozha",
       image: image1,
       date: "2025-05-10",
@@ -215,9 +211,15 @@ const Profile = () => {
     }, 4000);
     return () => clearInterval(interval);
   }, [images.length]);
-
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    const success = await logout();
+    if (success) {
+      // Clear user state and redirect
+      setUser(null);
+      navigate("/");
+    } else {
+      alert("Failed to logout. Please try again.");
+    }
   };
 
   const handleScroll = (section) => {
@@ -429,8 +431,8 @@ const Profile = () => {
                     <div className="favorites-list">
                       {favoriteProperties.map((property) => (
                         <div
-                          className={`favorite-card ${fadingOutId === property.id ? "fade-out" : ""}`}
-                          key={property.id}
+                          className={`favorite-card ${fadingOutId === property._id ? "fade-out" : ""}`}
+                          key={property._id}
                         >
                           <img
                             src={property.image || "/default-house.jpg"}

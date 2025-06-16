@@ -15,6 +15,7 @@ const AdminDashboard = () => {
   // Correction: on utilise "users" comme clé cohérente partout
   const [activeTab, setActiveTab] = useState("users");
   const { logout } = useAuth();
+  const [clients, setClients] = useState([]);
 
   const navigate = useNavigate();
 

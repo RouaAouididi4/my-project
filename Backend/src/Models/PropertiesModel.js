@@ -12,8 +12,8 @@ const propertySchema = new mongoose.Schema(
     },
     beds: { type: Number },
     baths: {
-      fullBaths: { type: Number, default: 0 },
-      halfBaths: { type: Number, default: 0 },
+      type: Number,
+      default: 0,
     },
     price: { type: Number, required: true },
     yearBuilt: { type: Number },
@@ -29,7 +29,7 @@ const propertySchema = new mongoose.Schema(
       "swimming-pool": { type: Boolean, default: false },
       balcony: { type: Boolean, default: false },
       balconyLocation: [{ type: String }],
-      deseginType: { type: String, enum: ["modern", "traditional"] },
+      designType: { type: String, enum: ["modern", "traditional"] },
     },
     Kitchen: {
       kitchenCount: { type: Number, default: 0 },

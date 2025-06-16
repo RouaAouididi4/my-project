@@ -66,14 +66,24 @@ export function AuthProvider({ children }) {
     loadUser();
   }, []);
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setAuthState({
-      token: null,
-      user: null,
-      isAuthenticated: false,
-    });
+  // In your auth service or where logout is handled
+  const logout = async () => {
+    try {
+      const response = await fetch("http://localhost:3001/api/auth/logout", {
+        method: "POST",
+        credentials: "include", // Important for session cookies
+      });
+
+      if (!response.ok) {
+        throw new Error("Logout failed");
+      }
+
+      // Clear client-side user state
+      return true;
+    } catch (error) {
+      console.error("Logout error:", error);
+      return false;
+    }
   };
 
   return (

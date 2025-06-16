@@ -79,19 +79,13 @@ function PostForSaleByOwnerListing() {
     location: { lat: 0, lng: 0 },
     hometype: "",
     beds: "",
-    baths: {
-      fullBaths: 0,
-      threeQuarterBaths: 0,
-      halfBaths: 0,
-      quarterBaths: 0,
-    },
+    baths: "",
     yearbuilt: "",
     status: "",
     description: "",
     phone: "",
     management: "",
     agreement: false,
-    title: "",
     // features object
     features: {
       garden: false,
@@ -289,12 +283,7 @@ function PostForSaleByOwnerListing() {
         hometype: "",
         type: "",
         beds: "",
-        baths: {
-          fullBaths: 0,
-          threeQuarterBaths: 0,
-          halfBaths: 0,
-          quarterBaths: 0,
-        },
+        baths: "",
         yearbuilt: "",
         status: "",
         description: "",
@@ -544,503 +533,499 @@ function PostForSaleByOwnerListing() {
       </div>
 
       <div className="container">
-        <center>
-          <div className="listing-form">
-            <div className="facts">Home Facts</div>
+        <div className="listing-form">
+          <div className="facts">Home Facts</div>
 
-            <div className="photos-section">
-              <h2>Photos</h2>
-              <p>
-                Drag and drop to reorder. Click on a photo to add a caption or
-                delete a photo.
-              </p>
+          <div className="photos-section">
+            <h2>Photos</h2>
+            <p>
+              Drag and drop to reorder. Click on a photo to add a caption or
+              delete a photo.
+            </p>
 
-              <div className="photo-upload-area">
-                <p>Drag and drop photos here to upload</p>
+            <div className="photo-upload-area">
+              <p>Drag and drop photos here to upload</p>
 
-                <label className="upload-button">
-                  Add New Photo
-                  <input
-                    type="file"
-                    multiple
-                    onChange={handlePhotoUpload}
-                    hidden
-                  />
-                </label>
-              </div>
+              <label className="upload-button">
+                Add New Photo
+                <input
+                  type="file"
+                  multiple
+                  onChange={handlePhotoUpload}
+                  hidden
+                />
+              </label>
+            </div>
 
-              <div className="photos-grid">
-                {photos.map((photo, index) => (
-                  <div
-                    key={index}
-                    className="photo-item"
-                    draggable
-                    onDragStart={(e) => e.dataTransfer.setData("index", index)}
-                    onDragOver={(e) => e.preventDefault()}
-                    onDrop={(e) => {
-                      const startIndex = e.dataTransfer.getData("index");
-                      handleReorderPhotos(parseInt(startIndex), index);
-                    }}
-                  >
-                    <img src={photo} alt={`Uploaded ${index}`} />
-                    {validationResults[index] && (
-                      <div
-                        className={`validation-badge ${validationResults[index].isValid ? "valid" : "invalid"}`}
-                      >
-                        {validationResults[index].isValid ? "✓" : "✗"}
-                        {!validationResults[index].isValid && (
-                          <span className="validation-message">
-                            {validationResults[index].message}
-                          </span>
-                        )}
-                      </div>
-                    )}
-                    <button
-                      className="delete-button"
-                      onClick={() => handleDeletePhoto(index)}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                ))}
-              </div>
-              {message && (
+            <div className="photos-grid">
+              {photos.map((photo, index) => (
                 <div
-                  className={`message ${message.includes("Erreur") ? "error" : "success"}`}
-                >
-                  {message}
-                </div>
-              )}
-            </div>
-            <div className="price-box">
-              <span className="price-label">Set Your Price*:</span>
-              <div className="price-input-box">
-                <input
-                  required
-                  type="number"
-                  className="price-input"
-                  name="price"
-                  placeholder="0"
-                  value={formData?.price ?? ""}
-                  ref={priceRef}
-                  onChange={handleInputChange}
-                />
-                <span className="price-currency">DT</span>
-              </div>
-            </div>
-            <div className="form-row">
-              <div className="form-section" style={{ width: "70%" }}>
-                <label>Type of property*:</label>
-                <select
-                  name="hometype"
-                  value={formData.hometype}
-                  onChange={handleInputChange}
-                >
-                  <option value="">-- Choose a type --</option>
-                  <option value="House">House</option>
-                  <option value="Apartment">Apartment</option>
-                  <option value="Villa">Villa</option>
-                  <option value="Studio">Studio</option>
-                </select>
-              </div>
-
-              <div className="form-section" style={{ width: "30%" }}>
-                <label htmlFor="type">Type*:</label>
-                <select
-                  id="type"
-                  name="type"
-                  value={formData.type}
-                  onChange={handleInputChange}
-                >
-                  <option value="">Select type:</option>
-                  <option value="rent">Rent</option>
-                  <option value="sale">Sale</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="form-row">
-              <div className="form-section">
-                <label>Beds*:</label>
-                <input
-                  type="number"
-                  min="0"
-                  placeholder="0"
-                  name="beds"
-                  value={formData.beds}
-                  onChange={handleInputChange}
-                />
-              </div>
-
-              <div className="form-section">
-                <label>Baths*:</label>
-                <input
-                  type="number"
-                  min="0"
-                  placeholder="0"
-                  name="baths"
-                  value={formData.baths.fullBaths}
-                  onChange={(e) => {
-                    const value = parseInt(e.target.value);
-                    const safeValue = isNaN(value) || value < 0 ? 0 : value;
-
-                    setFormData((prev) => ({
-                      ...prev,
-                      baths: {
-                        ...prev.baths,
-                        fullBaths: safeValue,
-                      },
-                    }));
+                  key={index}
+                  className="photo-item"
+                  draggable
+                  onDragStart={(e) => e.dataTransfer.setData("index", index)}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    const startIndex = e.dataTransfer.getData("index");
+                    handleReorderPhotos(parseInt(startIndex), index);
                   }}
-                />
-              </div>
-            </div>
-
-            <div className="form-row">
-              <div className="form-section">
-                <label>Kitchen*:</label>
-                <input
-                  type="number"
-                  placeholder="0"
-                  name="kitchenCount"
-                  className="kitchen-count-input"
-                  value={formData.Kitchen?.kitchenCount || 0}
-                  onChange={(e) => {
-                    const rawCount = parseInt(e.target.value);
-                    const count = isNaN(rawCount) ? 0 : Math.max(0, rawCount); // لا قيم سالبة
-
-                    setFormData((prev) => {
-                      const prevTypes = prev.Kitchen?.types || [];
-
-                      const newTypes = [
-                        ...prevTypes.slice(0, count),
-                        ...Array(Math.max(count - prevTypes.length, 0)).fill(
-                          ""
-                        ),
-                      ];
-
-                      return {
-                        ...prev,
-                        Kitchen: {
-                          ...prev.Kitchen,
-                          kitchenCount: count,
-                          types: newTypes,
-                        },
-                      };
-                    });
-                  }}
-                />
-
-                {formData.Kitchen?.kitchenCount > 0 &&
-                  formData.Kitchen.types.map((type, index) => (
-                    <div className="kitchen-type-select" key={index}>
-                      <label>Kitchen {index + 1} Type:</label>
-                      <select
-                        value={formData.Kitchen.types[index] || ""}
-                        onChange={(e) => {
-                          const updatedTypes = [...formData.Kitchen.types];
-                          updatedTypes[index] = e.target.value;
-
-                          setFormData((prev) => ({
-                            ...prev,
-                            Kitchen: {
-                              ...prev.Kitchen,
-                              types: updatedTypes,
-                            },
-                          }));
-                        }}
-                      >
-                        <option value="">-- Select Type --</option>
-                        <option value="Open">Open</option>
-                        <option value="Close">Close</option>
-                      </select>
-                    </div>
-                  ))}
-              </div>
-
-              <div className="form-section">
-                <label>Year Built*:</label>
-                <input
-                  type="text"
-                  className="filter-input"
-                  placeholder="Year Built"
-                  name="yearbuilt"
-                  value={formData.yearbuilt}
-                  onChange={handleInputChange}
-                />
-              </div>
-            </div>
-
-            <div className="filter-row">
-              <div className="management-section">
-                <label className="management-label">Management*:</label>
-                <div className="checkbox-group">
-                  <label className="checkbox-option">
-                    <input
-                      type="checkbox"
-                      name="management"
-                      value="unmanaged"
-                      checked={formData.management === "unmanaged"}
-                      onChange={handleInputChange}
-                    />
-                    <span className="checkmark"></span>
-                    Unmanaged
-                  </label>
-                  <label className="checkbox-option">
-                    <input
-                      type="checkbox"
-                      name="management"
-                      value="managed"
-                      checked={formData.management === "managed"}
-                      onChange={handleInputChange}
-                    />
-                    <span className="checkmark"></span>
-                    Managed
-                  </label>
-                </div>
-              </div>
-
-              <div className="form-section">
-                <h3>Contact information*:</h3>
-                <input
-                  type="tel"
-                  placeholder="(216) 00 000 000"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                />
-                <p className="info-text">
-                  Potential buyers will contact you through the email address
-                  you use to register on Homz. You must also add your phone
-                  number to the listing here.
-                </p>
-              </div>
-            </div>
-            <div className="form-section">
-              <label className="management-label">Features:</label>
-
-              <div className="checkbox-group">
-                {/* Garden */}
-                <label className="checkbox-option">
-                  <input
-                    type="checkbox"
-                    checked={formData?.features?.garden}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        features: {
-                          ...prev.features,
-                          garden: e.target.checked,
-                        },
-                      }))
-                    }
-                  />
-                  <span className="checkmark"></span>
-                  Garden
-                </label>
-
-                {/* Parking */}
-                <label className="checkbox-option">
-                  <input
-                    type="checkbox"
-                    checked={formData?.features?.parking}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        features: {
-                          ...prev.features,
-                          parking: e.target.checked,
-                        },
-                      }))
-                    }
-                  />
-                  <span className="checkmark"></span>
-                  Parking
-                </label>
-
-                {/* swimming pool */}
-                <label className="checkbox-option">
-                  <input
-                    type="checkbox"
-                    checked={formData?.features?.["swimming-pool"]}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        features: {
-                          ...prev.features,
-                          "swimming-pool": e.target.checked,
-                        },
-                      }))
-                    }
-                  />
-                  <span className="checkmark"></span>
-                  swimming pool
-                </label>
-
-                {/* Balcony */}
-                <label className="checkbox-option">
-                  <input
-                    type="checkbox"
-                    checked={formData?.features?.balcony}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        features: {
-                          ...prev.features,
-                          balcony: e.target.checked,
-                          balconyLocation: e.target.checked ? [] : [], // Reset to empty array if unchecked
-                        },
-                      }))
-                    }
-                  />
-                  <span className="checkmark"></span>
-                  Balcony
-                </label>
-
-                {/* Balcony Locations if Balcony is selected */}
-                {formData?.features?.balcony && (
-                  <div>
-                    <label>Balcony Location:</label>
-                    <div>
-                      {["living", "bedrooms", "kitchen", "other"].map(
-                        (location) => (
-                          <label key={location} className="checkbox-option">
-                            <input
-                              type="checkbox"
-                              checked={formData?.features?.balconyLocation.includes(
-                                location
-                              )}
-                              onChange={(e) => {
-                                const checked = e.target.checked;
-                                const value = location;
-                                setFormData((prev) => {
-                                  const updatedLocations = checked
-                                    ? [...prev.features.balconyLocation, value]
-                                    : prev.features.balconyLocation.filter(
-                                        (loc) => loc !== value
-                                      );
-
-                                  return {
-                                    ...prev,
-                                    features: {
-                                      ...prev.features,
-                                      balconyLocation: updatedLocations,
-                                    },
-                                  };
-                                });
-                              }}
-                            />
-                            <span className="checkmark"></span>
-                            {location === "living"
-                              ? "In the living room"
-                              : location === "bedrooms"
-                                ? "In the bedrooms"
-                                : location === "kitchen"
-                                  ? "In the kitchen"
-                                  : "Other"}
-                          </label>
-                        )
+                >
+                  <img src={photo} alt={`Uploaded ${index}`} />
+                  {validationResults[index] && (
+                    <div
+                      className={`validation-badge ${validationResults[index].isValid ? "valid" : "invalid"}`}
+                    >
+                      {validationResults[index].isValid ? "✓" : "✗"}
+                      {!validationResults[index].isValid && (
+                        <span className="validation-message">
+                          {validationResults[index].message}
+                        </span>
                       )}
                     </div>
-                  </div>
-                )}
-
-                {/* Desegin Type */}
-                <div>
-                  <label>Desegin Type*:</label>
-                  <select
-                    value={formData?.features?.designType}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        features: {
-                          ...prev.features,
-                          designType: e.target.value,
-                        },
-                      }))
-                    }
+                  )}
+                  <button
+                    className="delete-button"
+                    onClick={() => handleDeletePhoto(index)}
                   >
-                    <option value="">-- Select Type --</option>
-                    <option value="modern">Modern</option>
-                    <option value="traditional">Traditional</option>
-                  </select>
+                    Delete
+                  </button>
                 </div>
+              ))}
+            </div>
+            {message && (
+              <div
+                className={`message ${message.includes("Erreur") ? "error" : "success"}`}
+              >
+                {message}
               </div>
+            )}
+          </div>
+          <div className="price-box">
+            <span className="price-label">Set Your Price*:</span>
+            <div className="price-input-box">
+              <input
+                required
+                type="number"
+                className="price-input"
+                name="price"
+                placeholder="0"
+                value={formData?.price ?? ""}
+                ref={priceRef}
+                onChange={handleInputChange}
+              />
+              <span className="price-currency">DT</span>
             </div>
           </div>
-          <div className="agreement-container">
-            <div className="agreement-content">
-              <div className="checkbox-wrapper">
+          <div className="form-row">
+            <div className="form-section" style={{ width: "70%" }}>
+              <label>Type of property*:</label>
+              <select
+                name="hometype"
+                value={formData.hometype}
+                onChange={handleInputChange}
+              >
+                <option value="">-- Choose a type --</option>
+                <option value="House">House</option>
+                <option value="Apartment">Apartment</option>
+                <option value="Villa">Villa</option>
+                <option value="Studio">Studio</option>
+              </select>
+            </div>
+
+            <div className="form-section" style={{ width: "30%" }}>
+              <label htmlFor="type">Type*:</label>
+              <select
+                id="type"
+                name="type"
+                value={formData.type}
+                onChange={handleInputChange}
+              >
+                <option value="">Select type:</option>
+                <option value="rent">Rent</option>
+                <option value="sale">Sale</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-section">
+              <label>Beds*:</label>
+              <input
+                type="number"
+                min="0"
+                placeholder="0"
+                name="beds"
+                value={formData.beds}
+                onChange={handleInputChange}
+              />
+            </div>
+
+            <div className="form-section">
+              <label>Baths*:</label>
+              <input
+                type="number"
+                min="0"
+                placeholder="0"
+                name="baths"
+                value={formData.baths.fullBaths}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value);
+                  const safeValue = isNaN(value) || value < 0 ? 0 : value;
+
+                  setFormData((prev) => ({
+                    ...prev,
+                    baths: {
+                      ...prev.baths,
+                      fullBaths: safeValue,
+                    },
+                  }));
+                }}
+              />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-section">
+              <label>Kitchen*:</label>
+              <input
+                type="number"
+                placeholder="0"
+                name="kitchenCount"
+                className="kitchen-count-input"
+                value={formData.Kitchen?.kitchenCount || 0}
+                onChange={(e) => {
+                  const rawCount = parseInt(e.target.value);
+                  const count = isNaN(rawCount) ? 0 : Math.max(0, rawCount); // لا قيم سالبة
+
+                  setFormData((prev) => {
+                    const prevTypes = prev.Kitchen?.types || [];
+
+                    const newTypes = [
+                      ...prevTypes.slice(0, count),
+                      ...Array(Math.max(count - prevTypes.length, 0)).fill(""),
+                    ];
+
+                    return {
+                      ...prev,
+                      Kitchen: {
+                        ...prev.Kitchen,
+                        kitchenCount: count,
+                        types: newTypes,
+                      },
+                    };
+                  });
+                }}
+              />
+
+              {formData.Kitchen?.kitchenCount > 0 &&
+                formData.Kitchen.types.map((type, index) => (
+                  <div className="kitchen-type-select" key={index}>
+                    <label>Kitchen {index + 1} Type:</label>
+                    <select
+                      value={formData.Kitchen.types[index] || ""}
+                      onChange={(e) => {
+                        const updatedTypes = [...formData.Kitchen.types];
+                        updatedTypes[index] = e.target.value;
+
+                        setFormData((prev) => ({
+                          ...prev,
+                          Kitchen: {
+                            ...prev.Kitchen,
+                            types: updatedTypes,
+                          },
+                        }));
+                      }}
+                    >
+                      <option value="">-- Select Type --</option>
+                      <option value="Open">Open</option>
+                      <option value="Close">Close</option>
+                    </select>
+                  </div>
+                ))}
+            </div>
+
+            <div className="form-section">
+              <label>Year Built*:</label>
+              <input
+                type="text"
+                className="filter-input"
+                placeholder="Year Built"
+                name="yearbuilt"
+                value={formData.yearbuilt}
+                onChange={handleInputChange}
+              />
+            </div>
+          </div>
+
+          <div className="filter-row">
+            <div className="management-section">
+              <label className="management-label">Management*:</label>
+              <div className="checkbox-group">
+                <label className="checkbox-option">
+                  <input
+                    type="checkbox"
+                    name="management"
+                    value="unmanaged"
+                    checked={formData.management === "unmanaged"}
+                    onChange={handleInputChange}
+                  />
+                  <span className="checkmark"></span>
+                  Unmanaged
+                </label>
+                <label className="checkbox-option">
+                  <input
+                    type="checkbox"
+                    name="management"
+                    value="managed"
+                    checked={formData.management === "managed"}
+                    onChange={handleInputChange}
+                  />
+                  <span className="checkmark"></span>
+                  Managed
+                </label>
+              </div>
+            </div>
+
+            <div className="form-section">
+              <h3>Contact information*:</h3>
+              <input
+                type="tel"
+                placeholder="(216) 00 000 000"
+                name="phone"
+                value={formData.phone}
+                onChange={handleInputChange}
+              />
+              <p className="info-text">
+                Potential buyers will contact you through the email address you
+                use to register on Homz. You must also add your phone number to
+                the listing here.
+              </p>
+            </div>
+          </div>
+          <div className="form-section">
+            <label className="management-label">Features:</label>
+
+            <div className="checkbox-group">
+              {/* Garden */}
+              <label className="checkbox-option">
                 <input
                   type="checkbox"
-                  id="agreement-checkbox"
-                  checked={formData?.agreement}
+                  checked={formData?.features?.garden}
                   onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
-                      agreement: e.target.checked,
+                      features: {
+                        ...prev.features,
+                        garden: e.target.checked,
+                      },
                     }))
                   }
                 />
-                <label htmlFor="agreement-checkbox">
-                  I agree to acknowledge and understand the following:
-                </label>
+                <span className="checkmark"></span>
+                Garden
+              </label>
+
+              {/* Parking */}
+              <label className="checkbox-option">
+                <input
+                  type="checkbox"
+                  checked={formData?.features?.parking}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      features: {
+                        ...prev.features,
+                        parking: e.target.checked,
+                      },
+                    }))
+                  }
+                />
+                <span className="checkmark"></span>
+                Parking
+              </label>
+
+              {/* swimming pool */}
+              <label className="checkbox-option">
+                <input
+                  type="checkbox"
+                  checked={formData?.features?.["swimming-pool"]}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      features: {
+                        ...prev.features,
+                        "swimming-pool": e.target.checked,
+                      },
+                    }))
+                  }
+                />
+                <span className="checkmark"></span>
+                swimming pool
+              </label>
+
+              {/* Balcony */}
+              <label className="checkbox-option">
+                <input
+                  type="checkbox"
+                  checked={formData?.features?.balcony}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      features: {
+                        ...prev.features,
+                        balcony: e.target.checked,
+                        balconyLocation: e.target.checked ? [] : [], // Reset to empty array if unchecked
+                      },
+                    }))
+                  }
+                />
+                <span className="checkmark"></span>
+                Balcony
+              </label>
+
+              {/* Balcony Locations if Balcony is selected */}
+              {formData?.features?.balcony && (
+                <div>
+                  <label>Balcony Location:</label>
+                  <div>
+                    {["living", "bedrooms", "kitchen", "other"].map(
+                      (location) => (
+                        <label key={location} className="checkbox-option">
+                          <input
+                            type="checkbox"
+                            checked={formData?.features?.balconyLocation.includes(
+                              location
+                            )}
+                            onChange={(e) => {
+                              const checked = e.target.checked;
+                              const value = location;
+                              setFormData((prev) => {
+                                const updatedLocations = checked
+                                  ? [...prev.features.balconyLocation, value]
+                                  : prev.features.balconyLocation.filter(
+                                      (loc) => loc !== value
+                                    );
+
+                                return {
+                                  ...prev,
+                                  features: {
+                                    ...prev.features,
+                                    balconyLocation: updatedLocations,
+                                  },
+                                };
+                              });
+                            }}
+                          />
+                          <span className="checkmark"></span>
+                          {location === "living"
+                            ? "In the living room"
+                            : location === "bedrooms"
+                              ? "In the bedrooms"
+                              : location === "kitchen"
+                                ? "In the kitchen"
+                                : "Other"}
+                        </label>
+                      )
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Desegin Type */}
+              <div>
+                <label>Desegin Type*:</label>
+                <select
+                  value={formData?.features?.designType}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      features: {
+                        ...prev.features,
+                        designType: e.target.value,
+                      },
+                    }))
+                  }
+                >
+                  <option value="">-- Select Type --</option>
+                  <option value="modern">Modern</option>
+                  <option value="traditional">Traditional</option>
+                </select>
               </div>
-              <ol className="agreement-list">
-                <li>
-                  Property Information All property details must be true and
-                  accurate. Do not post fake or misleading information. Listings
-                  with wrong or suspicious info will be removed.
-                </li>
-                <li>
-                  Ownership and Authorization You confirm that you are the owner
-                  of the property or have legal authorization to post this
-                  property for sale or rent.
-                </li>
-                <li>
-                  Monthly Subscription Required To post a property, you must
-                  subscribe to a monthly plan. The subscription costs 10 TND per
-                  month. Payment is made online by credit or debit card. The
-                  subscription is valid until: The property is sold, Or you
-                  remove the listing yourself. You must pay again if you want to
-                  post a new property after that.
-                </li>
-                <li>
-                  You Must Be the Owner or Authorized You can only post a
-                  property if: You own it, Or you have permission from the owner
-                  to post it.
-                </li>
-                <li>
-                  Contact If you have any questions, contact us: 📧
-                  contact@agenceimmobilier.com
-                </li>
-                           
-              </ol>
-
-              <p className="marketing-consent">
-                I also agree that by clicking below, CasaTech Group and its
-                affiliates, and real estate professionals may call or text me
-                for marketing purposes, which may involve use of automated means
-                and prerecorded/artificial voices. Consent is not a condition of
-                buying any property, goods or services. Message/data rates may
-                apply.
-              </p>
             </div>
-
-            <button
-              type="submit"
-              onClick={handleSubmit}
-              className="post-button"
-              disabled={isSubmitting || loading}
-            >
-              {isSubmitting
-                ? "Posting..."
-                : loading
-                  ? "Validating images..."
-                  : "Post For Sale By Owner"}
-            </button>
           </div>
-        </center>
+        </div>
+        <div className="agreement-container">
+          <div className="agreement-content">
+            <div className="checkbox-wrapper">
+              <input
+                type="checkbox"
+                id="agreement-checkbox"
+                checked={formData?.agreement}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    agreement: e.target.checked,
+                  }))
+                }
+              />
+              <label htmlFor="agreement-checkbox">
+                I agree to acknowledge and understand the following:
+              </label>
+            </div>
+            <ol className="agreement-list">
+              <li>
+                Property Information All property details must be true and
+                accurate. Do not post fake or misleading information. Listings
+                with wrong or suspicious info will be removed.
+              </li>
+              <li>
+                Ownership and Authorization You confirm that you are the owner
+                of the property or have legal authorization to post this
+                property for sale or rent.
+              </li>
+              <li>
+                Monthly Subscription Required To post a property, you must
+                subscribe to a monthly plan. The subscription costs 10 TND per
+                month. Payment is made online by credit or debit card. The
+                subscription is valid until: The property is sold, Or you remove
+                the listing yourself. You must pay again if you want to post a
+                new property after that.
+              </li>
+              <li>
+                You Must Be the Owner or Authorized You can only post a property
+                if: You own it, Or you have permission from the owner to post
+                it.
+              </li>
+              <li>
+                Contact If you have any questions, contact us: 📧
+                contact@agenceimmobilier.com
+              </li>
+                         
+            </ol>
+
+            <p className="marketing-consent">
+              I also agree that by clicking below, CasaTech Group and its
+              affiliates, and real estate professionals may call or text me for
+              marketing purposes, which may involve use of automated means and
+              prerecorded/artificial voices. Consent is not a condition of
+              buying any property, goods or services. Message/data rates may
+              apply.
+            </p>
+          </div>
+
+          <button
+            type="submit"
+            onClick={handleSubmit}
+            className="post-button"
+            disabled={isSubmitting || loading}
+          >
+            {isSubmitting
+              ? "Posting..."
+              : loading
+                ? "Validating images..."
+                : "Post For Sale By Owner"}
+          </button>
+        </div>
       </div>
 
       <style jsx>{`
